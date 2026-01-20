@@ -6,7 +6,7 @@ This plan outlines the steps to implement the core functionality for users to cr
 
 This phase focuses on setting up the necessary database tables and exposing API endpoints for portfolio creation, storage, and retrieval.
 
-- [x] **Task: Implement Portfolio Table Schema in Alembic Migration**
+- [x] **Task: Implement Portfolio Table Schema in Alembic Migration** fa6409f
     - [ ] Write a failing test for `portfolios` table existence.
     - [ ] Create Alembic migration script for `portfolios` table based on `tech-stack.md` (id, user_id, name, description, is_current, created_at, updated_at).
     - [ ] Apply migration.
