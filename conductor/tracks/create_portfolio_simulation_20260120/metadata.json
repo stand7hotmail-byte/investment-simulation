@@ -1,0 +1,8 @@
+{
+"track_id": "create_portfolio_simulation_20260120",
+"type": "feature",
+"status": "new",
+"created_at": "2026-01-20T22:25:00Z",
+"updated_at": "2026-01-20T22:25:00Z",
+"description": "ユーザーがポートフォリオを作成・保存し、基本的な積み立て投資シミュレーションを実行できるコア機能を構築する"
+}
