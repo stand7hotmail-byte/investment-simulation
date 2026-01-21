@@ -25,6 +25,12 @@ def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(g
     fake_user_id = uuid.uuid4()
     return crud.create_portfolio(db=db, portfolio=portfolio, user_id=fake_user_id)
 
+@app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation)
+def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.PortfolioAllocationCreate, db: Session = Depends(get_db)):
+    if allocation.portfolio_id != portfolio_id:
+        raise HTTPException(status_code=400, detail="Portfolio ID in path and body must match")
+    return crud.create_portfolio_allocation(db=db, allocation=allocation)
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}

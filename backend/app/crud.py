@@ -8,3 +8,10 @@ def create_portfolio(db: Session, portfolio: schemas.PortfolioCreate, user_id: u
     db.commit()
     db.refresh(db_portfolio)
     return db_portfolio
+
+def create_portfolio_allocation(db: Session, allocation: schemas.PortfolioAllocationCreate):
+    db_allocation = models.PortfolioAllocation(**allocation.model_dump())
+    db.add(db_allocation)
+    db.commit()
+    db.refresh(db_allocation)
+    return db_allocation
