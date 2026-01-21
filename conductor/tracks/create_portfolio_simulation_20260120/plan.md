@@ -10,7 +10,7 @@ This phase focuses on setting up the necessary database tables and exposing API 
     - [ ] Write a failing test for `portfolios` table existence.
     - [ ] Create Alembic migration script for `portfolios` table based on `tech-stack.md` (id, user_id, name, description, is_current, created_at, updated_at).
     - [ ] Apply migration.
-- [x] **Task: Implement Portfolio Allocations Table Schema in Alembic Migration**
+- [x] **Task: Implement Portfolio Allocations Table Schema in Alembic Migration** 28b138a
     - [ ] Write a failing test for `portfolio_allocations` table existence.
     - [ ] Create Alembic migration script for `portfolio_allocations` table (id, portfolio_id, asset_code, weight, created_at).
     - [ ] Apply migration.
