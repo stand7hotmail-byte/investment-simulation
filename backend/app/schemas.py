@@ -36,3 +36,16 @@ class PortfolioAllocation(PortfolioAllocationBase):
 class PortfolioAllocationUpdate(BaseModel):
     asset_code: str | None = None
     weight: Decimal | None = None
+
+class AssetDataBase(BaseModel):
+    asset_code: str
+    name: str
+    asset_class: str | None = None
+    expected_return: Decimal | None = None
+    volatility: Decimal | None = None
+    correlation_matrix: dict | None = None
+
+class AssetData(AssetDataBase):
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

@@ -90,6 +90,18 @@ def delete_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUI
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Allocation not found or not owned by user")
     return {"message": "Allocation deleted successfully"}
 
+@app.get("/api/assets", response_model=List[schemas.AssetData])
+def read_assets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    assets = crud.get_assets(db, skip=skip, limit=limit)
+    return assets
+
+@app.get("/api/assets/{asset_code}", response_model=schemas.AssetData)
+def read_asset(asset_code: str, db: Session = Depends(get_db)):
+    db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
+    if db_asset is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
+    return db_asset
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
