@@ -14,4 +14,4 @@ This plan outlines the steps to implement the API endpoints for managing asset a
         - `DELETE /api/portfolios/{portfolio_id}/allocations/{allocation_id}` (delete an allocation).
     - [x] Implement the corresponding endpoints in `backend/app/main.py`.
     - [x] Rerun all tests to confirm they pass.
-- [ ] **Task: Conductor - User Manual Verification 'Asset Allocations Management API' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Asset Allocations Management API' (Protocol in workflow.md)**
