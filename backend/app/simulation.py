@@ -68,6 +68,89 @@ def calculate_efficient_frontier(
         "max_sharpe": max_sharpe_point
     }
 
+def calculate_portfolio_stats(expected_returns: np.ndarray, covariance_matrix: np.ndarray, weights: np.ndarray) -> tuple[float, float]:
+    """
+    ポートフォリオの期待リターンとボラティリティを算出します。
+    """
+    ret = expected_returns @ weights
+    vol = np.sqrt(weights.T @ covariance_matrix @ weights)
+    return float(ret), float(vol)
+
+def monte_carlo_simulation(
+    mu: float,
+    sigma: float,
+    initial_investment: float,
+    monthly_contribution: float,
+    years: int,
+    n_simulations: int = 10000,
+    extra_investments: List[Dict[str, Any]] = None,
+    target_amount: float = None
+) -> Dict[str, Any]:
+    """
+    幾何ブラウン運動を用いたモンテカルロシミュレーションを実行します。
+    """
+    # 年間のリターン行列を生成 (years, n_simulations)
+    # 幾何ブラウン運動: S_t = S_{t-1} * exp((mu - 0.5 * sigma^2) + sigma * epsilon)
+    # 簡略化のため、(1 + r) の形式で計算する (離散ステップ)
+    # r ~ N(mu, sigma^2)
+    daily_returns = np.random.normal(mu, sigma, (years, n_simulations))
+    
+    # シミュレーション結果の推移を保持
+    # (years + 1, n_simulations)
+    portfolio_values = np.zeros((years + 1, n_simulations))
+    portfolio_values[0] = initial_investment
+    
+    extra_map = {item["year"]: item["amount"] for item in (extra_investments or [])}
+    
+    for t in range(1, years + 1):
+        # 前年の値にリターンを適用
+        portfolio_values[t] = portfolio_values[t-1] * (1 + daily_returns[t-1])
+        
+        # 毎月の積み立てを加算 (年額換算)
+        portfolio_values[t] += monthly_contribution * 12
+        
+        # 任意の追加投資を加算
+        if t in extra_map:
+            portfolio_values[t] += extra_map[t]
+            
+    # 最終的な結果の統計
+    final_values = portfolio_values[-1]
+    
+    # タイル
+    percentiles = {
+        "10": float(np.percentile(final_values, 10)),
+        "25": float(np.percentile(final_values, 25)),
+        "50": float(np.percentile(final_values, 50)),
+        "75": float(np.percentile(final_values, 75)),
+        "90": float(np.percentile(final_values, 90))
+    }
+    
+    # 元本割れ確率 (初期投資 + 積み立て累計 + 追加投資累計)
+    total_invested = initial_investment + (monthly_contribution * 12 * years) + sum(extra_map.values())
+    prob_loss = float(np.mean(final_values < total_invested))
+    
+    # 目標到達確率
+    prob_target = None
+    if target_amount:
+        prob_target = float(np.mean(final_values >= target_amount))
+        
+    # チャート用の推移データ (10, 50, 90タイルを抽出)
+    history = []
+    for t in range(years + 1):
+        history.append({
+            "year": t,
+            "p10": float(np.percentile(portfolio_values[t], 10)),
+            "p50": float(np.percentile(portfolio_values[t], 50)),
+            "p90": float(np.percentile(portfolio_values[t], 90))
+        })
+        
+    return {
+        "percentiles": percentiles,
+        "元本割れ確率": prob_loss,
+        "目標到達確率": prob_target,
+        "history": history
+    }
+
 def build_covariance_matrix(volatilities: List[float], correlation_matrix: List[List[float]]) -> np.ndarray:
     """
     ボラティリティと相関係数行列から共分散行列を作成します。
