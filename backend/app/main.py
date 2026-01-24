@@ -1,6 +1,7 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 import uuid
+from typing import List
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -18,18 +19,47 @@ def get_db():
     finally:
         db.close()
 
+# Placeholder for user authentication
+def get_current_user_id():
+    return uuid.uuid4() # Replace with actual authentication logic
 
-@app.post("/api/portfolios", response_model=schemas.Portfolio)
-def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db)):
-    # This is a placeholder for user authentication
-    fake_user_id = uuid.uuid4()
-    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=fake_user_id)
+@app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=status.HTTP_201_CREATED)
+def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=user_id)
 
-@app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation)
+@app.get("/api/portfolios", response_model=List[schemas.Portfolio])
+def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    portfolios = crud.get_portfolios(db, user_id=user_id, skip=skip, limit=limit)
+    return portfolios
+
+@app.get("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
+def read_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
+    if db_portfolio is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    return db_portfolio
+
+@app.put("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
+def update_portfolio(portfolio_id: uuid.UUID, portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_portfolio = crud.update_portfolio(db, portfolio_id=portfolio_id, user_id=user_id, portfolio_update=portfolio)
+    if db_portfolio is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found or not owned by user")
+    return db_portfolio
+
+@app.delete("/api/portfolios/{portfolio_id}", status_code=status.HTTP_200_OK)
+def delete_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    if not crud.delete_portfolio(db, portfolio_id=portfolio_id, user_id=user_id):
+        raise HTTPException(status_code=404, detail="Portfolio not found or not owned by user")
+    return {"message": "Portfolio deleted successfully"}
+
+@app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation, status_code=status.HTTP_201_CREATED)
 def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.PortfolioAllocationCreate, db: Session = Depends(get_db)):
     if allocation.portfolio_id != portfolio_id:
         raise HTTPException(status_code=400, detail="Portfolio ID in path and body must match")
+    # For now, we assume the portfolio exists and is owned by the user.
+    # In a real app, you would verify ownership here.
     return crud.create_portfolio_allocation(db=db, allocation=allocation)
+
 
 @app.get("/")
 def read_root():

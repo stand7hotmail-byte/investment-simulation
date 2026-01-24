@@ -14,17 +14,17 @@ This phase focuses on setting up the necessary database tables and exposing API 
     - [ ] Write a failing test for `portfolio_allocations` table existence.
     - [ ] Create Alembic migration script for `portfolio_allocations` table (id, portfolio_id, asset_code, weight, created_at).
     - [ ] Apply migration.
-- [ ] **Task: Create FastAPI Router for Portfolio CRUD Operations**
-    - [ ] Write failing tests for GET /api/portfolios (get all user portfolios).
-    - [ ] Implement GET /api/portfolios endpoint.
-    - [ ] Write failing tests for POST /api/portfolios (create new portfolio).
-    - [ ] Implement POST /api/portfolios endpoint.
-    - [ ] Write failing tests for GET /api/portfolios/{id} (get single portfolio).
-    - [ ] Implement GET /api/portfolios/{id} endpoint.
-    - [ ] Write failing tests for PUT /api/portfolios/{id} (update portfolio).
-    - [ ] Implement PUT /api/portfolios/{id} endpoint.
-    - [ ] Write failing tests for DELETE /api/portfolios/{id} (delete portfolio).
-    - [ ] Implement DELETE /api/portfolios/{id} endpoint.
+- [x] **Task: Create FastAPI Router for Portfolio CRUD Operations**
+    - [x] Write failing tests for GET /api/portfolios (get all user portfolios).
+    - [x] Implement GET /api/portfolios endpoint.
+    - [x] Write failing tests for POST /api/portfolios (create new portfolio).
+    - [x] Implement POST /api/portfolios endpoint.
+    - [x] Write failing tests for GET /api/portfolios/{id} (get single portfolio).
+    - [x] Implement GET /api/portfolios/{id} endpoint.
+    - [x] Write failing tests for PUT /api/portfolios/{id} (update portfolio).
+    - [x] Implement PUT /api/portfolios/{id} endpoint.
+    - [x] Write failing tests for DELETE /api/portfolios/{id} (delete portfolio).
+    - [x] Implement DELETE /api/portfolios/{id} endpoint.
 - [ ] **Task: Create FastAPI Router for Asset Allocations**
     - [ ] Write failing tests for GET /api/portfolios/{id}/allocations (get allocations for portfolio).
     - [ ] Implement GET /api/portfolios/{id}/allocations endpoint.
