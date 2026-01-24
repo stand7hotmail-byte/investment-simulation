@@ -12,3 +12,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: 資産データ管理の実装**
   *Link: [./tracks/implement_asset_data_management_20260124/](./tracks/implement_asset_data_management_20260124/)*
+
+- [x] **Track: 効率的フロンティア計算の実装**
+  *Link: [./tracks/implement_efficient_frontier_20260124/](./tracks/implement_efficient_frontier_20260124/)*

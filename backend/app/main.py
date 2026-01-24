@@ -1,9 +1,10 @@
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 import uuid
+import numpy as np
 from typing import List, Optional
 
-from . import crud, models, schemas
+from . import crud, models, schemas, simulation
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -101,6 +102,44 @@ def read_asset(asset_code: str, db: Session = Depends(get_db)):
     if db_asset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
     return db_asset
+
+@app.post("/api/simulate/efficient-frontier", response_model=schemas.EfficientFrontierResponse)
+def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: Session = Depends(get_db)):
+    assets_data = []
+    for code in request.assets:
+        asset = crud.get_asset_by_code(db, code)
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        assets_data.append(asset)
+    
+    if len(assets_data) < 2:
+        raise HTTPException(status_code=400, detail="At least two assets are required for efficient frontier calculation")
+    
+    # パラメータの準備
+    expected_returns = np.array([float(a.expected_return) for a in assets_data])
+    volatilities = [float(a.volatility) for a in assets_data]
+    
+    # 相関行列の構築
+    n = len(assets_data)
+    corr_matrix = np.eye(n)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                target_code = assets_data[j].asset_code
+                corr_matrix[i, j] = assets_data[i].correlation_matrix.get(target_code, 0.0)
+    
+    # 共分散行列の構築
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    
+    # 計算実行
+    result = simulation.calculate_efficient_frontier(
+        expected_returns, 
+        cov_matrix, 
+        request.assets, 
+        request.n_points
+    )
+    
+    return result
 
 @app.get("/")
 def read_root():

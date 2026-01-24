@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from typing import List
 
 class PortfolioBase(BaseModel):
     name: str
@@ -49,3 +50,16 @@ class AssetData(AssetDataBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class EfficientFrontierRequest(BaseModel):
+    assets: List[str]
+    n_points: int = 50
+
+class FrontierPoint(BaseModel):
+    expected_return: float
+    volatility: float
+    weights: dict[str, float]
+
+class EfficientFrontierResponse(BaseModel):
+    frontier: List[FrontierPoint]
+    max_sharpe: FrontierPoint | None = None
