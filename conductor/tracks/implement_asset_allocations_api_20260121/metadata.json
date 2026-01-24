@@ -1,0 +1,7 @@
+{
+  "track_id": "implement_asset_allocations_api_20260121",
+  "name": "Implement Asset Allocations Management API",
+  "status": "in_progress",
+  "current_task": "Create FastAPI Router for Asset Allocations (GET, PUT, DELETE)",
+  "created_at": "2026-01-21T19:45:00Z"
+}
