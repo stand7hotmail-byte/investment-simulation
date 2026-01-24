@@ -32,3 +32,7 @@ class PortfolioAllocation(PortfolioAllocationBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class PortfolioAllocationUpdate(BaseModel):
+    asset_code: str | None = None
+    weight: Decimal | None = None

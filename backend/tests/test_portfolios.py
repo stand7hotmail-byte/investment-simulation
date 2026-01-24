@@ -1,5 +1,6 @@
 from fastapi import status
 import uuid
+from decimal import Decimal
 
 def test_create_portfolio(test_client):
     response = test_client.post("/api/portfolios", json={"name": "Test Portfolio", "description": "A test portfolio"})
@@ -77,3 +78,68 @@ def test_create_portfolio_allocation(test_client):
     data = response.json()
     assert data["asset_code"] == "SPY"
     assert "id" in data
+
+# Failing tests for asset allocations
+def test_get_portfolio_allocations(test_client):
+    portfolio_response = test_client.post("/api/portfolios", json={"name": "Portfolio for Allocations", "description": "Test allocations"})
+    assert portfolio_response.status_code == status.HTTP_201_CREATED
+    portfolio_id = portfolio_response.json()["id"]
+
+    # Create a few allocations
+    test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={"portfolio_id": portfolio_id, "asset_code": "AAPL", "weight": 0.5})
+    test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={"portfolio_id": portfolio_id, "asset_code": "MSFT", "weight": 0.3})
+
+    response = test_client.get(f"/api/portfolios/{portfolio_id}/allocations")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 2
+    assert any(alloc["asset_code"] == "AAPL" for alloc in data)
+    assert any(alloc["asset_code"] == "MSFT" for alloc in data)
+
+def test_get_single_portfolio_allocation(test_client):
+    portfolio_response = test_client.post("/api/portfolios", json={"name": "Portfolio for Single Allocation", "description": "Test single allocation"})
+    assert portfolio_response.status_code == status.HTTP_201_CREATED
+    portfolio_id = portfolio_response.json()["id"]
+
+    allocation_create_response = test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={"portfolio_id": portfolio_id, "asset_code": "GOOG", "weight": 1.0})
+    assert allocation_create_response.status_code == status.HTTP_201_CREATED
+    allocation_id = allocation_create_response.json()["id"]
+
+    response = test_client.get(f"/api/portfolios/{portfolio_id}/allocations/{allocation_id}")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["asset_code"] == "GOOG"
+    assert data["id"] == allocation_id
+
+def test_update_portfolio_allocation(test_client):
+    portfolio_response = test_client.post("/api/portfolios", json={"name": "Portfolio for Update Allocation", "description": "Test update allocation"})
+    assert portfolio_response.status_code == status.HTTP_201_CREATED
+    portfolio_id = portfolio_response.json()["id"]
+
+    allocation_create_response = test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={"portfolio_id": portfolio_id, "asset_code": "AMZN", "weight": 0.7})
+    assert allocation_create_response.status_code == status.HTTP_201_CREATED
+    allocation_id = allocation_create_response.json()["id"]
+
+    update_data = {"weight": 0.8}
+    response = test_client.put(f"/api/portfolios/{portfolio_id}/allocations/{allocation_id}", json=update_data)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert Decimal(str(data["weight"])) == Decimal("0.8")
+    assert data["id"] == allocation_id
+
+def test_delete_portfolio_allocation(test_client):
+    portfolio_response = test_client.post("/api/portfolios", json={"name": "Portfolio for Delete Allocation", "description": "Test delete allocation"})
+    assert portfolio_response.status_code == status.HTTP_201_CREATED
+    portfolio_id = portfolio_response.json()["id"]
+
+    allocation_create_response = test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={"portfolio_id": portfolio_id, "asset_code": "TSLA", "weight": 0.2})
+    assert allocation_create_response.status_code == status.HTTP_201_CREATED
+    allocation_id = allocation_create_response.json()["id"]
+
+    response = test_client.delete(f"/api/portfolios/{portfolio_id}/allocations/{allocation_id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"message": "Allocation deleted successfully"}
+
+    # Verify it's deleted
+    get_response = test_client.get(f"/api/portfolios/{portfolio_id}/allocations/{allocation_id}")
+    assert get_response.status_code == status.HTTP_404_NOT_FOUND
