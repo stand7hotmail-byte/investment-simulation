@@ -25,6 +25,6 @@
 - [x] **Task: エンドポイントの実装** 16618b5
     - [ ] `backend/app/main.py` に `POST /api/simulate/monte-carlo` を実装。
     - [ ] データベースからポートフォリオ情報を取得し、計算エンジンへ渡す連携処理を実装。
-- [ ] **Task: 統合テストの作成と実行**
+- [x] **Task: 統合テストの作成と実行** 6e64ce4
     - [ ] 実際にAPIを呼び出し、正しいデータ構造とステータスコードが返ることを検証。
 - [ ] **Task: Conductor - User Manual Verification 'API統合' (Protocol in workflow.md)**
