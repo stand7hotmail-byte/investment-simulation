@@ -15,7 +15,7 @@
 - [x] **Task: テストをパスさせる実装 (TDD Green Phase)** e14a723
     - [x] `simulation.py` の関数を完成させ、テストをパスさせる。
     - [x] NumPy等を使用してパフォーマンス（1秒以内）を確保。
-- [ ] **Task: Conductor - User Manual Verification 'シミュレーションエンジン' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'シミュレーションエンジン' (Protocol in workflow.md)**
 
 ## Phase 2: API統合
 
