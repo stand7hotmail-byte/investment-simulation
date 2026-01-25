@@ -19,7 +19,7 @@
 
 ## Phase 2: API統合
 
-- [ ] **Task: スキーマの定義**
+- [x] **Task: スキーマの定義** 9e03c6a
     - [ ] `backend/app/schemas.py` に `MonteCarloRequest` および `MonteCarloResponse` スキーマを追加。
     - [ ] 任意タイミングの追加投資を表現するネストされたスキーマを定義。
 - [ ] **Task: エンドポイントの実装**
