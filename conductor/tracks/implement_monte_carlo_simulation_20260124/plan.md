@@ -22,7 +22,7 @@
 - [x] **Task: スキーマの定義** 9e03c6a
     - [ ] `backend/app/schemas.py` に `MonteCarloRequest` および `MonteCarloResponse` スキーマを追加。
     - [ ] 任意タイミングの追加投資を表現するネストされたスキーマを定義。
-- [ ] **Task: エンドポイントの実装**
+- [x] **Task: エンドポイントの実装** 16618b5
     - [ ] `backend/app/main.py` に `POST /api/simulate/monte-carlo` を実装。
     - [ ] データベースからポートフォリオ情報を取得し、計算エンジンへ渡す連携処理を実装。
 - [ ] **Task: 統合テストの作成と実行**
