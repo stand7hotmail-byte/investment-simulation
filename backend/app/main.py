@@ -141,6 +141,62 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     
     return result
 
+@app.post("/api/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
+def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    # 1. ポートフォリオの存在と所有権を確認
+    db_portfolio = crud.get_portfolio(db, portfolio_id=request.portfolio_id, user_id=user_id)
+    if db_portfolio is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
+    
+    # 2. 資産配分を取得
+    allocations = crud.get_portfolio_allocations(db, portfolio_id=request.portfolio_id, user_id=user_id)
+    if not allocations:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Portfolio has no allocations")
+    
+    # 3. 各資産の統計データを取得
+    asset_codes = [a.asset_code for a in allocations]
+    weights = np.array([float(a.weight) for a in allocations])
+    
+    assets_stats = []
+    for code in asset_codes:
+        stats = crud.get_asset_by_code(db, code)
+        if not stats:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset data for {code} not found")
+        assets_stats.append(stats)
+        
+    # 4. ポートフォリオ全体の期待リターンとリスクを算出
+    expected_returns = np.array([float(a.expected_return) for a in assets_stats])
+    volatilities = [float(a.volatility) for a in assets_stats]
+    
+    # 相関行列の構築
+    n = len(assets_stats)
+    corr_matrix = np.eye(n)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                target_code = assets_stats[j].asset_code
+                corr_matrix[i, j] = assets_stats[i].correlation_matrix.get(target_code, 0.0)
+                
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    
+    mu, sigma = simulation.calculate_portfolio_stats(expected_returns, cov_matrix, weights)
+    
+    # 5. モンテカルロシミュレーションの実行
+    extra_investments = [inv.model_dump() for inv in request.extra_investments] if request.extra_investments else None
+    
+    result = simulation.monte_carlo_simulation(
+        mu=mu,
+        sigma=sigma,
+        initial_investment=request.initial_investment,
+        monthly_contribution=request.monthly_contribution,
+        years=request.years,
+        n_simulations=request.n_simulations,
+        extra_investments=extra_investments,
+        target_amount=request.target_amount
+    )
+    
+    return result
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
