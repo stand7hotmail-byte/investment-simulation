@@ -63,3 +63,28 @@ class FrontierPoint(BaseModel):
 class EfficientFrontierResponse(BaseModel):
     frontier: List[FrontierPoint]
     max_sharpe: FrontierPoint | None = None
+
+class ExtraInvestment(BaseModel):
+    year: int
+    amount: float
+
+class MonteCarloRequest(BaseModel):
+    portfolio_id: uuid.UUID
+    initial_investment: float
+    monthly_contribution: float
+    years: int
+    n_simulations: int = 10000
+    extra_investments: List[ExtraInvestment] | None = None
+    target_amount: float | None = None
+
+class MonteCarloHistory(BaseModel):
+    year: int
+    p10: float
+    p50: float
+    p90: float
+
+class MonteCarloResponse(BaseModel):
+    percentiles: dict[str, float]
+    元本割れ確率: float
+    目標到達確率: float | None = None
+    history: List[MonteCarloHistory]
