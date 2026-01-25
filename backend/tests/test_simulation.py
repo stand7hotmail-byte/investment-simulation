@@ -91,12 +91,7 @@ def test_monte_carlo_simulation_basic():
         n_simulations=n_simulations
     )
     
-    # Final value should be approximately initial * (1 + mu)^years (discrete yearly steps)
-    # or initial * exp(mu * years) (continuous)
-    # We'll use yearly steps in implementation
     expected_final = initial_investment * (1 + mu)**years
-    
-    # Percentiles should all be equal since sigma is 0
     assert results["percentiles"]["50"] == pytest.approx(expected_final, rel=1e-2)
     assert results["元本割れ確率"] == 0.0
 
@@ -117,7 +112,6 @@ def test_monte_carlo_with_contributions():
         n_simulations=n_simulations
     )
     
-    # 1,000,000 + 10,000 * 12 = 1,120,000
     assert results["percentiles"]["50"] == pytest.approx(1120000)
 
 def test_monte_carlo_with_extra_investments():
@@ -139,5 +133,45 @@ def test_monte_carlo_with_extra_investments():
         extra_investments=extra_investments
     )
     
-    # 1,000,000 + 500,000 = 1,500,000
     assert results["percentiles"]["50"] == pytest.approx(1500000)
+
+# --- API Integration Tests ---
+
+def test_simulate_monte_carlo_endpoint(test_client, session_override, fixed_user_id, sample_assets):
+    # 1. Create a portfolio
+    portfolio_res = test_client.post("/api/portfolios", json={"name": "MC Test Portfolio", "description": "Testing MC API"})
+    portfolio_id = portfolio_res.json()["id"]
+    
+    # 2. Add allocations (60% TOPIX, 40% SP500)
+    test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={
+        "portfolio_id": portfolio_id,
+        "asset_code": "TOPIX",
+        "weight": 0.6
+    })
+    test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={
+        "portfolio_id": portfolio_id,
+        "asset_code": "SP500",
+        "weight": 0.4
+    })
+    
+    # 3. Request Monte Carlo Simulation
+    payload = {
+        "portfolio_id": portfolio_id,
+        "initial_investment": 1000000,
+        "monthly_contribution": 30000,
+        "years": 5,
+        "n_simulations": 1000,
+        "extra_investments": [
+            {"year": 2, "amount": 500000}
+        ],
+        "target_amount": 5000000
+    }
+    
+    response = test_client.post("/api/simulate/monte-carlo", json=payload)
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert "percentiles" in data
+    assert "元本割れ確率" in data
+    assert "目標到達確率" in data
+    assert len(data["history"]) == 6 # 0 to 5 years
