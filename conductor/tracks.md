@@ -18,5 +18,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: シミュレーションロジック（モンテカルロ シミュレーション）を進めたい。**
+- [x] **Track: シミュレーションロジック（モンテカルロ シミュレーション）を進めたい。**
 *Link: [./tracks/implement_monte_carlo_simulation_20260124/](./tracks/implement_monte_carlo_simulation_20260124/)*
