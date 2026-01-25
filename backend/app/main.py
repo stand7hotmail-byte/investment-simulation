@@ -22,7 +22,8 @@ def get_db():
 
 # Placeholder for user authentication
 def get_current_user_id():
-    return uuid.uuid4() # Replace with actual authentication logic
+    # Return a fixed UUID for development to ensure consistency between requests
+    return uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 @app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=status.HTTP_201_CREATED)
 def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
