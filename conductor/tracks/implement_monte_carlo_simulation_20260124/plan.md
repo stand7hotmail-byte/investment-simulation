@@ -17,7 +17,7 @@
     - [x] NumPy等を使用してパフォーマンス（1秒以内）を確保。
 - [x] **Task: Conductor - User Manual Verification 'シミュレーションエンジン' (Protocol in workflow.md)**
 
-## Phase 2: API統合
+## Phase 2: API統合 [checkpoint: 17910c5]
 
 - [x] **Task: スキーマの定義** 9e03c6a
     - [ ] `backend/app/schemas.py` に `MonteCarloRequest` および `MonteCarloResponse` スキーマを追加。
