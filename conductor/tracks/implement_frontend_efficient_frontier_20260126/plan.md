@@ -8,7 +8,7 @@
     - [ ] `frontend` ディレクトリを作成し、Next.js 14 (App Router, TypeScript, Tailwind CSS) を初期化。
     - [ ] shadcn/ui, Zustand, TanStack Query, Plotly.js, Lucide React をインストール。
     - [ ] バックエンドとの API 連携用の環境変数設定。
-- [ ] **Task: サイドバー付きダッシュボードレイアウトの実装**
+- [x] **Task: サイドバー付きダッシュボードレイアウトの実装** 475416b
     - [ ] サイドバーコンポーネントの作成（「効率的フロンティア」等のリンクを配置）。
     - [ ] メインレイアウト (`app/layout.tsx`) への適用とレスポンシブ対応。
 - [ ] **Task: ユニットテスト環境の構築 (TDD Red Phase)**
