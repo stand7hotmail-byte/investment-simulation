@@ -11,7 +11,7 @@
 - [x] **Task: サイドバー付きダッシュボードレイアウトの実装** 475416b
     - [ ] サイドバーコンポーネントの作成（「効率的フロンティア」等のリンクを配置）。
     - [ ] メインレイアウト (`app/layout.tsx`) への適用とレスポンシブ対応。
-- [ ] **Task: ユニットテスト環境の構築 (TDD Red Phase)**
+- [x] **Task: ユニットテスト環境の構築 (TDD Red Phase)** 254700a
     - [ ] Vitest と React Testing Library のセットアップ。
     - [ ] 基本的なコンポーネント描画テストを作成し、パスすることを確認。
 - [ ] **Task: Conductor - User Manual Verification 'フロントエンド基盤' (Protocol in workflow.md)**
