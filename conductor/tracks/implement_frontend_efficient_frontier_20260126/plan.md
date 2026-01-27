@@ -14,7 +14,7 @@
 - [x] **Task: ユニットテスト環境の構築 (TDD Red Phase)** 254700a
     - [ ] Vitest と React Testing Library のセットアップ。
     - [ ] 基本的なコンポーネント描画テストを作成し、パスすることを確認。
-- [ ] **Task: Conductor - User Manual Verification 'フロントエンド基盤' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'フロントエンド基盤' (Protocol in workflow.md)**
 
 ## Phase 2: 資産選択とデータ取得の実装
 

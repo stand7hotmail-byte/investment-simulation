@@ -1,4 +1,4 @@
-# Track implement_monte_carlo_simulation_20260124 Context
+# Track implement_frontend_efficient_frontier_20260126 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)
