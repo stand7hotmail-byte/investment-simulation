@@ -33,7 +33,7 @@
 - [x] **Task: シミュレーション API 連携の実装** 1d57c42
     - [ ] `/api/simulate/efficient-frontier` を呼び出すカスタムフックの作成。
     - [ ] 計算実行ボタンとローディング状態の表示。
-- [ ] **Task: Plotly.js によるインタラクティブ・グラフの実装**
+- [x] **Task: Plotly.js によるインタラクティブ・グラフの実装** 69c0d8d
     - [ ] `EfficientFrontierChart` コンポーネントの作成。
     - [ ] ズーム、パン、ホバー表示（リターン・リスク）の有効化。
 - [ ] **Task: フロンティア曲線の描画テスト (TDD)**
