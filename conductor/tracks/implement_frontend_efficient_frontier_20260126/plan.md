@@ -26,7 +26,7 @@
 - [x] **Task: コンポーネントのテストと実装 (TDD)** d2d123c
     - [ ] 資産リストが正しく表示・選択されるかをテスト。
     - [ ] テストをパスさせる実装。
-- [ ] **Task: Conductor - User Manual Verification '資産選択機能' (Protocol in workflow.md)**
+- [~] **Task: Conductor - User Manual Verification '資産選択機能' (Protocol in workflow.md)**
 
 ## Phase 3: 効率的フロンティアの視覚化
 
