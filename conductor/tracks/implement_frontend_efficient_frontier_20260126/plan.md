@@ -16,7 +16,7 @@
     - [ ] 基本的なコンポーネント描画テストを作成し、パスすることを確認。
 - [x] **Task: Conductor - User Manual Verification 'フロントエンド基盤' (Protocol in workflow.md)**
 
-## Phase 2: 資産選択とデータ取得の実装
+## Phase 2: 資産選択とデータ取得の実装 [checkpoint: 21497bb]
 
 - [x] **Task: 資産一覧取得機能の実装** 4793743
     - [ ] TanStack Query を使用した `/api/assets` 呼び出しフックの作成。
