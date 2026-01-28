@@ -23,7 +23,7 @@
     - [ ] 資産選択用のチェックボックスリストコンポーネントの実装。
 - [x] **Task: 資産選択状態の管理 (Zustand)** e3eae89
     - [ ] 選択された資産のコードリストを保持する Zustand ストアを作成。
-- [ ] **Task: コンポーネントのテストと実装 (TDD)**
+- [x] **Task: コンポーネントのテストと実装 (TDD)** d2d123c
     - [ ] 資産リストが正しく表示・選択されるかをテスト。
     - [ ] テストをパスさせる実装。
 - [ ] **Task: Conductor - User Manual Verification '資産選択機能' (Protocol in workflow.md)**
