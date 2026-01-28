@@ -2,7 +2,7 @@
 
 このプランは、Next.js 14 を使用したアプリケーションの基盤構築と、資産の最適化曲線を視覚化する「効率的フロンティア」画面の実装手順を定義します。
 
-## Phase 1: フロントエンド基盤と基本レイアウトの構築
+## Phase 1: フロントエンド基盤と基本レイアウトの構築 [checkpoint: 7b036d6]
 
 - [x] **Task: Next.js プロジェクトの初期化と依存関係のセットアップ** afa84ec
     - [ ] `frontend` ディレクトリを作成し、Next.js 14 (App Router, TypeScript, Tailwind CSS) を初期化。
