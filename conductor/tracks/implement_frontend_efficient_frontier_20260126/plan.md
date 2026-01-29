@@ -36,10 +36,10 @@
 - [x] **Task: Plotly.js によるインタラクティブ・グラフの実装** 69c0d8d
     - [ ] `EfficientFrontierChart` コンポーネントの作成。
     - [ ] ズーム、パン、ホバー表示（リターン・リスク）の有効化。
-- [ ] **Task: フロンティア曲線の描画テスト (TDD)**
+- [x] **Task: フロンティア曲線の描画テスト (TDD)**
     - [ ] API レスポンスに基づきグラフデータが正しく構築されるかを検証するテスト。
     - [ ] テストをパスさせる実装。
-- [ ] **Task: Conductor - User Manual Verification 'グラフ視覚化' (Protocol in workflow.md)**
+- [~] **Task: Conductor - User Manual Verification 'グラフ視覚化' (Protocol in workflow.md)**
 
 ## Phase 4: 資産配分詳細テーブルとポイント連携
 
