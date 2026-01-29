@@ -23,6 +23,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 
 
-- [~] **Track: フロントエンドの開発: Next.js で今回作ったAPIを呼び出し、グラフを表示する画面を作る。**
+- [x] **Track: フロントエンドの開発: Next.js で今回作ったAPIを呼び出し、グラフを表示する画面を作る。**
 
 *Link: [./tracks/implement_frontend_efficient_frontier_20260126/](./tracks/implement_frontend_efficient_frontier_20260126/)*
