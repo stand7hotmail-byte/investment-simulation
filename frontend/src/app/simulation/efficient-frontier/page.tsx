@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AssetSelector } from "@/components/simulation/AssetSelector";
 import { EfficientFrontierChart } from "@/components/simulation/EfficientFrontierChart";
+import { AllocationTable } from "@/components/simulation/AllocationTable";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useEfficientFrontier } from "@/hooks/useEfficientFrontier";
 import { Button } from "@/components/ui/button";
@@ -44,10 +45,13 @@ export default function EfficientFrontierPage() {
         
         <div className="lg:col-span-2">
           {data ? (
-            <EfficientFrontierChart 
-              frontier={data.frontier} 
-              maxSharpe={data.max_sharpe} 
-            />
+            <div className="space-y-8">
+              <EfficientFrontierChart 
+                frontier={data.frontier} 
+                maxSharpe={data.max_sharpe} 
+              />
+              <AllocationTable />
+            </div>
           ) : (
             <div className="flex h-[550px] items-center justify-center bg-white rounded-lg border-2 border-dashed border-slate-200 text-slate-400 text-center p-8 shadow-inner">
               <div className="max-w-xs space-y-2">
