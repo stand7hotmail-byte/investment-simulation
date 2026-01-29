@@ -1180,5 +1180,6 @@ const MonteCarloChart = dynamic(
 ---
 
 **Document Version:** 1.0  
-**Last Updated:** 2026-01-20  
+**Last Updated:** 2026-01-29  
+**Status:** Core frontend stack (Next.js 14, TanStack Query, Zustand, Plotly.js) and Efficient Frontier visualization implemented.
 **Author:** Investment Simulator Development Team.co
