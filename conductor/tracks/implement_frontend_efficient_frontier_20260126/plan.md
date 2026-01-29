@@ -26,9 +26,9 @@
 - [x] **Task: コンポーネントのテストと実装 (TDD)** d2d123c
     - [ ] 資産リストが正しく表示・選択されるかをテスト。
     - [ ] テストをパスさせる実装。
-- [~] **Task: Conductor - User Manual Verification '資産選択機能' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification '資産選択機能' (Protocol in workflow.md)**
 
-## Phase 3: 効率的フロンティアの視覚化
+## Phase 3: 効率的フロンティアの視覚化 [checkpoint: 7a544fe]
 
 - [x] **Task: シミュレーション API 連携の実装** 1d57c42
     - [ ] `/api/simulate/efficient-frontier` を呼び出すカスタムフックの作成。
@@ -39,7 +39,7 @@
 - [x] **Task: フロンティア曲線の描画テスト (TDD)**
     - [ ] API レスポンスに基づきグラフデータが正しく構築されるかを検証するテスト。
     - [ ] テストをパスさせる実装。
-- [~] **Task: Conductor - User Manual Verification 'グラフ視覚化' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'グラフ視覚化' (Protocol in workflow.md)**
 
 ## Phase 4: 資産配分詳細テーブルとポイント連携
 
