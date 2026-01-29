@@ -41,7 +41,7 @@
     - [ ] テストをパスさせる実装。
 - [x] **Task: Conductor - User Manual Verification 'グラフ視覚化' (Protocol in workflow.md)**
 
-## Phase 4: 資産配分詳細テーブルとポイント連携
+## Phase 4: 資産配分詳細テーブルとポイント連携 [checkpoint: d35e2b6]
 
 - [x] **Task: ポイント選択連携機能の実装**
 - [x] **Task: 資産配分詳細テーブルコンポーネントの実装**
