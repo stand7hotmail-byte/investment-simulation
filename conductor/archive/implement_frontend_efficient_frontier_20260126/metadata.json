@@ -1,0 +1,8 @@
+{
+  "track_id": "implement_frontend_efficient_frontier_20260126",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-01-26T23:55:00Z",
+  "updated_at": "2026-01-29T00:45:00Z",
+  "description": "フロントエンドの開発: Next.js で今回作ったAPIを呼び出し、グラフを表示する画面を作る。"
+}
