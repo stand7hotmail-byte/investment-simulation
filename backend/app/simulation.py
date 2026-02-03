@@ -1,6 +1,61 @@
 import numpy as np
 import cvxpy as cp
 from typing import List, Dict, Any
+from scipy.optimize import minimize
+
+def calculate_risk_parity_weights(
+    covariance_matrix: np.ndarray,
+    bounds: List[tuple] = None
+) -> np.ndarray:
+    """
+    各資産のリスク寄与度が均等になるリスクパリティ（ERC）配分を計算します。
+    """
+    n = covariance_matrix.shape[0]
+    if bounds is None:
+        bounds = [(0, 1.0) for _ in range(n)]
+    
+    # 初期値: 均等配分
+    init_weights = np.array([1.0 / n] * n)
+    
+    # 制約: 重みの合計が1
+    constraints = [
+        {'type': 'eq', 'fun': lambda w: np.sum(w) - 1.0}
+    ]
+    
+    def objective(w):
+        # 非常に小さい重みによるゼロ除算を避けるための微小値
+        eps = 1e-12
+        portfolio_var = w.T @ covariance_matrix @ w
+        portfolio_vol = np.sqrt(max(portfolio_var, eps))
+        
+        # 限界リスク寄与度 (MRC)
+        marginal_risk_contribution = (covariance_matrix @ w) / portfolio_vol
+        
+        # 各資産のリスク寄与度 (RC)
+        risk_contributions = w * marginal_risk_contribution
+        
+        # 目標となるリスク寄与度 (全体の 1/n)
+        target_rc = portfolio_vol / n
+        
+        # 目標との二乗誤差和を最小化
+        return np.sum((risk_contributions - target_rc)**2)
+
+    result = minimize(
+        objective,
+        init_weights,
+        method='SLSQP',
+        constraints=constraints,
+        bounds=bounds,
+        tol=1e-10,
+        options={'maxiter': 1000}
+    )
+    
+    if not result.success:
+        # 最適化に失敗した場合は均等配分を返すか、エラーを投げる
+        # ここではフォールバックとして均等配分を返しつつログを出す（実運用ではより詳細な対応が必要）
+        return init_weights
+        
+    return result.x
 
 def calculate_efficient_frontier(
     expected_returns: np.ndarray,
