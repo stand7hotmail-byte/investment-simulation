@@ -78,3 +78,24 @@ def get_assets(db: Session, skip: int = 0, limit: int = 100) -> List[models.Asse
 
 def get_asset_by_code(db: Session, asset_code: str) -> Optional[models.AssetData]:
     return db.query(models.AssetData).filter(models.AssetData.asset_code == asset_code).first()
+
+def create_simulation_result(db: Session, simulation_type: str, parameters: dict, results: dict, portfolio_id: Optional[uuid.UUID] = None):
+    db_result = models.SimulationResult(
+        simulation_type=simulation_type,
+        parameters=parameters,
+        results=results,
+        portfolio_id=portfolio_id
+    )
+    db.add(db_result)
+    db.commit()
+    db.refresh(db_result)
+    return db_result
+
+def get_simulation_result(db: Session, simulation_type: str, parameters: dict) -> Optional[models.SimulationResult]:
+    # SQLite/PostgreSQL で JSON フィールドの完全一致検索は少し工夫が必要ですが、
+    # ここではシンプルにタイプとパラメータでフィルタリングします。
+    # 実際には JSONB 等の機能を使うのが望ましいです。
+    return db.query(models.SimulationResult).filter(
+        models.SimulationResult.simulation_type == simulation_type,
+        models.SimulationResult.parameters == parameters
+    ).order_by(models.SimulationResult.created_at.desc()).first()

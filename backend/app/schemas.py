@@ -88,3 +88,12 @@ class MonteCarloResponse(BaseModel):
     元本割れ確率: float
     目標到達確率: float | None = None
     history: List[MonteCarloHistory]
+
+class RiskParityRequest(BaseModel):
+    assets: List[str]
+    bounds: dict[str, List[float]] | None = None # e.g., {"TOPIX": [0.0, 0.5]}
+
+class RiskParityResponse(BaseModel):
+    expected_return: float
+    volatility: float
+    weights: dict[str, float]

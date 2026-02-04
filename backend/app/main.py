@@ -152,6 +152,67 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     
     return result
 
+@app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
+def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db)):
+    # キャッシュのチェック
+    parameters = request.model_dump()
+    cached_result = crud.get_simulation_result(db, "risk_parity", parameters)
+    if cached_result:
+        return cached_result.results
+
+    assets_data = []
+    for code in request.assets:
+        asset = crud.get_asset_by_code(db, code)
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        assets_data.append(asset)
+    
+    if len(assets_data) < 2:
+        raise HTTPException(status_code=400, detail="At least two assets are required for risk parity calculation")
+    
+    # パラメータの準備
+    expected_returns = np.array([float(a.expected_return) for a in assets_data])
+    volatilities = [float(a.volatility) for a in assets_data]
+    
+    # 相関行列の構築
+    n = len(assets_data)
+    corr_matrix = np.eye(n)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                target_code = assets_data[j].asset_code
+                corr_matrix[i, j] = assets_data[i].correlation_matrix.get(target_code, 0.0)
+    
+    # 共分散行列の構築
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    
+    # 配分制限の準備
+    bounds = None
+    if request.bounds:
+        bounds = []
+        for code in request.assets:
+            if code in request.bounds:
+                bounds.append(tuple(request.bounds[code]))
+            else:
+                bounds.append((0.0, 1.0))
+    
+    # 計算実行
+    weights_array = simulation.calculate_risk_parity_weights(cov_matrix, bounds=bounds)
+    
+    # 結果の集計
+    ret, vol = simulation.calculate_portfolio_stats(expected_returns, cov_matrix, weights_array)
+    
+    result = {
+        "expected_return": ret,
+        "volatility": vol,
+        "weights": {request.assets[i]: float(weights_array[i]) for i in range(n)}
+    }
+
+    # キャッシュに保存
+    crud.create_simulation_result(db, "risk_parity", parameters, result)
+    
+    return result
+
 @app.post("/api/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
 def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
     # 1. ポートフォリオの存在と所有権を確認

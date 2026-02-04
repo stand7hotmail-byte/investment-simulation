@@ -33,3 +33,13 @@ class AssetData(Base):
     volatility = Column(DECIMAL(8,6))
     correlation_matrix = Column(JSON) # Stores correlation coefficients with other assets
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+
+class SimulationResult(Base):
+    __tablename__ = "simulation_results"
+
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    portfolio_id = Column(GUID, ForeignKey("portfolios.id"), nullable=True) # Optional link to a portfolio
+    simulation_type = Column(String, nullable=False) # 'efficient_frontier', 'risk_parity', etc.
+    parameters = Column(JSON, nullable=False) # Parameters used for calculation
+    results = Column(JSON, nullable=False) # Actual calculation results
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
