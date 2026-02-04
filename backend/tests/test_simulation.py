@@ -3,31 +3,6 @@ import pytest
 import numpy as np
 from app import models, simulation
 
-@pytest.fixture
-def sample_assets(session_override):
-    assets = [
-        models.AssetData(
-            asset_code="TOPIX",
-            name="東証株価指数",
-            asset_class="Stock",
-            expected_return=0.05,
-            volatility=0.18,
-            correlation_matrix={"SP500": 0.7}
-        ),
-        models.AssetData(
-            asset_code="SP500",
-            name="S&P 500",
-            asset_class="Stock",
-            expected_return=0.07,
-            volatility=0.16,
-            correlation_matrix={"TOPIX": 0.7}
-        )
-    ]
-    for a in assets:
-        session_override.add(a)
-    session_override.commit()
-    return assets
-
 # --- Existing Efficient Frontier Tests ---
 def test_simulate_efficient_frontier(test_client, sample_assets):
     payload = {
