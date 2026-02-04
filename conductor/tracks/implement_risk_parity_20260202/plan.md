@@ -7,12 +7,12 @@
 - [x] Task: コアロジック hostのテスト通過確認 4b8b12e
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Logic' (Protocol in workflow.md) c7177a5
 
-## Phase 2: バックエンド - APIエンドポイントとキャッシュの実装 [checkpoint: 61d32e6]
+## Phase 2: バックエンド - APIエンドポイントとキャッシュの実装 [checkpoint: f19d8b2]
 - [x] Task: リスクパリティ計算用APIエンドポイント (`/simulation/risk-parity`) の統合テスト作成 61d32e6
 - [x] Task: FastAPIによるAPIエンドポイントの実装 7cce8b2
 - [x] Task: 計算結果のキャッシュ機構（同一パラメータでの再計算防止）の実装 7cce8b2
 - [x] Task: 統合テストの通過確認 61d32e6
-- [x] Task: Conductor - User Manual Verification 'Phase 2: API & Cache' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: API & Cache' (Protocol in workflow.md) f19d8b2
 
 ## Phase 3: フロントエンド - API連携とデータ取得
 - [ ] Task: リスクパリティAPIを呼び出す `useRiskParity` カスタムフックの作成
