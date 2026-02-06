@@ -5,17 +5,20 @@ interface SimulationState {
   // State
   selectedAssetCodes: string[];
   selectedPoint: FrontierPoint | null;
+  riskParityPoint: FrontierPoint | null;
   
   // Actions
   toggleAsset: (code: string) => void;
   setSelectedAssets: (codes: string[]) => void;
   clearAssets: () => void;
   setSelectedPoint: (point: FrontierPoint | null) => void;
+  setRiskParityPoint: (point: FrontierPoint | null) => void;
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
   selectedAssetCodes: [],
   selectedPoint: null,
+  riskParityPoint: null,
 
   toggleAsset: (code) => set((state) => ({
     selectedAssetCodes: state.selectedAssetCodes.includes(code)
@@ -25,7 +28,9 @@ export const useSimulationStore = create<SimulationState>((set) => ({
 
   setSelectedAssets: (codes) => set({ selectedAssetCodes: codes }),
 
-  clearAssets: () => set({ selectedAssetCodes: [], selectedPoint: null }),
+  clearAssets: () => set({ selectedAssetCodes: [], selectedPoint: null, riskParityPoint: null }),
 
   setSelectedPoint: (point) => set({ selectedPoint: point }),
+
+  setRiskParityPoint: (point) => set({ riskParityPoint: point }),
 }));
