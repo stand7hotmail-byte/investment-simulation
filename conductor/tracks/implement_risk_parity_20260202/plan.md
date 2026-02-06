@@ -16,7 +16,7 @@
 
 ## Phase 3: フロントエンド - API連携とデータ取得
 - [x] Task: リスクパリティAPIを呼び出す `useRiskParity` カスタムフックの作成 ef82e9c
-- [ ] Task: シミュレーションストア (`useSimulationStore`) へのリスクパリティ結果の保持機能追加
+- [x] Task: シミュレーションストア (`useSimulationStore`) へのリスクパリティ結果の保持機能追加 6d8f068
 - [ ] Task: コンポーネントレベルでのAPI連携テスト
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Integration' (Protocol in workflow.md)
 
