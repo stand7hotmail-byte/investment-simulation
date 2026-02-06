@@ -6,16 +6,33 @@ import { EfficientFrontierChart } from "@/components/simulation/EfficientFrontie
 import { AllocationTable } from "@/components/simulation/AllocationTable";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useEfficientFrontier } from "@/hooks/useEfficientFrontier";
+import { useRiskParity } from "@/hooks/useRiskParity";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 export default function EfficientFrontierPage() {
   const selectedAssets = useSimulationStore((state) => state.selectedAssetCodes);
+  const setRiskParityPoint = useSimulationStore((state) => state.setRiskParityPoint);
+  const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
+  const riskParityPoint = useSimulationStore((state) => state.riskParityPoint);
   const [isSimulating, setIsSimulating] = useState(false);
 
   const { data, isLoading, error } = useEfficientFrontier(
     { assets: selectedAssets, n_points: 50 },
     isSimulating
   );
+
+  const { data: rpData, isSuccess: isRpSuccess } = useRiskParity(
+    { assets: selectedAssets },
+    isSimulating
+  );
+
+  useEffect(() => {
+    if (isRpSuccess && rpData) {
+      setRiskParityPoint(rpData);
+      setSelectedPoint(rpData); // Default to Risk Parity view
+    }
+  }, [isRpSuccess, rpData, setRiskParityPoint, setSelectedPoint]);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
@@ -49,6 +66,7 @@ export default function EfficientFrontierPage() {
               <EfficientFrontierChart 
                 frontier={data.frontier} 
                 maxSharpe={data.max_sharpe} 
+                riskParity={riskParityPoint}
               />
               <AllocationTable />
             </div>

@@ -14,9 +14,10 @@ const Plot = dynamic(() => import("react-plotly.js"), {
 interface Props {
   frontier: FrontierPoint[];
   maxSharpe?: FrontierPoint | null;
+  riskParity?: FrontierPoint | null;
 }
 
-export function EfficientFrontierChart({ frontier, maxSharpe }: Props) {
+export function EfficientFrontierChart({ frontier, maxSharpe, riskParity }: Props) {
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
 
   const traceFrontier = {
@@ -40,7 +41,21 @@ export function EfficientFrontierChart({ frontier, maxSharpe }: Props) {
     hovertemplate: "<b>Max Sharpe</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
   } : null;
 
-  const data = traceMaxSharpe ? [traceFrontier, traceMaxSharpe] : [traceFrontier];
+  const traceRiskParity = riskParity ? {
+    x: [riskParity.volatility],
+    y: [riskParity.expected_return],
+    mode: "markers",
+    type: "scatter" as const,
+    name: "Risk Parity (ERC)",
+    marker: { size: 12, color: "#10b981", symbol: "diamond" },
+    hovertemplate: "<b>Risk Parity</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+  } : null;
+
+  const data = [
+    traceFrontier,
+    ...(traceMaxSharpe ? [traceMaxSharpe] : []),
+    ...(traceRiskParity ? [traceRiskParity] : []),
+  ];
 
   return (
     <Card className="w-full">
@@ -76,12 +91,15 @@ export function EfficientFrontierChart({ frontier, maxSharpe }: Props) {
             useResizeHandler={true}
             style={{ width: "100%", height: "100%" }}
             onClick={(event) => {
-              const pointIndex = event.points[0].pointIndex;
-              // Only handle clicks on the frontier line
-              if (event.points[0].curveNumber === 0) {
-                setSelectedPoint(frontier[pointIndex]);
-              } else if (event.points[0].curveNumber === 1 && maxSharpe) {
+              const point = event.points[0];
+              const curveName = (point.data as any).name;
+
+              if (curveName === "Efficient Frontier") {
+                setSelectedPoint(frontier[point.pointIndex]);
+              } else if (curveName === "Max Sharpe Ratio" && maxSharpe) {
                 setSelectedPoint(maxSharpe);
+              } else if (curveName === "Risk Parity (ERC)" && riskParity) {
+                setSelectedPoint(riskParity);
               }
             }}
             config={{
