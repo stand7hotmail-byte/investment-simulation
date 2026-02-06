@@ -14,11 +14,11 @@
 - [x] Task: 統合テストの通過確認 61d32e6
 - [x] Task: Conductor - User Manual Verification 'Phase 2: API & Cache' (Protocol in workflow.md) f19d8b2
 
-## Phase 3: フロントエンド - API連携とデータ取得
+## Phase 3: フロントエンド - API連携とデータ取得 [checkpoint: 384e937]
 - [x] Task: リスクパリティAPIを呼び出す `useRiskParity` カスタムフックの作成 ef82e9c
 - [x] Task: シミュレーションストア (`useSimulationStore`) へのリスクパリティ結果の保持機能追加 6d8f068
 - [x] Task: コンポーネントレベルでのAPI連携テスト a6e1505
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Integration' (Protocol in workflow.md) 384e937
 
 ## Phase 4: フロントエンド - チャート表示とUI統合
 - [ ] Task: EfficientFrontierChart (Plotly.js) へのリスクパリティプロットの追加
