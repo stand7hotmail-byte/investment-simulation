@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: API & Cache' (Protocol in workflow.md) f19d8b2
 
 ## Phase 3: フロントエンド - API連携とデータ取得
-- [ ] Task: リスクパリティAPIを呼び出す `useRiskParity` カスタムフックの作成
+- [x] Task: リスクパリティAPIを呼び出す `useRiskParity` カスタムフックの作成 ef82e9c
 - [ ] Task: シミュレーションストア (`useSimulationStore`) へのリスクパリティ結果の保持機能追加
 - [ ] Task: コンポーネントレベルでのAPI連携テスト
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Integration' (Protocol in workflow.md)
