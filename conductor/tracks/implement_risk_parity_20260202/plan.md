@@ -20,9 +20,9 @@
 - [x] Task: コンポーネントレベルでのAPI連携テスト a6e1505
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Integration' (Protocol in workflow.md) 384e937
 
-## Phase 4: フロントエンド - チャート表示とUI統合
-- [ ] Task: EfficientFrontierChart (Plotly.js) へのリスクパリティプロットの追加
-- [ ] Task: チャート上のツールチップおよび凡例の更新
-- [ ] Task: 戦略比較UIでの表示切替ロジックの実装
-- [ ] Task: E2Eテスト（リスクパリティの結果が正しく表示されること）の実施
+## Phase 4: フロントエンド - チャート表示とUI統合 [checkpoint: 7516215]
+- [x] Task: EfficientFrontierChart (Plotly.js) へのリスクパリティプロットの追加 7516215
+- [x] Task: チャート上のツールチップおよび凡例の更新 7516215
+- [x] Task: 戦略比較UIでの表示切替ロジックの実装 7516215
+- [x] Task: E2Eテスト（リスクパリティの結果が正しく表示されること）の実施 7516215
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI & Visualization' (Protocol in workflow.md)
