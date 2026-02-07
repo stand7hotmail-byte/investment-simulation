@@ -15,3 +15,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: 効率的フロンティア計算の実装**
   *Link: [./tracks/implement_efficient_frontier_20260124/](./tracks/implement_efficient_frontier_20260124/)*
+---
+
+- [x] **Track: リスクパリティ戦略の追加実装**
+*Link: [./tracks/implement_risk_parity_20260202/](./tracks/implement_risk_parity_20260202/)*

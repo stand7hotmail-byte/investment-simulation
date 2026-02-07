@@ -25,4 +25,4 @@
 - [x] Task: チャート上のツールチップおよび凡例の更新 7516215
 - [x] Task: 戦略比較UIでの表示切替ロジックの実装 7516215
 - [x] Task: E2Eテスト（リスクパリティの結果が正しく表示されること）の実施 7516215
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: UI & Visualization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: UI & Visualization' (Protocol in workflow.md) 120deca
