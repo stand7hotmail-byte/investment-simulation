@@ -1,7 +1,7 @@
 # 完全技術スタック仕様書
 ## 投資シミュレーション&データ可視化Webアプリケーション
 
-**最終更新:** 2026年1月20日  
+**最終更新:** 2026年2月8日  
 **想定規模:** 100-1,000ユーザー  
 **開発体制:** 個人開発  
 **予算:** Railway Starter ($5/月) + その他無料枠
@@ -54,6 +54,7 @@
 - **可用性:** 99%以上（Railway稼働率に準拠）
 - **セキュリティ:** JWT認証、Row Level Security
 - **対応環境:** デスクトップブラウザ優先（Chrome/Firefox/Safari最新版）
+- **検証基盤:** Playwright による E2E テスト、Storybook によるコンポーネント隔離環境
 
 ---
 
@@ -181,7 +182,8 @@
 |---------|------|------|
 | **Unit (Frontend)** | Vitest | Reactコンポーネントテスト |
 | **Unit (Backend)** | Pytest | 計算ロジック検証 |
-| **E2E** | Playwright | ブラウザ自動テスト |
+| **E2E** | Playwright | ブラウザ自動テスト（実装済み） |
+| **UI Playground** | Storybook | コンポーネントカタログ・隔離開発 |
 | **Benchmark** | pytest-benchmark | 計算パフォーマンス測定 |
 | **Coverage** | Coverage.py | コードカバレッジ測定 |
 
@@ -197,6 +199,7 @@
 | **Formatter (Python)** | Black | コード整形 |
 | **Type Check (Python)** | mypy | 型チェック |
 | **Git Hooks** | Husky | コミット前チェック |
+| **DB Inspection** | Custom Scripts | SQLiteデータのJSON抽出・検証 |
 | **AI Assistant** | Gemini CLI | コード生成補助 |
 
 ---
