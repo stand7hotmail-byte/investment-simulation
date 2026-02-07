@@ -9,8 +9,8 @@
 
 ## Phase 2: コンポーネント隔離環境 (Storybook) の構築
 - [x] Task: Storybook のインストールと Tailwind CSS / Lucide アイコンの統合 f90eccd
-- [ ] Task: `EfficientFrontierChart` のストーリー作成（複数のモックデータでの表示確認）
-- [ ] Task: `AllocationTable` のストーリー作成
+- [x] Task: `EfficientFrontierChart` のストーリー作成（複数のモックデータでの表示確認） 125df10
+- [x] Task: `AllocationTable` のストーリー作成 125df10
 - [ ] Task: Storybook 上での「クリックによる Props 変更」のシミュレーション環境整備
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Component Stories' (Protocol in workflow.md)
 
