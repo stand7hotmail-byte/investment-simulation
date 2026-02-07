@@ -7,12 +7,12 @@
 - [x] Task: ヘッドレスブラウザによるテスト自動実行の確認 915fabe
 - [x] Task: Conductor - User Manual Verification 'Phase 1: E2E Testing' (Protocol in workflow.md) 915fabe
 
-## Phase 2: コンポーネント隔離環境 (Storybook) の構築 [checkpoint: dbc2aac]
+## Phase 2: コンポーネント隔離環境 (Storybook) の構築 [checkpoint: 0bedcde]
 - [x] Task: Storybook のインストールと Tailwind CSS / Lucide アイコンの統合 f90eccd
 - [x] Task: `EfficientFrontierChart` のストーリー作成（複数のモックデータでの表示確認） 125df10
 - [x] Task: `AllocationTable` のストーリー作成 125df10
 - [x] Task: Storybook 上での「クリックによる Props 変更」のシミュレーション環境整備 dbc2aac
-- [x] Task: Conductor - User Manual Verification 'Phase 2: Component Stories' (Protocol in workflow.md) dbc2aac
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Component Stories' (Protocol in workflow.md) 0bedcde
 
 ## Phase 3: データベース可視化ツールの整備
 - [ ] Task: エージェントが DB テーブル構造と全レコードを一括取得するための Python スクリプトの実装
