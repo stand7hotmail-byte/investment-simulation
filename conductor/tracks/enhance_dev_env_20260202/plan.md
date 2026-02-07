@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: E2E Testing' (Protocol in workflow.md) 915fabe
 
 ## Phase 2: コンポーネント隔離環境 (Storybook) の構築
-- [ ] Task: Storybook のインストールと Tailwind CSS / Lucide アイコンの統合
+- [x] Task: Storybook のインストールと Tailwind CSS / Lucide アイコンの統合 f90eccd
 - [ ] Task: `EfficientFrontierChart` のストーリー作成（複数のモックデータでの表示確認）
 - [ ] Task: `AllocationTable` のストーリー作成
 - [ ] Task: Storybook 上での「クリックによる Props 変更」のシミュレーション環境整備
