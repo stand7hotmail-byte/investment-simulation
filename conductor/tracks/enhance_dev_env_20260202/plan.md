@@ -14,13 +14,13 @@
 - [x] Task: Storybook 上での「クリックによる Props 変更」のシミュレーション環境整備 dbc2aac
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Component Stories' (Protocol in workflow.md) 0bedcde
 
-## Phase 3: データベース可視化ツールの整備
-- [ ] Task: エージェントが DB テーブル構造と全レコードを一括取得するための Python スクリプトの実装
-- [ ] Task: シミュレーションキャッシュ (`simulation_results`) を JSON で出力・閲覧するユーティリティの作成
-- [ ] Task: DBツールを使用したデータの整合性検証（計算結果が正しく保存されているかの確認）
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: DB Tools' (Protocol in workflow.md)
+## Phase 3: データベース可視化ツールの整備 [checkpoint: b515073]
+- [x] Task: エージェントが DB テーブル構造と全レコードを一括取得するための Python スクリプトの実装 915fabe
+- [x] Task: シミュレーションキャッシュ (`simulation_results`) を JSON で出力・閲覧するユーティリティの作成 915fabe
+- [x] Task: DBツールを使用したデータの整合性検証（計算結果が正しく保存されているかの確認） b515073
+- [x] Task: Conductor - User Manual Verification 'Phase 3: DB Tools' (Protocol in workflow.md) b515073
 
-## Phase 4: 基盤を活用した UI 不具合の最終修正
+## Phase 4: 基盤を活用した UI 不具合の最終修正 [checkpoint: 915fabe]
 - [x] Task: Playwright と Storybook を駆使して、保留となっている「チャートのクリック挙動」をデバッグ 915fabe
 - [x] Task: 修正プログラムの適用と自動テストによる回帰テストの実施 915fabe
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing' (Protocol in workflow.md) 915fabe
