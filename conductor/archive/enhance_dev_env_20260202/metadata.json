@@ -1,0 +1,8 @@
+{
+  "track_id": "enhance_dev_env_20260202",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-02-02T12:00:00Z",
+  "updated_at": "2026-02-02T12:00:00Z",
+  "description": "開発基盤と検証環境の強化（E2E・Storybook・DBツール）"
+}
