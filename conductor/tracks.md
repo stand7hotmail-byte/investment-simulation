@@ -15,3 +15,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: 効率的フロンティア計算の実装**
   *Link: [./tracks/implement_efficient_frontier_20260124/](./tracks/implement_efficient_frontier_20260124/)*
+
+---
+
+- [x] **Track: 開発基盤と検証環境の強化**
+*Link: [./tracks/enhance_dev_env_20260202/](./tracks/enhance_dev_env_20260202/)*
