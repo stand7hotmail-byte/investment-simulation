@@ -2,7 +2,7 @@
 
 ## Phase 1: E2Eテスト (Playwright) の導入と検証
 - [x] Task: Playwright のインストールと Next.js 向けの基本設定 5099ee7
-- [ ] Task: 「効率的フロンティア」シミュレーションの基本フロー（資産選択〜実行）のテスト作成
+- [x] Task: 「効率的フロンティア」シミュレーションの基本フロー（資産選択〜実行）のテスト作成 2772ad2
 - [ ] Task: 今回の課題である「チャートの各ポイントクリック」と「テーブル連動」を検証するテストの実装
 - [ ] Task: ヘッドレスブラウザによるテスト自動実行の確認
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: E2E Testing' (Protocol in workflow.md)
