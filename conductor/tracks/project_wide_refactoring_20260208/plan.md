@@ -8,13 +8,13 @@
 - [x] Task: Verify backend unit test coverage meets requirement (>80%) [a3e5f04]
 - [x] Task: Conductor - User Manual Verification 'Backend Refactoring' (Protocol in workflow.md) [a3e5f04]
 
-## Phase 2: Frontend Refactoring (Custom Hooks & Component Cleanup)
-- [ ] Task: Audit component logic in `src/components/simulation/` to identify extraction points
-- [ ] Task: Write failing unit tests for new custom hooks representing extracted business logic
-- [ ] Task: Extract logic from components into custom hooks (e.g., `useSimulationLogic.ts`) to pass tests
-- [ ] Task: Consolidate and refactor utility functions in `src/lib/utils.ts` with corresponding tests
-- [ ] Task: Verify frontend unit test coverage meets requirement (>80%)
-- [ ] Task: Conductor - User Manual Verification 'Frontend Refactoring' (Protocol in workflow.md)
+## Phase 2: Frontend Refactoring (Custom Hooks & Component Cleanup) [checkpoint: 30fdbdb]
+- [x] Task: Audit component logic in `src/components/simulation/` to identify extraction points [30fdbdb]
+- [x] Task: Write failing unit tests for new custom hooks representing extracted business logic [30fdbdb]
+- [x] Task: Extract logic from components into custom hooks (e.g., `useSimulationLogic.ts`) to pass tests [30fdbdb]
+- [x] Task: Consolidate and refactor utility functions in `src/lib/utils.ts` with corresponding tests [30fdbdb]
+- [x] Task: Verify frontend unit test coverage meets requirement (>80%) [30fdbdb]
+- [x] Task: Conductor - User Manual Verification 'Frontend Refactoring' (Protocol in workflow.md) [30fdbdb]
 
 ## Phase 3: State Management & Store Refinement
 - [ ] Task: Audit `useSimulationStore.ts` (Zustand) and `useEfficientFrontier.ts` (React Query) for responsibility overlap
