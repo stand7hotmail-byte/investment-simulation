@@ -215,3 +215,20 @@ def build_covariance_matrix(volatilities: List[float], correlation_matrix: List[
     # Cov = Diag(vols) * Corr * Diag(vols)
     cov = np.outer(vols, vols) * corrs
     return cov
+
+def prepare_simulation_inputs(assets: List[Any]) -> tuple[np.ndarray, List[float], np.ndarray]:
+    """
+    資産データのリストから、期待リターン、ボラティリティ、相関行列を抽出します。
+    """
+    returns = np.array([float(a.expected_return) for a in assets])
+    volatilities = [float(a.volatility) for a in assets]
+    
+    n = len(assets)
+    corr_matrix = np.eye(n)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                target_code = assets[j].asset_code
+                corr_matrix[i, j] = assets[i].correlation_matrix.get(target_code, 0.0)
+                
+    return returns, volatilities, corr_matrix

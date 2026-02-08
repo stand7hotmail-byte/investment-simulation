@@ -126,25 +126,13 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     if len(assets_data) < 2:
         raise HTTPException(status_code=400, detail="At least two assets are required for efficient frontier calculation")
     
-    # パラメータの準備
-    expected_returns = np.array([float(a.expected_return) for a in assets_data])
-    volatilities = [float(a.volatility) for a in assets_data]
-    
-    # 相関行列の構築
-    n = len(assets_data)
-    corr_matrix = np.eye(n)
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                target_code = assets_data[j].asset_code
-                corr_matrix[i, j] = assets_data[i].correlation_matrix.get(target_code, 0.0)
-    
-    # 共分散行列の構築
+    # 計算データの準備を委譲
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
     
     # 計算実行
     result = simulation.calculate_efficient_frontier(
-        expected_returns, 
+        returns, 
         cov_matrix, 
         request.assets, 
         request.n_points
@@ -154,7 +142,7 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
 
 @app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
 def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db)):
-    # キャッシュのチェック
+    # キャッシュのチェック (Side effect - separate)
     parameters = request.model_dump()
     cached_result = crud.get_simulation_result(db, "risk_parity", parameters)
     if cached_result:
@@ -170,20 +158,8 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
     if len(assets_data) < 2:
         raise HTTPException(status_code=400, detail="At least two assets are required for risk parity calculation")
     
-    # パラメータの準備
-    expected_returns = np.array([float(a.expected_return) for a in assets_data])
-    volatilities = [float(a.volatility) for a in assets_data]
-    
-    # 相関行列の構築
-    n = len(assets_data)
-    corr_matrix = np.eye(n)
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                target_code = assets_data[j].asset_code
-                corr_matrix[i, j] = assets_data[i].correlation_matrix.get(target_code, 0.0)
-    
-    # 共分散行列の構築
+    # 計算データの準備を委譲
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
     
     # 配分制限の準備
@@ -200,15 +176,15 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
     weights_array = simulation.calculate_risk_parity_weights(cov_matrix, bounds=bounds)
     
     # 結果の集計
-    ret, vol = simulation.calculate_portfolio_stats(expected_returns, cov_matrix, weights_array)
+    ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, weights_array)
     
     result = {
         "expected_return": ret,
         "volatility": vol,
-        "weights": {request.assets[i]: float(weights_array[i]) for i in range(n)}
+        "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
     }
 
-    # キャッシュに保存
+    # キャッシュに保存 (Side effect)
     crud.create_simulation_result(db, "risk_parity", parameters, result)
     
     return result
@@ -237,21 +213,10 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
         assets_stats.append(stats)
         
     # 4. ポートフォリオ全体の期待リターンとリスクを算出
-    expected_returns = np.array([float(a.expected_return) for a in assets_stats])
-    volatilities = [float(a.volatility) for a in assets_stats]
-    
-    # 相関行列の構築
-    n = len(assets_stats)
-    corr_matrix = np.eye(n)
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                target_code = assets_stats[j].asset_code
-                corr_matrix[i, j] = assets_stats[i].correlation_matrix.get(target_code, 0.0)
-                
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_stats)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
     
-    mu, sigma = simulation.calculate_portfolio_stats(expected_returns, cov_matrix, weights)
+    mu, sigma = simulation.calculate_portfolio_stats(returns, cov_matrix, weights)
     
     # 5. モンテカルロシミュレーションの実行
     extra_investments = [inv.model_dump() for inv in request.extra_investments] if request.extra_investments else None
