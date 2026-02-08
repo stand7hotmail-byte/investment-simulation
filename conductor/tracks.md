@@ -15,8 +15,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: 効率的フロンティア計算の実装**
   *Link: [./tracks/implement_efficient_frontier_20260124/](./tracks/implement_efficient_frontier_20260124/)*
-
----
-
-- [~] **Track: Project-Wide Refactoring for Separation of Concerns**
-  *Link: [./tracks/project_wide_refactoring_20260208/](./tracks/project_wide_refactoring_20260208/)*
