@@ -80,8 +80,8 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, assets
     autosize: true,
     height: 450,
     margin: { l: 60, r: 20, t: 40, b: 60 },
-    xaxis: { title: "Risk (Volatility)", tickformat: ".1%", fixedrange: true },
-    yaxis: { title: "Expected Return", tickformat: ".1%", fixedrange: true },
+    xaxis: { title: { text: "Risk (Volatility)" }, tickformat: ".1%", fixedrange: true },
+    yaxis: { title: { text: "Expected Return" }, tickformat: ".1%", fixedrange: true },
     dragmode: false as const,
     hovermode: "closest" as const,
     showlegend: true,
@@ -121,19 +121,19 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, assets
         <div className="w-full overflow-hidden rounded-md border border-slate-200 bg-white">
           <Plot
             key={assetsKey} 
-            data={data}
-            layout={layout}
+            data={data as any}
+            layout={layout as any}
             revision={revision}
             useResizeHandler={true}
             style={{ width: "100%", height: "100%" }}
             onInitialized={(figure, graphDiv) => {
               plotRef.current = graphDiv;
-              graphDiv.on('plotly_click', handleNativeClick);
+              (graphDiv as any).on('plotly_click', handleNativeClick);
             }}
             onUpdate={(figure, graphDiv) => {
               // Ensure listener is attached after updates
-              graphDiv.removeAllListeners?.('plotly_click');
-              graphDiv.on('plotly_click', handleNativeClick);
+              (graphDiv as any).removeAllListeners?.('plotly_click');
+              (graphDiv as any).on('plotly_click', handleNativeClick);
             }}
             config={{ responsive: true, displayModeBar: false }}
           />

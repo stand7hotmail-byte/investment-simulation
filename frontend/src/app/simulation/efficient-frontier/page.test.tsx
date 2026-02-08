@@ -67,7 +67,6 @@ describe("EfficientFrontierPage", () => {
       expect(screen.getByTestId("ef-chart")).toHaveTextContent("with Risk Parity");
     });
 
-    expect(useSimulationStore.getState().riskParityPoint).toEqual(mockRiskParityData);
     expect(useSimulationStore.getState().selectedPoint).toEqual(mockRiskParityData);
   });
 });

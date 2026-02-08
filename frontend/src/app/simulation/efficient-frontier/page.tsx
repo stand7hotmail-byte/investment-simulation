@@ -57,7 +57,10 @@ export default function EfficientFrontierPage() {
                 riskParity={riskParityPoint}
                 assetsKey={`${selectedAssets.sort().join(",")}-${lastRunId}`}
               />
-              <AllocationTable />
+              <AllocationTable 
+                riskParityPoint={riskParityPoint}
+                maxSharpePoint={maxSharpePoint}
+              />
             </div>
           ) : (
             <div className="flex h-[550px] items-center justify-center bg-white rounded-lg border-2 border-dashed border-slate-200 text-slate-400 text-center p-8 shadow-inner">

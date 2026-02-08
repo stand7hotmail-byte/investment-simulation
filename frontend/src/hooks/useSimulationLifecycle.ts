@@ -6,12 +6,8 @@ import { useRiskParity } from "./useRiskParity";
 export function useSimulationLifecycle() {
   const selectedAssets = useSimulationStore((state) => state.selectedAssetCodes);
   const clearResults = useSimulationStore((state) => state.clearResults);
-  const setRiskParityPoint = useSimulationStore((state) => state.setRiskParityPoint);
-  const setMaxSharpePoint = useSimulationStore((state) => state.setMaxSharpePoint);
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
-  
-  const riskParityPoint = useSimulationStore((state) => state.riskParityPoint);
-  const maxSharpePoint = useSimulationStore((state) => state.maxSharpePoint);
+  const selectedPoint = useSimulationStore((state) => state.selectedPoint);
   
   const [isSimulating, setIsSimulating] = useState(false);
   const [lastRunId, setLastRunId] = useState(0);
@@ -50,22 +46,13 @@ export function useSimulationLifecycle() {
     setIsSimulating(true);
   }, []);
 
-  // Sync results to store
+  // Auto-select Risk Parity point when results arrive
   useEffect(() => {
-    if (isEfSuccess && efData) {
-      setMaxSharpePoint(efData.max_sharpe);
+    if (isRpSuccess && rpData && !hasAutoSelected.current) {
+      setSelectedPoint(rpData);
+      hasAutoSelected.current = true;
     }
-  }, [isEfSuccess, efData, setMaxSharpePoint]);
-
-  useEffect(() => {
-    if (isRpSuccess && rpData) {
-      setRiskParityPoint(rpData);
-      if (!hasAutoSelected.current) {
-        setSelectedPoint(rpData);
-        hasAutoSelected.current = true;
-      }
-    }
-  }, [isRpSuccess, rpData, setRiskParityPoint, setSelectedPoint]);
+  }, [isRpSuccess, rpData, setSelectedPoint]);
 
   // Handle loading state
   useEffect(() => {
@@ -82,9 +69,10 @@ export function useSimulationLifecycle() {
     rpData,
     efError,
     rpError,
-    hasResults: riskParityPoint !== null && efData !== undefined,
-    maxSharpePoint,
-    riskParityPoint,
+    hasResults: rpData !== undefined && efData !== undefined,
+    maxSharpePoint: efData?.max_sharpe || null,
+    riskParityPoint: rpData || null,
+    selectedPoint,
     selectedAssets
   };
 }

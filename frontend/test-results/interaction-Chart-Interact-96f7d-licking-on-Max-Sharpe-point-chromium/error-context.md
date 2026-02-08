@@ -1,0 +1,125 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]: InvestSim
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - text: Dashboard
+        - link "Efficient Frontier" [ref=e13] [cursor=pointer]:
+          - /url: /simulation/efficient-frontier
+          - img [ref=e14]
+          - text: Efficient Frontier
+        - link "Monte Carlo" [ref=e17] [cursor=pointer]:
+          - /url: /simulation/monte-carlo
+          - img [ref=e18]
+          - text: Monte Carlo
+        - link "Portfolios" [ref=e21] [cursor=pointer]:
+          - /url: /portfolios
+          - img [ref=e22]
+          - text: Portfolios
+        - link "Settings" [ref=e25] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e26]
+          - text: Settings
+    - main [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - heading "Efficient Frontier Simulation" [level=1] [ref=e32]
+          - paragraph [ref=e33]: Analyze the risk and return trade-off for your selected portfolio of assets.
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e38]: Select Assets
+              - generic [ref=e43]:
+                - generic [ref=e44]:
+                  - checkbox "東証株価指数" [checked] [ref=e45]:
+                    - generic:
+                      - img
+                  - generic [ref=e46]: 東証株価指数
+                - generic [ref=e47]:
+                  - checkbox "S&P 500" [checked] [ref=e48]:
+                    - generic:
+                      - img
+                  - generic [ref=e49]: S&P 500
+                - generic [ref=e50]:
+                  - checkbox "MSCI オール・カントリー・ワールド・インデックス" [ref=e51]
+                  - generic [ref=e52]: MSCI オール・カントリー・ワールド・インデックス
+                - generic [ref=e53]:
+                  - checkbox "米国10年国債" [ref=e54]
+                  - generic [ref=e55]: 米国10年国債
+                - generic [ref=e56]:
+                  - checkbox "金 (GOLD)" [ref=e57]
+                  - generic [ref=e58]: 金 (GOLD)
+            - button "Run Simulation" [ref=e59]
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - generic [ref=e64]: Efficient Frontier Analysis
+              - generic [ref=e69]:
+                - img:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic: 15.5%
+                        - generic:
+                          - generic: 15.6%
+                        - generic:
+                          - generic: 15.7%
+                        - generic:
+                          - generic: 15.8%
+                        - generic:
+                          - generic: 15.9%
+                        - generic:
+                          - generic: 16.0%
+                      - generic:
+                        - generic:
+                          - generic: 6.0%
+                        - generic:
+                          - generic: 6.2%
+                        - generic:
+                          - generic: 6.4%
+                        - generic:
+                          - generic: 6.6%
+                        - generic:
+                          - generic: 6.8%
+                        - generic:
+                          - generic: 7.0%
+                - img:
+                  - generic [ref=e76]:
+                    - generic [ref=e78]: Efficient Frontier
+                    - generic [ref=e85]: Max Sharpe Ratio
+                    - generic [ref=e92]: Risk Parity (ERC)
+                - img:
+                  - generic:
+                    - generic:
+                      - generic: "Risk: 16.00%Return: 7.00%"
+            - generic [ref=e98]:
+              - generic [ref=e99]:
+                - generic [ref=e100]: Risk Parity Strategy (ERC)
+                - generic [ref=e101]:
+                  - generic [ref=e102]: Asset Allocation Details
+                  - generic [ref=e103]:
+                    - generic [ref=e104]: "Risk: 15.62%"
+                    - generic [ref=e105]: "Return: 6.06%"
+              - table [ref=e108]:
+                - rowgroup [ref=e109]:
+                  - row "Asset Name Allocation (%)" [ref=e110]:
+                    - columnheader "Asset Name" [ref=e111]
+                    - columnheader "Allocation (%)" [ref=e112]
+                - rowgroup [ref=e113]:
+                  - row "S&P 500 52.94%" [ref=e114]:
+                    - cell "S&P 500" [ref=e115]
+                    - cell "52.94%" [ref=e116]
+                  - row "東証株価指数 47.06%" [ref=e117]:
+                    - cell "東証株価指数" [ref=e118]
+                    - cell "47.06%" [ref=e119]
+  - button "Open Next.js Dev Tools" [ref=e125] [cursor=pointer]:
+    - img [ref=e126]
+  - alert [ref=e129]
+  - img [ref=e130]
+```

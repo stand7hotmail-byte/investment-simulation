@@ -1,4 +1,4 @@
-# Track implement_risk_parity_20260202 Context
+# Track project_wide_refactoring_20260208 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)

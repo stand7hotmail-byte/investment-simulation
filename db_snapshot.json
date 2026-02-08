@@ -1,0 +1,549 @@
+{
+  "alembic_version": {
+    "columns": [
+      "version_num"
+    ],
+    "count": 1,
+    "rows": [
+      {
+        "version_num": "fb089c96a6d9"
+      }
+    ]
+  },
+  "portfolios": {
+    "columns": [
+      "id",
+      "user_id",
+      "name",
+      "description",
+      "is_current",
+      "created_at",
+      "updated_at"
+    ],
+    "count": 0,
+    "rows": []
+  },
+  "portfolio_allocations": {
+    "columns": [
+      "id",
+      "portfolio_id",
+      "asset_code",
+      "weight",
+      "created_at"
+    ],
+    "count": 0,
+    "rows": []
+  },
+  "asset_data": {
+    "columns": [
+      "asset_code",
+      "name",
+      "asset_class",
+      "expected_return",
+      "volatility",
+      "correlation_matrix",
+      "updated_at"
+    ],
+    "count": 5,
+    "rows": [
+      {
+        "asset_code": "TOPIX",
+        "name": "東証株価指数",
+        "asset_class": "Stock",
+        "expected_return": 0.05,
+        "volatility": 0.18,
+        "correlation_matrix": "{\"TOPIX\": 1.0, \"SP500\": 0.7, \"MSCI_ACWI\": 0.85, \"US_10Y\": -0.2, \"GOLD\": 0.1}",
+        "updated_at": "2026-02-04 15:05:25.361220"
+      },
+      {
+        "asset_code": "SP500",
+        "name": "S&P 500",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{\"TOPIX\": 0.7, \"SP500\": 1.0, \"MSCI_ACWI\": 0.95, \"US_10Y\": -0.15, \"GOLD\": 0.05}",
+        "updated_at": "2026-02-04 15:05:25.361220"
+      },
+      {
+        "asset_code": "MSCI_ACWI",
+        "name": "MSCI オール・カントリー・ワールド・インデックス",
+        "asset_class": "Stock",
+        "expected_return": 0.065,
+        "volatility": 0.17,
+        "correlation_matrix": "{\"TOPIX\": 0.85, \"SP500\": 0.95, \"MSCI_ACWI\": 1.0, \"US_10Y\": -0.1, \"GOLD\": 0.08}",
+        "updated_at": "2026-02-04 15:05:25.361220"
+      },
+      {
+        "asset_code": "US_10Y",
+        "name": "米国10年国債",
+        "asset_class": "Bond",
+        "expected_return": 0.03,
+        "volatility": 0.05,
+        "correlation_matrix": "{\"TOPIX\": -0.2, \"SP500\": -0.15, \"MSCI_ACWI\": -0.1, \"US_10Y\": 1.0, \"GOLD\": 0.15}",
+        "updated_at": "2026-02-04 15:05:25.361220"
+      },
+      {
+        "asset_code": "GOLD",
+        "name": "金 (GOLD)",
+        "asset_class": "Commodity",
+        "expected_return": 0.04,
+        "volatility": 0.15,
+        "correlation_matrix": "{\"TOPIX\": 0.1, \"SP500\": 0.05, \"MSCI_ACWI\": 0.08, \"US_10Y\": 0.15, \"GOLD\": 1.0}",
+        "updated_at": "2026-02-04 15:05:25.361220"
+      }
+    ]
+  },
+  "simulation_results": {
+    "columns": [
+      "id",
+      "portfolio_id",
+      "simulation_type",
+      "parameters",
+      "results",
+      "created_at"
+    ],
+    "count": 55,
+    "rows": [
+      {
+        "id": "eedb2e19-e821-4e73-b7ac-4d1f0cb7ee2e",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.06058823500843706, \"volatility\": 0.1561899298928169, \"weights\": {\"TOPIX\": 0.47058824957814666, \"SP500\": 0.5294117504218533}}",
+        "created_at": "2026-02-04 15:06:08.075252"
+      },
+      {
+        "id": "1b82a19e-b720-4ef4-8827-3b00be6fbf75",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"SP500\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.061874046644325525, \"volatility\": 0.15978247349364813, \"weights\": {\"TOPIX\": 0.32710410676853086, \"SP500\": 0.3561216491706966, \"MSCI_ACWI\": 0.31677424406077254}}",
+        "created_at": "2026-02-06 23:28:55.585619"
+      },
+      {
+        "id": "b16d40fb-77f1-4cfd-8b13-d606b47fde56",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03986199633865838, \"volatility\": 0.0527410591268647, \"weights\": {\"SP500\": 0.20072320670898178, \"US_10Y\": 0.6159699862611074, \"GOLD\": 0.1833068070299109}}",
+        "created_at": "2026-02-06 23:30:45.630685"
+      },
+      {
+        "id": "12b71ac6-d8f8-47a3-920d-0cd15dbcb0e2",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"MSCI_ACWI\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05577606046936856, \"volatility\": 0.1164735067750737, \"weights\": {\"SP500\": 0.2972617084744348, \"MSCI_ACWI\": 0.27432836860542037, \"GOLD\": 0.4284099229201449}}",
+        "created_at": "2026-02-06 23:34:09.410797"
+      },
+      {
+        "id": "8f27efc4-427e-43f4-a86a-3a20c434691b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"SP500\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05577606046943383, \"volatility\": 0.11647350677526049, \"weights\": {\"GOLD\": 0.42840992291702323, \"SP500\": 0.297261708471879, \"MSCI_ACWI\": 0.27432836861109794}}",
+        "created_at": "2026-02-06 23:38:11.502050"
+      },
+      {
+        "id": "af57fbc9-ee69-4759-b80e-622dda08d8a9",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03903079631211187, \"volatility\": 0.052654921724116864, \"weights\": {\"SP500\": 0.1543915290123254, \"TOPIX\": 0.14275675758094283, \"US_10Y\": 0.7028517134067318}}",
+        "created_at": "2026-02-07 00:08:07.584651"
+      },
+      {
+        "id": "511aa2a6-cd62-4124-876d-70887ef809ac",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"MSCI_ACWI\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.06187404664407106, \"volatility\": 0.15978247349377847, \"weights\": {\"SP500\": 0.35612164915986744, \"MSCI_ACWI\": 0.31677424405824656, \"TOPIX\": 0.32710410678188606}}",
+        "created_at": "2026-02-07 00:33:11.718083"
+      },
+      {
+        "id": "393bea90-33db-43d1-b0ec-640eeed8bde4",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"US_10Y\", \"GOLD\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03848965956981464, \"volatility\": 0.0548335863654537, \"weights\": {\"US_10Y\": 0.6229339891782569, \"GOLD\": 0.18830603235785484, \"MSCI_ACWI\": 0.1887599784638883}}",
+        "created_at": "2026-02-07 00:36:39.001845"
+      },
+      {
+        "id": "562fc7da-e7d0-418d-9fca-d56f80f971f0",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"US_10Y\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03848965957012841, \"volatility\": 0.05483358636660894, \"weights\": {\"GOLD\": 0.18830603236921012, \"US_10Y\": 0.622933989161181, \"MSCI_ACWI\": 0.18875997846960885}}",
+        "created_at": "2026-02-07 00:38:57.938395"
+      },
+      {
+        "id": "06bb3c1a-a39c-4593-bb15-e91cb09133a4",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"SP500\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0390307963318828, \"volatility\": 0.05265492173070079, \"weights\": {\"TOPIX\": 0.14275675688542228, \"SP500\": 0.1543915298543588, \"US_10Y\": 0.7028517132602189}}",
+        "created_at": "2026-02-07 00:57:00.070333"
+      },
+      {
+        "id": "a845b1ba-3650-485e-b757-d364d2dc6639",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"SP500\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03943987580077066, \"volatility\": 0.054269445510803226, \"weights\": {\"TOPIX\": 0.12168615821527068, \"SP500\": 0.1358701415726775, \"US_10Y\": 0.5853090028562373, \"GOLD\": 0.15713469735581448}}",
+        "created_at": "2026-02-07 00:57:18.719830"
+      },
+      {
+        "id": "5d4b2db9-a82c-4343-b1b5-225b553a2ee1",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0517187547353712, \"volatility\": 0.11711623111064628, \"weights\": {\"GOLD\": 0.531249810585152, \"MSCI_ACWI\": 0.468750189414848}}",
+        "created_at": "2026-02-07 00:57:33.974209"
+      },
+      {
+        "id": "f151fa88-b3ca-4c2d-af2b-637ad50f6484",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0500521192955186, \"volatility\": 0.1202227924828588, \"weights\": {\"GOLD\": 0.43402541741747896, \"MSCI_ACWI\": 0.2928248979795589, \"TOPIX\": 0.27314968460296224}}",
+        "created_at": "2026-02-07 00:57:38.701250"
+      },
+      {
+        "id": "1ec788d8-3013-4071-bb5b-34dd278f07cd",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"SP500\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.052093040065088976, \"volatility\": 0.11450744319985738, \"weights\": {\"GOLD\": 0.41689114725273074, \"SP500\": 0.31309757688081385, \"TOPIX\": 0.2700112758664555}}",
+        "created_at": "2026-02-07 00:58:09.160231"
+      },
+      {
+        "id": "6ec98820-a405-485f-a76d-c64c7bad29d7",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.060588235008437616, \"volatility\": 0.15618992989281644, \"weights\": {\"SP500\": 0.5294117504218803, \"TOPIX\": 0.4705882495781198}}",
+        "created_at": "2026-02-07 00:58:28.092845"
+      },
+      {
+        "id": "8268c973-66c2-4a0c-be6f-df8ba536593b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"TOPIX\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.061874046644930944, \"volatility\": 0.1597824734933321, \"weights\": {\"SP500\": 0.3561216491967571, \"TOPIX\": 0.32710410673685597, \"MSCI_ACWI\": 0.3167742440663869}}",
+        "created_at": "2026-02-07 00:58:36.742342"
+      },
+      {
+        "id": "c36032f4-f05b-4e96-a54b-1f118b81ed74",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"TOPIX\", \"MSCI_ACWI\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05384502993764839, \"volatility\": 0.11882254911750526, \"weights\": {\"SP500\": 0.2274195912228924, \"TOPIX\": 0.2033055871026917, \"MSCI_ACWI\": 0.19957545319738776, \"GOLD\": 0.3696993684770282}}",
+        "created_at": "2026-02-07 00:58:47.030657"
+      },
+      {
+        "id": "00289896-4ff7-4caa-a095-f55ffc3c3a97",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\", \"SP500\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04047396526160557, \"volatility\": 0.057734203289287626, \"weights\": {\"MSCI_ACWI\": 0.1004210633294443, \"TOPIX\": 0.11228730881208558, \"SP500\": 0.11783704672083273, \"US_10Y\": 0.6694545811376376}}",
+        "created_at": "2026-02-07 05:27:30.970953"
+      },
+      {
+        "id": "bc40ebaf-0abe-4e2f-a3bf-b6040b8cfd20",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.061874046645269534, \"volatility\": 0.15978247349315364, \"weights\": {\"MSCI_ACWI\": 0.31677424406941096, \"TOPIX\": 0.32710410671917084, \"SP500\": 0.3561216492114182}}",
+        "created_at": "2026-02-07 05:27:44.465700"
+      },
+      {
+        "id": "569cad5b-c96f-4fa5-a321-266f780553ab",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\", \"SP500\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04070085502719106, \"volatility\": 0.05796982169154172, \"weights\": {\"MSCI_ACWI\": 0.08839945458910237, \"TOPIX\": 0.0968697490419437, \"SP500\": 0.10468132274401427, \"US_10Y\": 0.5618268510276362, \"GOLD\": 0.14822262259730343}}",
+        "created_at": "2026-02-07 05:27:58.527570"
+      },
+      {
+        "id": "e15b9cb6-e4e6-4d1d-8f64-641742ad5ea1",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03795453803880807, \"volatility\": 0.05183610424073059, \"weights\": {\"MSCI_ACWI\": 0.2272725153945163, \"US_10Y\": 0.7727274846054838}}",
+        "created_at": "2026-02-07 05:28:12.723609"
+      },
+      {
+        "id": "53b2d641-85dc-42f0-9e01-941be2fab431",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.038489659570442133, \"volatility\": 0.05483358636782811, \"weights\": {\"MSCI_ACWI\": 0.1887599784749504, \"US_10Y\": 0.6229339891431628, \"GOLD\": 0.1883060323818869}}",
+        "created_at": "2026-02-07 05:28:19.610134"
+      },
+      {
+        "id": "f1159798-a71d-48e1-83cc-8533f6dbd881",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.044545464469822174, \"volatility\": 0.12135599732390648, \"weights\": {\"TOPIX\": 0.4545464469822169, \"GOLD\": 0.5454535530177831}}",
+        "created_at": "2026-02-07 05:29:49.087337"
+      },
+      {
+        "id": "8b40f8d3-e4bc-44f0-b87b-27ad5bdceb5d",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"GOLD\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.035418546906620746, \"volatility\": 0.05317391073066396, \"weights\": {\"TOPIX\": 0.1811371151967694, \"GOLD\": 0.17958046026853539, \"US_10Y\": 0.6392824245346952}}",
+        "created_at": "2026-02-07 05:29:58.185053"
+      },
+      {
+        "id": "ae367bad-5b73-449b-a8b2-1f8bf1075c4f",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"GOLD\", \"US_10Y\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03833763562692496, \"volatility\": 0.05643422712540588, \"weights\": {\"TOPIX\": 0.12239059520542503, \"GOLD\": 0.16243810662201177, \"US_10Y\": 0.5933015079840963, \"MSCI_ACWI\": 0.1218697901884669}}",
+        "created_at": "2026-02-07 05:30:07.592935"
+      },
+      {
+        "id": "a92af871-6d08-49a0-b9ee-267a6d0a0a15",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"GOLD\", \"US_10Y\", \"MSCI_ACWI\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04070085502658417, \"volatility\": 0.05796982168969786, \"weights\": {\"TOPIX\": 0.09686974905293695, \"GOLD\": 0.1482226225869294, \"US_10Y\": 0.5618268510478787, \"MSCI_ACWI\": 0.0883994545668143, \"SP500\": 0.10468132274544083}}",
+        "created_at": "2026-02-07 05:30:11.659462"
+      },
+      {
+        "id": "0b3d398c-389d-4edc-bcf3-90e73c56dd6b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.032499965886840336, \"volatility\": 0.05687130715628517, \"weights\": {\"GOLD\": 0.2499965886840335, \"US_10Y\": 0.7500034113159665}}",
+        "created_at": "2026-02-07 05:30:30.590815"
+      },
+      {
+        "id": "433b96dc-20e5-4be9-bafb-22529a34e9eb",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.06757576129661227, \"volatility\": 0.16277482910680746, \"weights\": {\"SP500\": 0.5151522593224527, \"MSCI_ACWI\": 0.4848477406775473}}",
+        "created_at": "2026-02-07 05:30:46.631751"
+      },
+      {
+        "id": "f3620df4-c449-4bd6-bd22-ba78e75aebd4",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"MSCI_ACWI\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0410461745155231, \"volatility\": 0.05567471609431711, \"weights\": {\"SP500\": 0.15417108380599104, \"MSCI_ACWI\": 0.13940946180809882, \"US_10Y\": 0.7064194543859101}}",
+        "created_at": "2026-02-07 05:31:10.382419"
+      },
+      {
+        "id": "dea3c684-7a13-49f1-baac-a347189deb18",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.039523762170442386, \"volatility\": 0.04967002866960563, \"weights\": {\"SP500\": 0.23809405426105956, \"US_10Y\": 0.7619059457389404}}",
+        "created_at": "2026-02-07 05:31:13.165277"
+      },
+      {
+        "id": "f03976dc-eb73-46e2-9677-dd51da951cb9",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.057714311487269854, \"volatility\": 0.16817219841415612, \"weights\": {\"TOPIX\": 0.48571256751534303, \"MSCI_ACWI\": 0.5142874324846569}}",
+        "created_at": "2026-02-07 05:32:00.581580"
+      },
+      {
+        "id": "cd06e63c-059c-4074-862f-1fb30b46ebfc",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.034347826007555274, \"volatility\": 0.04949651957187227, \"weights\": {\"TOPIX\": 0.2173913003777638, \"US_10Y\": 0.7826086996222362}}",
+        "created_at": "2026-02-07 05:32:36.378228"
+      },
+      {
+        "id": "f543f583-d306-49c7-8ee5-f66362e60d3b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"MSCI_ACWI\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.06187404664528713, \"volatility\": 0.15978247349314642, \"weights\": {\"TOPIX\": 0.3271041067182173, \"MSCI_ACWI\": 0.3167742440697042, \"SP500\": 0.3561216492120784}}",
+        "created_at": "2026-02-07 05:36:04.142559"
+      },
+      {
+        "id": "6f8d99fd-22be-4f73-9703-d79c2430bee2",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"GOLD\", \"US_10Y\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.039439875800139065, \"volatility\": 0.054269445510090566, \"weights\": {\"TOPIX\": 0.12168615823288416, \"GOLD\": 0.1571346973470991, \"US_10Y\": 0.5853090028697572, \"SP500\": 0.1358701415502597}}",
+        "created_at": "2026-02-07 09:43:56.706708"
+      },
+      {
+        "id": "b8f98a0f-ff5c-46d8-b29c-bdf3c296a610",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"SP500\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.061874046645084155, \"volatility\": 0.1597824734932545, \"weights\": {\"MSCI_ACWI\": 0.3167742440679595, \"SP500\": 0.3561216492032376, \"TOPIX\": 0.3271041067288029}}",
+        "created_at": "2026-02-07 10:03:21.216910"
+      },
+      {
+        "id": "d4027888-89f7-49e8-9a97-fcffecb8cb33",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"SP500\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04047396526081995, \"volatility\": 0.05773420328827091, \"weights\": {\"MSCI_ACWI\": 0.10042106330559879, \"SP500\": 0.11783704670636701, \"TOPIX\": 0.11228730884346538, \"US_10Y\": 0.6694545811445688}}",
+        "created_at": "2026-02-07 14:53:47.660517"
+      },
+      {
+        "id": "4dea0317-3ab6-4c0c-8389-bf343366d707",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05771431148830103, \"volatility\": 0.16817219841349498, \"weights\": {\"MSCI_ACWI\": 0.5142874325534017, \"TOPIX\": 0.4857125674465983}}",
+        "created_at": "2026-02-07 14:56:21.039458"
+      },
+      {
+        "id": "8b1a1933-aecd-4ca0-8f0e-4e09758c0564",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"SP500\", \"TOPIX\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.040700855026596136, \"volatility\": 0.05796982168943884, \"weights\": {\"MSCI_ACWI\": 0.08839945456322443, \"SP500\": 0.10468132275045199, \"TOPIX\": 0.0968697490499617, \"US_10Y\": 0.5618268510497658, \"GOLD\": 0.1482226225865962}}",
+        "created_at": "2026-02-07 14:57:01.819627"
+      },
+      {
+        "id": "23786e8b-dad2-432b-915e-f8a7bb259ede",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\", \"SP500\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04070085503067245, \"volatility\": 0.05796982170213806, \"weights\": {\"GOLD\": 0.1482226226482836, \"MSCI_ACWI\": 0.08839945471210581, \"SP500\": 0.10468132273783444, \"TOPIX\": 0.09686974898762647, \"US_10Y\": 0.5618268509141497}}",
+        "created_at": "2026-02-07 14:57:02.355476"
+      },
+      {
+        "id": "4c86f97d-84b2-4049-9be3-abc1cf6de1ca",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"SP500\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03943987580008372, \"volatility\": 0.05426944550997875, \"weights\": {\"GOLD\": 0.1571346973473473, \"SP500\": 0.13587014154898056, \"TOPIX\": 0.12168615823255094, \"US_10Y\": 0.5853090028711212}}",
+        "created_at": "2026-02-07 15:03:59.771610"
+      },
+      {
+        "id": "e72739fa-4fae-4ffc-904e-dd22dd20f031",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.044545464469818566, \"volatility\": 0.12135599732389846, \"weights\": {\"GOLD\": 0.5454535530181442, \"TOPIX\": 0.4545464469818558}}",
+        "created_at": "2026-02-07 15:16:17.264275"
+      },
+      {
+        "id": "3667468a-091e-4629-a271-87dc1f70e45b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"TOPIX\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05209304006496576, \"volatility\": 0.11450744319950801, \"weights\": {\"GOLD\": 0.41689114726061416, \"TOPIX\": 0.27001127586079104, \"SP500\": 0.31309757687859485}}",
+        "created_at": "2026-02-07 15:16:22.534749"
+      },
+      {
+        "id": "185b05f4-fcc0-4e31-8164-6649ec41326a",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03779182525417072, \"volatility\": 0.05504606220467204, \"weights\": {\"MSCI_ACWI\": 0.1404493178251573, \"TOPIX\": 0.14380495651451086, \"US_10Y\": 0.7157457256603318}}",
+        "created_at": "2026-02-07 15:20:17.167571"
+      },
+      {
+        "id": "118f691a-2d13-49f0-ba71-0856bcf57bee",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"TOPIX\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03833763562683559, \"volatility\": 0.05643422712478675, \"weights\": {\"MSCI_ACWI\": 0.12186979019063642, \"TOPIX\": 0.12239059519896124, \"US_10Y\": 0.5933015079919933, \"GOLD\": 0.1624381066184091}}",
+        "created_at": "2026-02-07 15:20:20.419608"
+      },
+      {
+        "id": "28e7722f-58f5-4376-8328-f7921010a461",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\", \"TOPIX\", \"US_10Y\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.04070085503617457, \"volatility\": 0.05796982171867507, \"weights\": {\"GOLD\": 0.14822262273019063, \"MSCI_ACWI\": 0.08839945490720247, \"TOPIX\": 0.09686974889661577, \"US_10Y\": 0.5618268507362849, \"SP500\": 0.10468132272970632}}",
+        "created_at": "2026-02-07 15:20:22.812560"
+      },
+      {
+        "id": "7d3d07e2-cf8c-4917-8a8b-85367a883725",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.03541854690646855, \"volatility\": 0.05317391072893487, \"weights\": {\"TOPIX\": 0.1811371152057987, \"US_10Y\": 0.6392824245589434, \"GOLD\": 0.1795804602352578}}",
+        "created_at": "2026-02-07 15:20:58.433176"
+      },
+      {
+        "id": "ded76a54-a7de-4069-b84d-2a632ae03a3b",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.035418546906412884, \"volatility\": 0.05317391072794785, \"weights\": {\"GOLD\": 0.17958046021321633, \"TOPIX\": 0.18113711521403592, \"US_10Y\": 0.6392824245727478}}",
+        "created_at": "2026-02-07 15:20:58.704143"
+      },
+      {
+        "id": "825d0f97-ce9a-4f58-8c75-40a9e58abcd8",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"TOPIX\", \"US_10Y\", \"SP500\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.039439875802138126, \"volatility\": 0.05426944551240573, \"weights\": {\"GOLD\": 0.15713469737117483, \"TOPIX\": 0.1216861581814119, \"US_10Y\": 0.5853090028274598, \"SP500\": 0.13587014161995348}}",
+        "created_at": "2026-02-07 15:21:05.459233"
+      },
+      {
+        "id": "5511be91-36c4-4507-966c-fc06309f05f9",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\", \"SP500\", \"TOPIX\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05384502993765158, \"volatility\": 0.11882254911751773, \"weights\": {\"GOLD\": 0.36969936847694695, \"MSCI_ACWI\": 0.19957545319801276, \"SP500\": 0.2274195912225424, \"TOPIX\": 0.20330558710249788}}",
+        "created_at": "2026-02-07 15:30:59.378621"
+      },
+      {
+        "id": "7784d5a7-65d6-4583-be37-1ad300a3ebe9",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"SP500\", \"TOPIX\", \"US_10Y\", \"MSCI_ACWI\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0407008550299042, \"volatility\": 0.05796982169944564, \"weights\": {\"GOLD\": 0.14822262263622257, \"SP500\": 0.10468132274475317, \"TOPIX\": 0.09686974899593569, \"US_10Y\": 0.5618268509421417, \"MSCI_ACWI\": 0.0883994546809468}}",
+        "created_at": "2026-02-07 15:31:29.530843"
+      },
+      {
+        "id": "7a8c96b1-8bf2-4ee7-93cf-ec4ece3cb3d6",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"TOPIX\", \"SP500\", \"MSCI_ACWI\", \"US_10Y\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.040700855041993715, \"volatility\": 0.05796982173590422, \"weights\": {\"TOPIX\": 0.09686974880072541, \"SP500\": 0.1046813227269378, \"MSCI_ACWI\": 0.08839945510736187, \"US_10Y\": 0.5618268505505722, \"GOLD\": 0.14822262281440265}}",
+        "created_at": "2026-02-07 15:40:12.432372"
+      },
+      {
+        "id": "fbf82291-701f-4441-b8d4-587ba581a461",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"SP500\", \"TOPIX\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.05209304006513749, \"volatility\": 0.11450744319998944, \"weights\": {\"SP500\": 0.3130975768817338, \"TOPIX\": 0.27001127586854773, \"GOLD\": 0.4168911472497185}}",
+        "created_at": "2026-02-07 15:41:02.523516"
+      },
+      {
+        "id": "ab029822-6827-4a81-885e-61f13a0d7928",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"SP500\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.041046174515260166, \"volatility\": 0.05567471609311846, \"weights\": {\"MSCI_ACWI\": 0.1394094617844503, \"SP500\": 0.15417108382011008, \"US_10Y\": 0.7064194543954396}}",
+        "created_at": "2026-02-07 15:41:21.534115"
+      },
+      {
+        "id": "80a213fc-3a4e-43ac-b7f6-43edf6262b7f",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"MSCI_ACWI\", \"SP500\", \"GOLD\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.0557760604694003, \"volatility\": 0.11647350677516918, \"weights\": {\"MSCI_ACWI\": 0.2743283686084456, \"SP500\": 0.2972617084729719, \"GOLD\": 0.42840992291858254}}",
+        "created_at": "2026-02-07 15:41:28.984917"
+      },
+      {
+        "id": "0339e620-3cb8-49e9-8cdd-f19217893091",
+        "portfolio_id": null,
+        "simulation_type": "risk_parity",
+        "parameters": "{\"assets\": [\"GOLD\", \"MSCI_ACWI\", \"TOPIX\", \"US_10Y\"], \"bounds\": null}",
+        "results": "{\"expected_return\": 0.038337635626847236, \"volatility\": 0.05643422712493052, \"weights\": {\"GOLD\": 0.16243810661824118, \"MSCI_ACWI\": 0.121869790189266, \"TOPIX\": 0.12239059520202566, \"US_10Y\": 0.5933015079904672}}",
+        "created_at": "2026-02-07 15:48:28.047265"
+      }
+    ]
+  }
+}

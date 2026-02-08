@@ -15,10 +15,15 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, MousePointer2 } from "lucide-react";
 
-export function AllocationTable() {
+import { FrontierPoint } from "@/types/simulation";
+
+interface Props {
+  riskParityPoint?: FrontierPoint | null;
+  maxSharpePoint?: FrontierPoint | null;
+}
+
+export function AllocationTable({ riskParityPoint, maxSharpePoint }: Props) {
   const selectedPoint = useSimulationStore((state) => state.selectedPoint);
-  const riskParityPoint = useSimulationStore((state) => state.riskParityPoint);
-  const maxSharpePoint = useSimulationStore((state) => state.maxSharpePoint);
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
   const { data: assets } = useAssets();
 
