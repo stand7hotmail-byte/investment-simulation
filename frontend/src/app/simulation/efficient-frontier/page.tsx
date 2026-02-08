@@ -1,86 +1,25 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { AssetSelector } from "@/components/simulation/AssetSelector";
 import { EfficientFrontierChart } from "@/components/simulation/EfficientFrontierChart";
 import { AllocationTable } from "@/components/simulation/AllocationTable";
-import { useSimulationStore } from "@/store/useSimulationStore";
-import { useEfficientFrontier } from "@/hooks/useEfficientFrontier";
-import { useRiskParity } from "@/hooks/useRiskParity";
+import { useSimulationLifecycle } from "@/hooks/useSimulationLifecycle";
 import { Button } from "@/components/ui/button";
 
 export default function EfficientFrontierPage() {
-  const selectedAssets = useSimulationStore((state) => state.selectedAssetCodes);
-  const clearResults = useSimulationStore((state) => state.clearResults);
-  const setRiskParityPoint = useSimulationStore((state) => state.setRiskParityPoint);
-  const setMaxSharpePoint = useSimulationStore((state) => state.setMaxSharpePoint);
-  const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
-  
-  const riskParityPoint = useSimulationStore((state) => state.riskParityPoint);
-  const maxSharpePoint = useSimulationStore((state) => state.maxSharpePoint);
-  
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [lastRunId, setLastRunId] = useState(0);
-  const hasAutoSelected = useRef(false);
+  const {
+    isSimulating,
+    runSimulation,
+    lastRunId,
+    efData,
+    efError,
+    rpError,
+    hasResults,
+    maxSharpePoint,
+    riskParityPoint,
+    selectedAssets
+  } = useSimulationLifecycle();
 
-  useEffect(() => {
-    clearResults();
-    hasAutoSelected.current = false;
-    setIsSimulating(false);
-  }, [selectedAssets, clearResults]);
-
-  const { 
-    data: efData, 
-    isSuccess: isEfSuccess, 
-    isLoading: isEfLoading,
-    error: efError 
-  } = useEfficientFrontier(
-    { assets: selectedAssets, n_points: 50 },
-    isSimulating
-  );
-
-  const { 
-    data: rpData, 
-    isSuccess: isRpSuccess, 
-    isLoading: isRpLoading,
-    error: rpError 
-  } = useRiskParity(
-    { assets: selectedAssets },
-    isSimulating
-  );
-
-  const handleRunSimulation = () => {
-    hasAutoSelected.current = false;
-    setLastRunId(Date.now());
-    setIsSimulating(true);
-  };
-
-  useEffect(() => {
-    if (isEfSuccess && efData) {
-      setMaxSharpePoint(efData.max_sharpe);
-    }
-  }, [isEfSuccess, efData, setMaxSharpePoint]);
-
-  useEffect(() => {
-    if (isRpSuccess && rpData) {
-      setRiskParityPoint(rpData);
-      if (!hasAutoSelected.current) {
-        setSelectedPoint(rpData);
-        hasAutoSelected.current = true;
-        // Keep isSimulating true while the other query might be loading
-      }
-    }
-  }, [isRpSuccess, rpData, setRiskParityPoint, setSelectedPoint]);
-
-  // Turn off isSimulating only when both are done loading
-  useEffect(() => {
-    if (!isEfLoading && !isRpLoading) {
-      setIsSimulating(false);
-    }
-  }, [isEfLoading, isRpLoading]);
-
-  const hasResults = riskParityPoint !== null && efData !== undefined;
-  const anyLoading = isEfLoading || isRpLoading || isSimulating;
   const anyError = efError || rpError;
 
   return (
@@ -97,10 +36,10 @@ export default function EfficientFrontierPage() {
           <AssetSelector />
           <Button 
             className="w-full h-12 text-lg font-medium shadow-sm transition-all active:scale-[0.98]" 
-            disabled={selectedAssets.length < 2 || anyLoading}
-            onClick={handleRunSimulation}
+            disabled={selectedAssets.length < 2 || isSimulating}
+            onClick={runSimulation}
           >
-            {anyLoading ? "Calculating..." : "Run Simulation"}
+            {isSimulating ? "Calculating..." : "Run Simulation"}
           </Button>
           {anyError && (
             <p className="text-sm text-red-500 bg-red-50 p-3 rounded-md border border-red-100">
@@ -113,7 +52,7 @@ export default function EfficientFrontierPage() {
           {hasResults ? (
             <div className="space-y-8">
               <EfficientFrontierChart 
-                frontier={efData.frontier} 
+                frontier={efData!.frontier} 
                 maxSharpe={maxSharpePoint} 
                 riskParity={riskParityPoint}
                 assetsKey={`${selectedAssets.sort().join(",")}-${lastRunId}`}
@@ -124,10 +63,10 @@ export default function EfficientFrontierPage() {
             <div className="flex h-[550px] items-center justify-center bg-white rounded-lg border-2 border-dashed border-slate-200 text-slate-400 text-center p-8 shadow-inner">
               <div className="max-w-xs space-y-2">
                 <p className="text-lg font-medium text-slate-500">
-                  {anyLoading ? "Calculating..." : "No results yet"}
+                  {isSimulating ? "Calculating..." : "No results yet"}
                 </p>
                 <p className="text-sm">
-                  {anyLoading 
+                  {isSimulating 
                     ? "Our optimizer is finding the best allocations for you." 
                     : "Select assets and click 'Run Simulation' to see the updated results."}
                 </p>

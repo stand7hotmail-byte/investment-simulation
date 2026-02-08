@@ -2,7 +2,7 @@
 
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useAssets } from "@/hooks/useAssets";
-import { FrontierPoint } from "@/types/simulation";
+import { isPointMatch, getStrategyName } from "@/lib/simulation-utils";
 import {
   Table,
   TableBody,
@@ -26,20 +26,7 @@ export function AllocationTable() {
     return null;
   }
 
-  const isMatch = (p1: FrontierPoint | null, p2: FrontierPoint) => {
-    if (!p1) return false;
-    return Math.abs(p1.volatility - p2.volatility) < 1e-6 && 
-           Math.abs(p1.expected_return - p2.expected_return) < 1e-6;
-  };
-
-  let strategyName = "Custom Selection";
-  if (isMatch(riskParityPoint, selectedPoint)) {
-    strategyName = "Risk Parity Strategy (ERC)";
-  } else if (isMatch(maxSharpePoint, selectedPoint)) {
-    strategyName = "Maximum Sharpe Ratio Strategy";
-  } else if (selectedPoint.expected_return > 0) {
-    strategyName = "Efficient Frontier Optimized Point";
-  }
+  const strategyName = getStrategyName(selectedPoint, riskParityPoint, maxSharpePoint);
 
   const getAssetName = (code: string) => {
     const asset = assets?.find((a) => a.asset_code === code);
@@ -56,7 +43,7 @@ export function AllocationTable() {
       <div className="flex flex-wrap gap-2">
         {riskParityPoint && (
           <Button 
-            variant={isMatch(riskParityPoint, selectedPoint) ? "default" : "outline"}
+            variant={isPointMatch(riskParityPoint, selectedPoint) ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedPoint(riskParityPoint)}
             className="flex items-center gap-2"
@@ -67,7 +54,7 @@ export function AllocationTable() {
         )}
         {maxSharpePoint && (
           <Button 
-            variant={isMatch(maxSharpePoint, selectedPoint) ? "default" : "outline"}
+            variant={isPointMatch(maxSharpePoint, selectedPoint) ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedPoint(maxSharpePoint)}
             className="flex items-center gap-2"
