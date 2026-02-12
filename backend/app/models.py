@@ -32,6 +32,7 @@ class AssetData(Base):
     expected_return = Column(DECIMAL(8,6))
     volatility = Column(DECIMAL(8,6))
     correlation_matrix = Column(JSON) # Stores correlation coefficients with other assets
+    historical_prices = Column(JSON) # Stores historical price data
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
 class SimulationResult(Base):
