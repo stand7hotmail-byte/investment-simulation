@@ -8,10 +8,10 @@
     - [x] `backend/app/models.py` 内の `AssetData` モデルに `historical_prices` (JSONB) カラムを追加。
     - [x] `alembic revision --autogenerate` を実行してマイグレーションファイルを生成。
     - [x] 生成されたマイグレーションファイルの内容を確認し、`alembic upgrade head` で適用。
-- [ ] Task: Yahoo Finance API クライアントの実装
-    - [ ] `backend/app/data_sources/yahoo_finance.py` を新規作成。
-    - [ ] Yahoo Finance から過去の価格データを取得するための関数を実装（例: 特定のシンボル、開始日、終了日で日足データを取得）。
-    - [ ] 取得したデータを `historical_prices` JSONB形式に変換するユーティリティ関数を実装。
+- [x] Task: Yahoo Finance API クライアントの実装 [60a914b]
+    - [x] `backend/app/data_sources/yahoo_finance.py` を新規作成。
+    - [x] Yahoo Finance から過去の価格データを取得するための関数を実装（例: 特定のシンボル、開始日、終了日で日足データを取得）。
+    - [x] 取得したデータを `historical_prices` JSONB形式に変換するユーティリティ関数を実装。
 - [ ] Task: 収集スクリプトの作成
     - [ ] `backend/scripts/collect_historical_data.py` を新規作成。
     - [ ] `AssetData` テーブルに登録されている各資産の過去データを、Yahoo Finance API クライアントを使用して収集するロジックを実装。
