@@ -16,7 +16,7 @@
     - [x] `backend/scripts/collect_historical_data.py` を新規作成。
     - [x] `AssetData` テーブルに登録されている各資産の過去データを、Yahoo Finance API クライアントを使用して収集するロジックを実装。
     - [x] 収集したデータを `AssetData` モデルの `historical_prices` カラムに保存する処理を実装。
-- [ ] Task: Conductor - User Manual Verification 'データモデルの拡張とデータ収集基盤の準備' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'データモデルの拡張とデータ収集基盤の準備' (Protocol in workflow.md) [ae0d72b]
 
 ## Phase 2: 過去データAPIエンドポイントの実装と既存機能への統合
 
