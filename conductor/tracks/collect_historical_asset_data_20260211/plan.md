@@ -12,10 +12,10 @@
     - [x] `backend/app/data_sources/yahoo_finance.py` を新規作成。
     - [x] Yahoo Finance から過去の価格データを取得するための関数を実装（例: 特定のシンボル、開始日、終了日で日足データを取得）。
     - [x] 取得したデータを `historical_prices` JSONB形式に変換するユーティリティ関数を実装。
-- [ ] Task: 収集スクリプトの作成
-    - [ ] `backend/scripts/collect_historical_data.py` を新規作成。
-    - [ ] `AssetData` テーブルに登録されている各資産の過去データを、Yahoo Finance API クライアントを使用して収集するロジックを実装。
-    - [ ] 収集したデータを `AssetData` モデルの `historical_prices` カラムに保存する処理を実装。
+- [x] Task: 収集スクリプトの作成 [260da39]
+    - [x] `backend/scripts/collect_historical_data.py` を新規作成。
+    - [x] `AssetData` テーブルに登録されている各資産の過去データを、Yahoo Finance API クライアントを使用して収集するロジックを実装。
+    - [x] 収集したデータを `AssetData` モデルの `historical_prices` カラムに保存する処理を実装。
 - [ ] Task: Conductor - User Manual Verification 'データモデルの拡張とデータ収集基盤の準備' (Protocol in workflow.md)
 
 ## Phase 2: 過去データAPIエンドポイントの実装と既存機能への統合
