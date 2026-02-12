@@ -10,47 +10,52 @@ from app import models
 def seed_assets():
     db = SessionLocal()
     try:
+        # Clear existing assets to avoid duplicates when re-seeding
+        db.query(models.AssetData).delete()
+        db.commit()
+        print("Cleared existing assets.")
+
         # Initial asset data
         assets = [
             {
-                "asset_code": "TOPIX",
-                "name": "東証株価指数",
-                "asset_class": "Stock",
-                "expected_return": 0.0500,
-                "volatility": 0.1800,
-                "correlation_matrix": {"TOPIX": 1.0, "SP500": 0.70, "MSCI_ACWI": 0.85, "US_10Y": -0.20, "GOLD": 0.10}
-            },
-            {
-                "asset_code": "SP500",
-                "name": "S&P 500",
+                "asset_code": "SPY",
+                "name": "S&P 500 ETF (SPY)",
                 "asset_class": "Stock",
                 "expected_return": 0.0700,
                 "volatility": 0.1600,
-                "correlation_matrix": {"TOPIX": 0.70, "SP500": 1.0, "MSCI_ACWI": 0.95, "US_10Y": -0.15, "GOLD": 0.05}
+                "correlation_matrix": {"SPY": 1.0, "QQQ": 0.9, "BND": -0.1, "GLD": 0.05, "VNQ": 0.7}
             },
             {
-                "asset_code": "MSCI_ACWI",
-                "name": "MSCI オール・カントリー・ワールド・インデックス",
+                "asset_code": "QQQ",
+                "name": "Nasdaq 100 ETF (QQQ)",
                 "asset_class": "Stock",
-                "expected_return": 0.0650,
-                "volatility": 0.1700,
-                "correlation_matrix": {"TOPIX": 0.85, "SP500": 0.95, "MSCI_ACWI": 1.0, "US_10Y": -0.10, "GOLD": 0.08}
+                "expected_return": 0.0800,
+                "volatility": 0.2000,
+                "correlation_matrix": {"SPY": 0.9, "QQQ": 1.0, "BND": -0.2, "GLD": 0.03, "VNQ": 0.6}
             },
             {
-                "asset_code": "US_10Y",
-                "name": "米国10年国債",
+                "asset_code": "BND",
+                "name": "Vanguard Total Bond Market Index Fund ETF (BND)",
                 "asset_class": "Bond",
                 "expected_return": 0.0300,
                 "volatility": 0.0500,
-                "correlation_matrix": {"TOPIX": -0.20, "SP500": -0.15, "MSCI_ACWI": -0.10, "US_10Y": 1.0, "GOLD": 0.15}
+                "correlation_matrix": {"SPY": -0.1, "QQQ": -0.2, "BND": 1.0, "GLD": 0.1, "VNQ": 0.2}
             },
             {
-                "asset_code": "GOLD",
-                "name": "金 (GOLD)",
+                "asset_code": "GLD",
+                "name": "SPDR Gold Shares (GLD)",
                 "asset_class": "Commodity",
                 "expected_return": 0.0400,
                 "volatility": 0.1500,
-                "correlation_matrix": {"TOPIX": 0.10, "SP500": 0.05, "MSCI_ACWI": 0.08, "US_10Y": 0.15, "GOLD": 1.0}
+                "correlation_matrix": {"SPY": 0.05, "QQQ": 0.03, "BND": 0.1, "GLD": 1.0, "VNQ": 0.15}
+            },
+            {
+                "asset_code": "VNQ",
+                "name": "Vanguard Real Estate Index Fund ETF (VNQ)",
+                "asset_class": "REIT",
+                "expected_return": 0.0600,
+                "volatility": 0.2200,
+                "correlation_matrix": {"SPY": 0.7, "QQQ": 0.6, "BND": 0.2, "GLD": 0.15, "VNQ": 1.0}
             }
         ]
 

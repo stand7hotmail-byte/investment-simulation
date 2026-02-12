@@ -26,7 +26,7 @@ def fetch_historical_data(ticker: str, start_date: str = None, end_date: str = N
 
     # Fetch data
     try:
-        data = yf.download(ticker, start=start_date_dt, end=end_date_dt, interval="1wk") # Using weekly interval to reduce data points and better suit monthly updates
+        data = yf.download(ticker, start=start_date_dt, end=end_date_dt, interval="1d", auto_adjust=False, prepost=False) # Using daily interval and explicit settings
         if data.empty:
             return []
 
@@ -35,7 +35,7 @@ def fetch_historical_data(ticker: str, start_date: str = None, end_date: str = N
         for index, row in data.iterrows():
             historical_prices.append({
                 "date": index.strftime("%Y-%m-%d"),
-                "price": round(row['Adj Close'], 2)  # Using 'Adj Close' for accurate historical price
+                "price": round(row['Adj Close'].item(), 2)  # Use .item() to get the scalar value from the Series
             })
         return historical_prices
     except Exception as e:
