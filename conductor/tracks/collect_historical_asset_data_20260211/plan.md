@@ -20,10 +20,10 @@
 
 ## Phase 2: 過去データAPIエンドポイントの実装と既存機能への統合
 
-- [ ] Task: 過去データ取得APIエンドポイントの実装
-    - [ ] `backend/app/schemas.py` に `HistoricalDataResponse` スキーマを定義（日付、価格などのリストを含む）。
-    - [ ] `backend/app/main.py` に `GET /api/assets/{asset_code}/historical-data` エンドポイントを追加。
-    - [ ] データベースから `AssetData` の `historical_prices` を取得し、`HistoricalDataResponse` スキーマに沿って整形して返却するロジックを実装。
+- [x] Task: 過去データ取得APIエンドポイントの実装 [40c6b63]
+    - [x] `backend/app/schemas.py` に `HistoricalDataResponse` スキーマを定義（日付、価格などのリストを含む）。
+    - [x] `backend/app/main.py` に `GET /api/assets/{asset_code}/historical-data` エンドポイントを追加。
+    - [x] データベースから `AssetData` の `historical_prices` を取得し、`HistoricalDataResponse` スキーマに沿って整形して返却するロジックを実装。
 - [ ] Task: 既存のシミュレーション機能への統合
     - [ ] `backend/app/simulation.py` を更新し、バックテストやモンテカルロシミュレーションが `AssetData` から `historical_prices` を利用できるように修正。
     - [ ] 資産間の相関係数や共分散の計算ロジックが `historical_prices` を利用できるように修正。
