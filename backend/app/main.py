@@ -114,6 +114,23 @@ def read_asset(asset_code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
     return db_asset
 
+@app.get("/api/assets/{asset_code}/historical-data", response_model=schemas.HistoricalDataResponse)
+def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
+    db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
+    if db_asset is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found")
+    
+    if not db_asset.historical_prices:
+        return schemas.HistoricalDataResponse(asset_code=asset_code, historical_prices=[])
+
+    return schemas.HistoricalDataResponse(
+        asset_code=asset_code,
+        historical_prices=[
+            schemas.HistoricalPricePoint(date=point['date'], price=point['price'])
+            for point in db_asset.historical_prices
+        ]
+    )
+
 @app.post("/api/simulate/efficient-frontier", response_model=schemas.EfficientFrontierResponse)
 def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: Session = Depends(get_db)):
     assets_data = []

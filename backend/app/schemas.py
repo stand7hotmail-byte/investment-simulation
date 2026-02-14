@@ -97,3 +97,11 @@ class RiskParityResponse(BaseModel):
     expected_return: float
     volatility: float
     weights: dict[str, float]
+
+class HistoricalPricePoint(BaseModel):
+    date: str
+    price: Decimal
+
+class HistoricalDataResponse(BaseModel):
+    asset_code: str
+    historical_prices: List[HistoricalPricePoint]
