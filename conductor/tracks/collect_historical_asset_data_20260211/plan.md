@@ -24,9 +24,9 @@
     - [x] `backend/app/schemas.py` に `HistoricalDataResponse` スキーマを定義（日付、価格などのリストを含む）。
     - [x] `backend/app/main.py` に `GET /api/assets/{asset_code}/historical-data` エンドポイントを追加。
     - [x] データベースから `AssetData` の `historical_prices` を取得し、`HistoricalDataResponse` スキーマに沿って整形して返却するロジックを実装。
-- [ ] Task: 既存のシミュレーション機能への統合
-    - [ ] `backend/app/simulation.py` を更新し、バックテストやモンテカルロシミュレーションが `AssetData` から `historical_prices` を利用できるように修正。
-    - [ ] 資産間の相関係数や共分散の計算ロジックが `historical_prices` を利用できるように修正。
+- [x] Task: 既存のシミュレーション機能への統合 [1e6c14a]
+    - [x] `backend/app/simulation.py` を更新し、バックテストやモンテカルロシミュレーションが `AssetData` から `historical_prices` を利用できるように修正。
+    - [x] 資産間の相関係数や共分散の計算ロジックが `historical_prices` を利用できるように修正。
 - [ ] Task: Conductor - User Manual Verification '過去データAPIエンドポイントの実装と既存機能への統合' (Protocol in workflow.md)
 
 ## Phase 3: フロントエンドへの統合と検証
