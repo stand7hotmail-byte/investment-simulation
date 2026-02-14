@@ -131,6 +131,57 @@ def calculate_portfolio_stats(expected_returns: np.ndarray, covariance_matrix: n
     vol = np.sqrt(weights.T @ covariance_matrix @ weights)
     return float(ret), float(vol)
 
+def get_asset_returns(historical_prices: List[Dict[str, Any]]) -> np.ndarray:
+    """
+    Given a list of historical price points for a single asset,
+    calculates the daily/weekly returns.
+    """
+    prices = np.array([point['price'] for point in historical_prices])
+    # Calculate daily/weekly returns (percentage change)
+    returns = (prices[1:] / prices[:-1]) - 1
+    return returns
+
+def calculate_stats_from_historical_data(historical_prices_data: List[List[Dict[str, Any]]]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    複数の資産の過去価格データから、年間リターン、年間ボラティリティ、相関行列を計算します。
+    """
+    num_assets = len(historical_prices_data)
+    
+    # 全ての資産の日次/週次リターンを格納
+    all_asset_returns = []
+    
+    for asset_prices in historical_prices_data:
+        if not asset_prices:
+            # データがない場合はスキップするか、エラーを出すか、ゼロを埋めるか
+            # ここではエラーを出す（またはより適切なハンドリング）
+            raise ValueError("Historical prices data cannot be empty for an asset.")
+        all_asset_returns.append(get_asset_returns(asset_prices))
+
+    # リターン期間を合わせるために、最短の履歴を持つ資産に合わせる
+    min_len = min(len(returns) for returns in all_asset_returns)
+    aligned_returns = np.array([returns[-min_len:] for returns in all_asset_returns]).T # (timesteps, num_assets)
+    
+    # 年率換算係数 (例: 日次リターンなら252, 週次なら52)
+    # yfinance.downloadでinterval="1d"を使用しているため、日次リターンを想定
+    # （ただし、取得されるデータは営業日のみのため、厳密には252日ではない場合がある）
+    annualization_factor = 252 # Assumes daily data
+    if min_len < 200: # Heuristic for weekly data if less than ~200 data points over a year
+        annualization_factor = 52 # Assumes weekly data
+
+    # 期待リターン (年率)
+    annual_returns = np.mean(aligned_returns, axis=0) * annualization_factor
+
+    # 共分散行列 (年率)
+    covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor
+
+    # 相関行列
+    correlation_matrix = np.corrcoef(aligned_returns, rowvar=False)
+    
+    # ボラティリティ (年率)
+    annual_volatilities = np.std(aligned_returns, axis=0) * np.sqrt(annualization_factor)
+
+    return annual_returns, annual_volatilities, correlation_matrix
+
 def monte_carlo_simulation(
     mu: float,
     sigma: float,
@@ -219,16 +270,25 @@ def build_covariance_matrix(volatilities: List[float], correlation_matrix: List[
 def prepare_simulation_inputs(assets: List[Any]) -> tuple[np.ndarray, List[float], np.ndarray]:
     """
     資産データのリストから、期待リターン、ボラティリティ、相関行列を抽出します。
+    historical_pricesが利用可能な場合はそれを使用し、そうでない場合は事前に定義された属性を使用します。
     """
-    returns = np.array([float(a.expected_return) for a in assets])
-    volatilities = [float(a.volatility) for a in assets]
-    
-    n = len(assets)
-    corr_matrix = np.eye(n)
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                target_code = assets[j].asset_code
-                corr_matrix[i, j] = assets[i].correlation_matrix.get(target_code, 0.0)
+    # historical_pricesが全ての資産で利用可能かチェック
+    all_historical_prices_available = all(hasattr(a, 'historical_prices') and a.historical_prices for a in assets)
+
+    if all_historical_prices_available:
+        historical_data_for_calculation = [a.historical_prices for a in assets]
+        returns_array, volatilities_list, correlation_matrix_array = calculate_stats_from_historical_data(historical_data_for_calculation)
+    else:
+        # 既存のロジック: 事前に定義された期待リターン、ボラティリティ、相関行列を使用
+        returns_array = np.array([float(a.expected_return) for a in assets])
+        volatilities_list = [float(a.volatility) for a in assets]
+        
+        n = len(assets)
+        correlation_matrix_array = np.eye(n)
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    target_code = assets[j].asset_code
+                    correlation_matrix_array[i, j] = assets[i].correlation_matrix.get(target_code, 0.0)
                 
-    return returns, volatilities, corr_matrix
+    return returns_array, volatilities_list, correlation_matrix_array
