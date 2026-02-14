@@ -2,7 +2,7 @@
 
 このプランは、各種資産の過去データ収集、データモデル拡張、APIエンドポイント実装、およびデータ活用機能の実現のための手順を定義します。
 
-## Phase 1: データモデルの拡張とデータ収集基盤の準備
+## Phase 1: データモデルの拡張とデータ収集基盤の準備 [checkpoint: 0b7c0a1]
 
 - [x] Task: `AssetData` モデルの `historical_prices` カラム追加とマイグレーション [03e9f6e]
     - [x] `backend/app/models.py` 内の `AssetData` モデルに `historical_prices` (JSONB) カラムを追加。
