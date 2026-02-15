@@ -29,11 +29,11 @@
     - [x] 資産間の相関係数や共分散の計算ロジックが `historical_prices` を利用できるように修正。
 - [x] Task: Conductor - User Manual Verification '過去データAPIエンドポイントの実装と既存機能への統合' (Protocol in workflow.md) [b8616f3]
 
-## Phase 3: フロントエンドへの統合と検証
+## Phase 3: フロントエンドへの統合と検証 [checkpoint: 5f66ea4]
 
 - [x] Task: 過去価格データ表示コンポーネントの実装 [8c573cc]
     - [x] `frontend/src/components/charts/AssetHistoricalChart.tsx` を新規作成。
     - [x] `GET /api/assets/{asset_code}/historical-data` エンドポイントを呼び出し、取得したデータで価格推移グラフを表示するReactコンポーネントを実装（Plotly.jsまたはRechartsを使用）。
 - [x] Task: 既存機能のUI更新と動作確認 [adfaf89]
     - [x] バックテスト、モンテカルロシミュレーション、相関係数表示などの既存のUIが、新しい過去データ基盤と正しく連携していることを確認。
-- [ ] Task: Conductor - User Manual Verification 'フロントエンドへの統合と検証' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'フロントエンドへの統合と検証' (Protocol in workflow.md) [5f66ea4]
