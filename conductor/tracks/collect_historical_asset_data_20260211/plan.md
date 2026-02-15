@@ -18,7 +18,7 @@
     - [x] 収集したデータを `AssetData` モデルの `historical_prices` カラムに保存する処理を実装。
 - [x] Task: Conductor - User Manual Verification 'データモデルの拡張とデータ収集基盤の準備' (Protocol in workflow.md) [ae0d72b]
 
-## Phase 2: 過去データAPIエンドポイントの実装と既存機能への統合
+## Phase 2: 過去データAPIエンドポイントの実装と既存機能への統合 [checkpoint: b8616f3]
 
 - [x] Task: 過去データ取得APIエンドポイントの実装 [40c6b63]
     - [x] `backend/app/schemas.py` に `HistoricalDataResponse` スキーマを定義（日付、価格などのリストを含む）。
@@ -27,7 +27,7 @@
 - [x] Task: 既存のシミュレーション機能への統合 [1e6c14a]
     - [x] `backend/app/simulation.py` を更新し、バックテストやモンテカルロシミュレーションが `AssetData` から `historical_prices` を利用できるように修正。
     - [x] 資産間の相関係数や共分散の計算ロジックが `historical_prices` を利用できるように修正。
-- [ ] Task: Conductor - User Manual Verification '過去データAPIエンドポイントの実装と既存機能への統合' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification '過去データAPIエンドポイントの実装と既存機能への統合' (Protocol in workflow.md) [b8616f3]
 
 ## Phase 3: フロントエンドへの統合と検証
 
