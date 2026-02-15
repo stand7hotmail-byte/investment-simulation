@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, LineChart, Wallet } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { AssetHistoricalChart } from "@/components/charts/AssetHistoricalChart";
 
 export default function Home() {
   return (
@@ -58,6 +56,10 @@ export default function Home() {
             </Button>
           </CardContent>
         </Card>
+      </div>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-4">SPY Historical Price</h2>
+        <AssetHistoricalChart assetCode="SPY" />
       </div>
     </div>
   );
