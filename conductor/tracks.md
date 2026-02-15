@@ -15,3 +15,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: 効率的フロンティア計算の実装**
   *Link: [./tracks/implement_efficient_frontier_20260124/](./tracks/implement_efficient_frontier_20260124/)*
+
+---
+
+- [x] **Track: 過去資産データ収集・活用機能の実装**
+  *Link: [./tracks/collect_historical_asset_data_20260211/](./tracks/collect_historical_asset_data_20260211/)*
