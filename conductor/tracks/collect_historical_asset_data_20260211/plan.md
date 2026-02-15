@@ -31,9 +31,9 @@
 
 ## Phase 3: フロントエンドへの統合と検証
 
-- [ ] Task: 過去価格データ表示コンポーネントの実装
-    - [ ] `frontend/src/components/charts/AssetHistoricalChart.tsx` を新規作成。
-    - [ ] `GET /api/assets/{asset_code}/historical-data` エンドポイントを呼び出し、取得したデータで価格推移グラフを表示するReactコンポーネントを実装（Plotly.jsまたはRechartsを使用）。
+- [x] Task: 過去価格データ表示コンポーネントの実装 [8c573cc]
+    - [x] `frontend/src/components/charts/AssetHistoricalChart.tsx` を新規作成。
+    - [x] `GET /api/assets/{asset_code}/historical-data` エンドポイントを呼び出し、取得したデータで価格推移グラフを表示するReactコンポーネントを実装（Plotly.jsまたはRechartsを使用）。
 - [ ] Task: 既存機能のUI更新と動作確認
     - [ ] バックテスト、モンテカルロシミュレーション、相関係数表示などの既存のUIが、新しい過去データ基盤と正しく連携していることを確認。
 - [ ] Task: Conductor - User Manual Verification 'フロントエンドへの統合と検証' (Protocol in workflow.md)
