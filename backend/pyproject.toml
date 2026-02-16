@@ -1,0 +1,33 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "stand7hotmail-byte",email = "stand7hotmail@gmail.com"}
+]
+requires-python = ">=3.12"
+dependencies = [
+         "fastapi>=0.109.0",
+             "uvicorn>=0.27.0",
+             "sqlalchemy>=2.0.0",
+             "psycopg2-binary",
+             "alembic>=1.13.0",
+             "pydantic>=2.0.0",
+             "python-jose[cryptography]",
+             "httpx>=0.26.0",
+            "python-dotenv>=1.0.0",
+            "pandas>=2.1.0",
+            "numpy>=1.26.0",
+            "scipy>=1.11.0",
+            "yfinance",
+            "cvxpy>=1.4.0",
+	"pydantic-settings",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+ [tool.poetry]
+package-mode = false

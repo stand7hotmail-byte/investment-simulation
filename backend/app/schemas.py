@@ -21,7 +21,6 @@ class Portfolio(PortfolioBase):
     model_config = ConfigDict(from_attributes=True)
 
 class PortfolioAllocationBase(BaseModel):
-    portfolio_id: uuid.UUID
     asset_code: str
     weight: Decimal
 

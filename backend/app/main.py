@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 import uuid
 import numpy as np
 from typing import List, Optional
+from decimal import Decimal
 
 from . import crud, models, schemas, simulation
 from .database import SessionLocal, engine
@@ -71,9 +72,8 @@ def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.Por
     if db_portfolio is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
 
-    if allocation.portfolio_id != portfolio_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Portfolio ID in path and body must match")
-    return crud.create_portfolio_allocation(db=db, allocation=allocation)
+    # Pass portfolio_id as a separate argument to crud.create_portfolio_allocation
+    return crud.create_portfolio_allocation(db=db, allocation=allocation, portfolio_id=portfolio_id)
 
 @app.get("/api/portfolios/{portfolio_id}/allocations", response_model=List[schemas.PortfolioAllocation])
 def read_portfolio_allocations(portfolio_id: uuid.UUID, skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
@@ -126,7 +126,7 @@ def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
     return schemas.HistoricalDataResponse(
         asset_code=asset_code,
         historical_prices=[
-            schemas.HistoricalPricePoint(date=point['date'], price=point['price'])
+            schemas.HistoricalPricePoint(date=point['date'], price=Decimal(str(point['price'])))
             for point in db_asset.historical_prices
         ]
     )

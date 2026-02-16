@@ -34,8 +34,12 @@ def delete_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID):
         return True
     return False
 
-def create_portfolio_allocation(db: Session, allocation: schemas.PortfolioAllocationCreate):
-    db_allocation = models.PortfolioAllocation(**allocation.model_dump())
+def create_portfolio_allocation(db: Session, allocation: schemas.PortfolioAllocationCreate, portfolio_id: uuid.UUID):
+    db_allocation = models.PortfolioAllocation(
+        portfolio_id=portfolio_id,
+        asset_code=allocation.asset_code,
+        weight=allocation.weight
+    )
     db.add(db_allocation)
     db.commit()
     db.refresh(db_allocation)
