@@ -2,7 +2,7 @@
 
 This plan outlines the steps to implement the core functionality for users to create, manage, and run basic accumulation simulations on their investment portfolios.
 
-## Phase 1: Database Schema and API Endpoints
+## Phase 1: Database Schema and API Endpoints [checkpoint: f99ec46]
 
 This phase focuses on setting up the necessary database tables and exposing API endpoints for portfolio creation, storage, and retrieval.
 
