@@ -10,8 +10,8 @@ describe("Sidebar", () => {
 
   it("renders navigation links", () => {
     render(<Sidebar />);
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Efficient Frontier")).toBeInTheDocument();
-    expect(screen.getByText("Portfolios")).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: "Dashboard" })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: "Efficient Frontier" })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: "Portfolios" })).toBeInTheDocument();
   });
 });
