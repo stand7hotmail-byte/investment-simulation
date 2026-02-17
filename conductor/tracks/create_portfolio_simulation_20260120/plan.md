@@ -25,21 +25,21 @@ This phase focuses on setting up the necessary database tables and exposing API 
     - [x] Implement PUT /api/portfolios/{id} endpoint.
     - [x] Write failing tests for DELETE /api/portfolios/{id} (delete portfolio).
     - [x] Implement DELETE /api/portfolios/{id} endpoint.
-- [ ] **Task: Create FastAPI Router for Asset Allocations**
-    - [ ] Write failing tests for GET /api/portfolios/{id}/allocations (get allocations for portfolio).
-    - [ ] Implement GET /api/portfolios/{id}/allocations endpoint.
-    - [ ] Write failing tests for POST /api/portfolios/{id}/allocations (set allocations for portfolio).
-    - [ ] Implement POST /api/portfolios/{id}/allocations endpoint.
-- [ ] **Task: Conductor - User Manual Verification 'Database Schema and API Endpoints' (Protocol in workflow.md)**
+- [x] **Task: Create FastAPI Router for Asset Allocations**
+    - [x] Write failing tests for GET /api/portfolios/{id}/allocations (get allocations for portfolio).
+    - [x] Implement GET /api/portfolios/{id}/allocations endpoint.
+    - [x] Write failing tests for POST /api/portfolios/{id}/allocations (set allocations for portfolio).
+    - [x] Implement POST /api/portfolios/{id}/allocations endpoint.
+- [x] **Task: Conductor - User Manual Verification 'Database Schema and API Endpoints' (Protocol in workflow.md)**
 
 ## Phase 2: Frontend Portfolio Management UI
 
 This phase focuses on building the user interface for creating, viewing, and editing portfolios.
 
-- [ ] **Task: Implement Portfolio List View**
-    - [ ] Write failing tests for displaying a list of portfolios.
-    - [ ] Create Next.js page to fetch and display user's portfolios using TanStack Query.
-    - [ ] Add basic UI for each portfolio (name, description, view/edit/delete buttons).
+- [x] **Task: Implement Portfolio List View** 5db9261
+    - [x] Write failing tests for displaying a list of portfolios.
+    - [x] Create Next.js page to fetch and display user's portfolios using TanStack Query.
+    - [x] Add basic UI for each portfolio (name, description, view/edit/delete buttons).
 - [ ] **Task: Implement Portfolio Creation Form**
     - [ ] Write failing tests for portfolio creation form submission.
     - [ ] Create a form component using React Hook Form and Zod for validation.
