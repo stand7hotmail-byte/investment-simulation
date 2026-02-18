@@ -6,6 +6,7 @@ export interface Portfolio {
   is_current: boolean;
   created_at: string;
   updated_at: string;
+  allocations?: PortfolioAllocation[];
 }
 
 export interface PortfolioAllocation {

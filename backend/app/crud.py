@@ -36,8 +36,24 @@ def get_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID) -> O
 def update_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID, portfolio_update: schemas.PortfolioCreate) -> Optional[models.Portfolio]:
     db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id, models.Portfolio.user_id == user_id).first()
     if db_portfolio:
-        for key, value in portfolio_update.model_dump().items():
-            setattr(db_portfolio, key, value)
+        # Update portfolio basic info
+        db_portfolio.name = portfolio_update.name
+        db_portfolio.description = portfolio_update.description
+        
+        # If allocations are provided, replace existing ones
+        if portfolio_update.allocations is not None:
+            # Delete existing allocations
+            db.query(models.PortfolioAllocation).filter(models.PortfolioAllocation.portfolio_id == portfolio_id).delete()
+            
+            # Create new allocations
+            for allocation in portfolio_update.allocations:
+                db_allocation = models.PortfolioAllocation(
+                    portfolio_id=portfolio_id,
+                    asset_code=allocation.asset_code,
+                    weight=allocation.weight
+                )
+                db.add(db_allocation)
+        
         db.commit()
         db.refresh(db_portfolio)
     return db_portfolio

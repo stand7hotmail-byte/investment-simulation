@@ -17,6 +17,7 @@ class Portfolio(PortfolioBase):
     is_current: bool
     created_at: datetime
     updated_at: datetime
+    allocations: List["PortfolioAllocation"] = []
 
     model_config = ConfigDict(from_attributes=True)
 

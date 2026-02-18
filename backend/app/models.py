@@ -3,6 +3,8 @@ import uuid
 from datetime import datetime, UTC
 from .database import Base, GUID
 
+from sqlalchemy.orm import relationship
+
 class Portfolio(Base):
     __tablename__ = "portfolios"
 
@@ -13,6 +15,8 @@ class Portfolio(Base):
     is_current = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+
+    allocations = relationship("PortfolioAllocation", backref="portfolio", cascade="all, delete-orphan")
 
 class PortfolioAllocation(Base):
     __tablename__ = "portfolio_allocations"

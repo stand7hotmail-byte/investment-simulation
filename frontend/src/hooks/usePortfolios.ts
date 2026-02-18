@@ -8,3 +8,11 @@ export function usePortfolios() {
     queryFn: () => fetchApi<Portfolio[]>("/api/portfolios"),
   });
 }
+
+export function usePortfolio(id: string) {
+  return useQuery({
+    queryKey: ["portfolios", id],
+    queryFn: () => fetchApi<Portfolio>(`/api/portfolios/${id}`),
+    enabled: !!id,
+  });
+}

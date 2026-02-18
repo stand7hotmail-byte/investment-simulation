@@ -46,7 +46,7 @@ This phase focuses on building the user interface for creating, viewing, and edi
     - [x] Implement asset selection and weight allocation UI (dropdowns for assets, input fields for weights).
     - [x] Ensure total weights sum to 100%.
     - [x] Integrate with the backend POST /api/portfolios endpoint.
-- [ ] **Task: Implement Portfolio Edit Form**
+- [~] **Task: Implement Portfolio Edit Form**
     - [ ] Write failing tests for portfolio edit form submission.
     - [ ] Reuse the portfolio creation form component, pre-filling with existing portfolio data.
     - [ ] Integrate with the backend PUT /api/portfolios/{id} endpoint.
