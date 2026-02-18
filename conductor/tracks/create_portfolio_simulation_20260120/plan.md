@@ -40,12 +40,12 @@ This phase focuses on building the user interface for creating, viewing, and edi
     - [x] Write failing tests for displaying a list of portfolios.
     - [x] Create Next.js page to fetch and display user's portfolios using TanStack Query.
     - [x] Add basic UI for each portfolio (name, description, view/edit/delete buttons).
-- [~] **Task: Implement Portfolio Creation Form**
-    - [ ] Write failing tests for portfolio creation form submission.
-    - [ ] Create a form component using React Hook Form and Zod for validation.
-    - [ ] Implement asset selection and weight allocation UI (dropdowns for assets, input fields for weights).
-    - [ ] Ensure total weights sum to 100%.
-    - [ ] Integrate with the backend POST /api/portfolios endpoint.
+- [x] **Task: Implement Portfolio Creation Form** 52d1c0c
+    - [x] Write failing tests for portfolio creation form submission.
+    - [x] Create a form component using React Hook Form and Zod for validation.
+    - [x] Implement asset selection and weight allocation UI (dropdowns for assets, input fields for weights).
+    - [x] Ensure total weights sum to 100%.
+    - [x] Integrate with the backend POST /api/portfolios endpoint.
 - [ ] **Task: Implement Portfolio Edit Form**
     - [ ] Write failing tests for portfolio edit form submission.
     - [ ] Reuse the portfolio creation form component, pre-filling with existing portfolio data.
