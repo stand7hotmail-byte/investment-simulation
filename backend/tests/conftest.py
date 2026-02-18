@@ -3,6 +3,11 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import uuid
+import sys
+import os
+
+# Add the project root to sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from app.main import app, get_db, get_current_user_id
 from app.database import Base

@@ -9,7 +9,7 @@ class PortfolioBase(BaseModel):
     description: str | None = None
 
 class PortfolioCreate(PortfolioBase):
-    pass
+    allocations: List["PortfolioAllocationCreate"] = []
 
 class Portfolio(PortfolioBase):
     id: uuid.UUID

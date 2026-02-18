@@ -150,3 +150,95 @@ def test_simulate_monte_carlo_endpoint(test_client, session_override, fixed_user
     assert "元本割れ確率" in data
     assert "目標到達確率" in data
     assert len(data["history"]) == 6 # 0 to 5 years
+
+# --- New Historical Data Calculation Tests ---
+
+def test_get_asset_returns():
+    # Test with normal data
+    prices = [{"date": "2023-01-01", "price": 100.0},
+              {"date": "2023-01-02", "price": 101.0},
+              {"date": "2023-01-03", "price": 99.99}]
+    returns = simulation.get_asset_returns(prices)
+    assert len(returns) == 2
+    assert returns[0] == pytest.approx(0.01)
+    assert returns[1] == pytest.approx(99.99/101 - 1, rel=1e-12)
+
+    # Test with single data point (no returns)
+    prices_single = [{"date": "2023-01-01", "price": 100.0}]
+    returns_single = simulation.get_asset_returns(prices_single)
+    assert len(returns_single) == 0
+
+    # Test with empty data
+    prices_empty = []
+    returns_empty = simulation.get_asset_returns(prices_empty)
+    assert len(returns_empty) == 0
+
+def test_calculate_stats_from_historical_data():
+    # Sample historical data for two assets
+    historical_data_asset1 = [
+        {"date": "2023-01-01", "price": 100.0},
+        {"date": "2023-01-02", "price": 101.0},
+        {"date": "2023-01-03", "price": 102.0},
+        {"date": "2023-01-04", "price": 103.0},
+        {"date": "2023-01-05", "price": 104.0},
+    ]
+    historical_data_asset2 = [
+        {"date": "2023-01-01", "price": 50.0},
+        {"date": "2023-01-02", "price": 50.5},
+        {"date": "2023-01-03", "price": 51.0},
+        {"date": "2023-01-04", "price": 51.5},
+        {"date": "2023-01-05", "price": 52.0},
+    ]
+    
+    historical_data_list = [historical_data_asset1, historical_data_asset2]
+    
+    returns, volatilities, correlation_matrix = simulation.calculate_stats_from_historical_data(historical_data_list)
+    
+    assert len(returns) == 2
+    assert len(volatilities) == 2
+    assert correlation_matrix.shape == (2, 2)
+    assert correlation_matrix[0, 1] == pytest.approx(1.0) # Highly correlated synthetic data
+    
+    # Test with one asset having empty historical data
+    with pytest.raises(ValueError, match="Historical prices data cannot be empty for an asset."):
+        simulation.calculate_stats_from_historical_data([historical_data_asset1, []])
+
+def test_prepare_simulation_inputs_with_historical_data():
+    # Mock AssetData objects with historical_prices
+    class MockAssetData:
+        def __init__(self, asset_code, historical_prices, expected_return=None, volatility=None, correlation_matrix=None):
+            self.asset_code = asset_code
+            self.historical_prices = historical_prices
+            self.expected_return = expected_return
+            self.volatility = volatility
+            self.correlation_matrix = correlation_matrix
+
+    asset1_hist = [
+        {"date": "2023-01-01", "price": 100.0},
+        {"date": "2023-01-02", "price": 101.0},
+    ]
+    asset2_hist = [
+        {"date": "2023-01-01", "price": 50.0},
+        {"date": "2023-01-02", "price": 50.5},
+    ]
+
+    mock_asset1 = MockAssetData("ASSET1", asset1_hist)
+    mock_asset2 = MockAssetData("ASSET2", asset2_hist)
+
+    # Test when historical_prices are available for all assets
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs([mock_asset1, mock_asset2])
+    
+    assert len(returns) == 2
+    assert len(volatilities) == 2
+    assert corr_matrix.shape == (2, 2)
+    
+    # Test when historical_prices are NOT available for some assets, should fall back
+    mock_asset3 = MockAssetData("ASSET3", None, expected_return=0.06, volatility=0.15, correlation_matrix={"ASSET1": 0.5, "ASSET3": 1.0, "ASSET4": 0.5})
+    mock_asset4 = MockAssetData("ASSET4", [], expected_return=0.08, volatility=0.20, correlation_matrix={"ASSET1": 0.6, "ASSET4": 1.0})
+
+    # This will use the explicit expected_return, volatility, correlation_matrix
+    returns_fallback, volatilities_fallback, corr_matrix_fallback = simulation.prepare_simulation_inputs([mock_asset3, mock_asset4])
+    
+    assert returns_fallback[0] == pytest.approx(0.06)
+    assert volatilities_fallback[0] == pytest.approx(0.15)
+    assert corr_matrix_fallback[0, 1] == pytest.approx(0.5) # From mock_asset3's correlation_matrix

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, LineChart, Wallet } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { AssetHistoricalChart } from "@/components/charts/AssetHistoricalChart";
 

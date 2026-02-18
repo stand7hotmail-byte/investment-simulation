@@ -7,3 +7,20 @@ export interface Portfolio {
   created_at: string;
   updated_at: string;
 }
+
+export interface PortfolioAllocation {
+  id: string;
+  portfolio_id: string;
+  asset_code: string;
+  weight: number;
+  created_at: string;
+}
+
+export interface CreatePortfolioRequest {
+  name: string;
+  description?: string | null;
+  allocations: {
+    asset_code: string;
+    weight: number;
+  }[];
+}

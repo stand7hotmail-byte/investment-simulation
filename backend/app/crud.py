@@ -5,10 +5,26 @@ from typing import List, Optional
 from decimal import Decimal
 
 def create_portfolio(db: Session, portfolio: schemas.PortfolioCreate, user_id: uuid.UUID):
-    db_portfolio = models.Portfolio(**portfolio.model_dump(), user_id=user_id)
+    db_portfolio = models.Portfolio(
+        name=portfolio.name,
+        description=portfolio.description,
+        user_id=user_id
+    )
     db.add(db_portfolio)
     db.commit()
     db.refresh(db_portfolio)
+
+    if portfolio.allocations:
+        for allocation in portfolio.allocations:
+            db_allocation = models.PortfolioAllocation(
+                portfolio_id=db_portfolio.id,
+                asset_code=allocation.asset_code,
+                weight=allocation.weight
+            )
+            db.add(db_allocation)
+        db.commit()
+        db.refresh(db_portfolio)
+
     return db_portfolio
 
 def get_portfolios(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[models.Portfolio]:
