@@ -89,6 +89,20 @@ class MonteCarloResponse(BaseModel):
     目標到達確率: float | None = None
     history: List[MonteCarloHistory]
 
+class BasicAccumulationRequest(BaseModel):
+    portfolio_id: uuid.UUID
+    initial_investment: float
+    monthly_contribution: float
+    years: int
+
+class BasicAccumulationHistory(BaseModel):
+    year: int
+    value: float
+
+class BasicAccumulationResponse(BaseModel):
+    final_value: float
+    history: List[BasicAccumulationHistory]
+
 class RiskParityRequest(BaseModel):
     assets: List[str]
     bounds: dict[str, List[float]] | None = None # e.g., {"TOPIX": [0.0, 0.5]}

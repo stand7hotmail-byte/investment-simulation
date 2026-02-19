@@ -59,6 +59,48 @@ def test_delete_portfolio(test_client):
     get_response = test_client.get(f"/api/portfolios/{created_portfolio_id}")
     assert get_response.status_code == status.HTTP_404_NOT_FOUND
 
+def test_create_portfolio_with_allocations(test_client):
+    portfolio_data = {
+        "name": "Full Portfolio",
+        "description": "With initial allocations",
+        "allocations": [
+            {"asset_code": "AAPL", "weight": 0.6},
+            {"asset_code": "MSFT", "weight": 0.4}
+        ]
+    }
+    response = test_client.post("/api/portfolios", json=portfolio_data)
+    assert response.status_code == status.HTTP_201_CREATED
+    data = response.json()
+    assert data["name"] == "Full Portfolio"
+    assert "allocations" in data
+    assert len(data["allocations"]) == 2
+    assert any(a["asset_code"] == "AAPL" and Decimal(str(a["weight"])) == Decimal("0.6") for a in data["allocations"])
+
+def test_update_portfolio_with_allocations(test_client):
+    # Create initial
+    portfolio_data = {
+        "name": "Old Portfolio",
+        "allocations": [{"asset_code": "AAPL", "weight": 1.0}]
+    }
+    create_response = test_client.post("/api/portfolios", json=portfolio_data)
+    portfolio_id = create_response.json()["id"]
+
+    # Update with new allocations
+    update_data = {
+        "name": "New Portfolio",
+        "allocations": [
+            {"asset_code": "MSFT", "weight": 0.5},
+            {"asset_code": "GOOG", "weight": 0.5}
+        ]
+    }
+    response = test_client.put(f"/api/portfolios/{portfolio_id}", json=update_data)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["name"] == "New Portfolio"
+    assert len(data["allocations"]) == 2
+    assert any(a["asset_code"] == "MSFT" for a in data["allocations"])
+    assert not any(a["asset_code"] == "AAPL" for a in data["allocations"])
+
 def test_create_portfolio_allocation(test_client):
     # First, create a portfolio to link the allocation to
     portfolio_response = test_client.post("/api/portfolios", json={"name": "Portfolio for Allocation", "description": "For testing allocations"})

@@ -251,6 +251,45 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
     
     return result
 
+@app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
+def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    # 1. ポートフォリオの存在と所有権を確認
+    db_portfolio = crud.get_portfolio(db, portfolio_id=request.portfolio_id, user_id=user_id)
+    if db_portfolio is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
+    
+    # 2. 資産配分を取得
+    allocations = crud.get_portfolio_allocations(db, portfolio_id=request.portfolio_id, user_id=user_id)
+    if not allocations:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Portfolio has no allocations")
+    
+    # 3. 各資産の統計データを取得
+    asset_codes = [a.asset_code for a in allocations]
+    weights = np.array([float(a.weight) for a in allocations])
+    
+    assets_stats = []
+    for code in asset_codes:
+        stats = crud.get_asset_by_code(db, code)
+        if not stats:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset data for {code} not found")
+        assets_stats.append(stats)
+        
+    # 4. ポートフォリオ全体の期待リターンを算出
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_stats)
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    
+    mu, _ = simulation.calculate_portfolio_stats(returns, cov_matrix, weights)
+    
+    # 5. 基本シミュレーションの実行
+    result = simulation.calculate_basic_accumulation(
+        mu=mu,
+        initial_investment=request.initial_investment,
+        monthly_contribution=request.monthly_contribution,
+        years=request.years
+    )
+    
+    return result
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Efficient Frontier", href: "/simulation/efficient-frontier", icon: TrendingUp },
-  { name: "Monte Carlo", href: "/simulation/monte-carlo", icon: LineChart },
+  { name: "Accumulation Sim", href: "/simulation/accumulation", icon: LineChart },
   { name: "Portfolios", href: "/portfolios", icon: Wallet },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

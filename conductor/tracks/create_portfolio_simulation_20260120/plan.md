@@ -32,7 +32,7 @@ This phase focuses on setting up the necessary database tables and exposing API 
     - [x] Implement POST /api/portfolios/{id}/allocations endpoint.
 - [x] **Task: Conductor - User Manual Verification 'Database Schema and API Endpoints' (Protocol in workflow.md)**
 
-## Phase 2: Frontend Portfolio Management UI
+## Phase 2: Frontend Portfolio Management UI [checkpoint: f5f7e7c]
 
 This phase focuses on building the user interface for creating, viewing, and editing portfolios.
 
@@ -46,32 +46,32 @@ This phase focuses on building the user interface for creating, viewing, and edi
     - [x] Implement asset selection and weight allocation UI (dropdowns for assets, input fields for weights).
     - [x] Ensure total weights sum to 100%.
     - [x] Integrate with the backend POST /api/portfolios endpoint.
-- [~] **Task: Implement Portfolio Edit Form**
-    - [ ] Write failing tests for portfolio edit form submission.
-    - [ ] Reuse the portfolio creation form component, pre-filling with existing portfolio data.
-    - [ ] Integrate with the backend PUT /api/portfolios/{id} endpoint.
-- [ ] **Task: Implement Delete Portfolio Functionality**
-    - [ ] Write failing tests for portfolio deletion.
-    - [ ] Add a confirmation dialog for deleting portfolios.
-    - [ ] Integrate with the backend DELETE /api/portfolios/{id} endpoint.
-- [ ] **Task: Conductor - User Manual Verification 'Frontend Portfolio Management UI' (Protocol in workflow.md)**
+- [x] **Task: Implement Portfolio Edit Form** cd99f6e
+    - [x] Write failing tests for portfolio edit form submission.
+    - [x] Reuse the portfolio creation form component, pre-filling with existing portfolio data.
+    - [x] Integrate with the backend PUT /api/portfolios/{id} endpoint.
+- [x] **Task: Implement Delete Portfolio Functionality** cd99f6e
+    - [x] Write failing tests for portfolio deletion.
+    - [x] Add a confirmation dialog for deleting portfolios.
+    - [x] Integrate with the backend DELETE /api/portfolios/{id} endpoint.
+- [x] **Task: Conductor - User Manual Verification 'Frontend Portfolio Management UI' (Protocol in workflow.md)**
 
-## Phase 3: Basic Accumulation Simulation
+## Phase 3: Basic Accumulation Simulation [checkpoint: pending]
 
 This phase focuses on developing the simulation logic in the backend and integrating it with the frontend to display results.
 
-- [ ] **Task: Implement Basic Accumulation Simulation Logic (Backend)**
-    - [ ] Write failing unit tests for the simulation logic (e.g., test with fixed returns/volatility).
-    - [ ] Develop Python function to calculate projected future value based on initial investment, monthly contribution, period, and portfolio's aggregated expected return/volatility.
-- [ ] **Task: Create FastAPI Endpoint for Basic Simulation**
-    - [ ] Write failing tests for POST /api/simulate/basic-accumulation endpoint.
-    - [ ] Implement POST /api/simulate/basic-accumulation endpoint to receive parameters, call simulation logic, and return results.
-- [ ] **Task: Implement Simulation Input Form (Frontend)**
-    - [ ] Write failing tests for simulation input form submission.
-    - [ ] Create a form component with inputs for initial investment, monthly contribution, and investment period.
-    - [ ] Add a dropdown to select a saved portfolio.
-    - [ ] Integrate with the backend simulation endpoint.
-- [ ] **Task: Display Simulation Results (Frontend)**
-    - [ ] Write failing tests for displaying simulation results.
-    - [ ] Create a component to display the projected final value and potentially a simple line chart (e.g., using Recharts for simplicity) showing growth over time.
-- [ ] **Task: Conductor - User Manual Verification 'Basic Accumulation Simulation' (Protocol in workflow.md)**
+- [x] **Task: Implement Basic Accumulation Simulation Logic (Backend)**
+    - [x] Write failing unit tests for the simulation logic (e.g., test with fixed returns/volatility).
+    - [x] Develop Python function to calculate projected future value based on initial investment, monthly contribution, period, and portfolio's aggregated expected return/volatility.
+- [x] **Task: Create FastAPI Endpoint for Basic Simulation**
+    - [x] Write failing tests for POST /api/simulate/basic-accumulation endpoint.
+    - [x] Implement POST /api/simulate/basic-accumulation endpoint to receive parameters, call simulation logic, and return results.
+- [x] **Task: Implement Simulation Input Form (Frontend)**
+    - [x] Write failing tests for simulation input form submission.
+    - [x] Create a form component with inputs for initial investment, monthly contribution, and investment period.
+    - [x] Add a dropdown to select a saved portfolio.
+    - [x] Integrate with the backend simulation endpoint.
+- [x] **Task: Display Simulation Results (Frontend)**
+    - [x] Write failing tests for displaying simulation results.
+    - [x] Create a component to display the projected final value and potentially a simple line chart (e.g., using Recharts for simplicity) showing growth over time.
+- [x] **Task: Conductor - User Manual Verification 'Basic Accumulation Simulation' (Protocol in workflow.md)**

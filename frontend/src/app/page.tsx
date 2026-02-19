@@ -30,22 +30,22 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow opacity-60">
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <LineChart className="h-8 w-8 text-indigo-600 mb-2" />
-            <CardTitle>Monte Carlo</CardTitle>
+            <CardTitle>Accumulation Sim</CardTitle>
             <CardDescription>
-              Predict future portfolio values using probabilistic forecasting models.
+              Estimate the future value of your portfolio with monthly contributions.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full cursor-not-allowed">
-              Coming Soon
+            <Button asChild className="w-full">
+              <Link href="/simulation/accumulation">Run Simulation</Link>
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow opacity-60">
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <Wallet className="h-8 w-8 text-emerald-600 mb-2" />
             <CardTitle>My Portfolios</CardTitle>
@@ -54,8 +54,8 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full cursor-not-allowed">
-              Coming Soon
+            <Button asChild className="w-full">
+              <Link href="/portfolios">View Portfolios</Link>
             </Button>
           </CardContent>
         </Card>

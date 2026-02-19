@@ -292,3 +292,26 @@ def prepare_simulation_inputs(assets: List[Any]) -> tuple[np.ndarray, List[float
                     correlation_matrix_array[i, j] = assets[i].correlation_matrix.get(target_code, 0.0)
                 
     return returns_array, volatilities_list, correlation_matrix_array
+
+def calculate_basic_accumulation(
+    mu: float,
+    initial_investment: float,
+    monthly_contribution: float,
+    years: int
+) -> Dict[str, Any]:
+    """
+    期待リターンに基づいた確定的（決定論的）な資産形成シミュレーションを計算します。
+    """
+    history = []
+    current_value = initial_investment
+    history.append({"year": 0, "value": float(current_value)})
+    
+    for t in range(1, years + 1):
+        # 1年間の運用（期末に積み立てを加算すると仮定）
+        current_value = current_value * (1 + mu) + (monthly_contribution * 12)
+        history.append({"year": t, "value": float(current_value)})
+        
+    return {
+        "final_value": float(current_value),
+        "history": history
+    }

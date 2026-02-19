@@ -242,3 +242,63 @@ def test_prepare_simulation_inputs_with_historical_data():
     assert returns_fallback[0] == pytest.approx(0.06)
     assert volatilities_fallback[0] == pytest.approx(0.15)
     assert corr_matrix_fallback[0, 1] == pytest.approx(0.5) # From mock_asset3's correlation_matrix
+
+# --- Basic Accumulation Logic Tests ---
+
+def test_calculate_basic_accumulation():
+    # Setup
+    mu = 0.05
+    initial_investment = 1000000
+    monthly_contribution = 10000
+    years = 10
+    
+    # Execute
+    results = simulation.calculate_basic_accumulation(
+        mu=mu,
+        initial_investment=initial_investment,
+        monthly_contribution=monthly_contribution,
+        years=years
+    )
+    
+    # Expected: (1,000,000 * 1.05^10) + (10,000 * 12 * (1.05^10 - 1) / 0.05)
+    # 1.05^10 = 1.6288946267774415
+    # part1 = 1,628,894.62
+    # part2 = 120,000 * (0.6288946) / 0.05 = 120,000 * 12.577892 = 1,509,347.10
+    # total = 3,138,241.72
+    
+    expected_total = (initial_investment * (1 + mu)**years) + (monthly_contribution * 12 * ((1 + mu)**years - 1) / mu)
+    
+    assert results["final_value"] == pytest.approx(expected_total)
+    assert len(results["history"]) == years + 1
+    assert results["history"][0]["value"] == initial_investment
+    assert results["history"][-1]["value"] == pytest.approx(expected_total)
+
+# --- Basic Accumulation API Integration Tests ---
+
+def test_simulate_basic_accumulation_endpoint(test_client, session_override, fixed_user_id, sample_assets):
+    # 1. Create a portfolio
+    portfolio_res = test_client.post("/api/portfolios", json={"name": "Basic Sim Test Portfolio", "description": "Testing Basic Sim API"})
+    portfolio_id = portfolio_res.json()["id"]
+    
+    # 2. Add allocations (100% TOPIX)
+    test_client.post(f"/api/portfolios/{portfolio_id}/allocations", json={
+        "portfolio_id": portfolio_id,
+        "asset_code": "TOPIX",
+        "weight": 1.0
+    })
+    
+    # 3. Request Basic Accumulation Simulation
+    payload = {
+        "portfolio_id": portfolio_id,
+        "initial_investment": 1000000,
+        "monthly_contribution": 30000,
+        "years": 5
+    }
+    
+    response = test_client.post("/api/simulate/basic-accumulation", json=payload)
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert "final_value" in data
+    assert "history" in data
+    assert len(data["history"]) == 6 # 0 to 5 years
