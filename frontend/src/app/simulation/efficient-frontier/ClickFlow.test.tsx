@@ -38,10 +38,19 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe("Detailed Click Flow Integration", () => {
+  let queryClient: QueryClient;
+  let wrapper: ({ children }: { children: React.ReactNode }) => JSX.Element;
+
   beforeEach(() => {
     vi.clearAllMocks();
     useSimulationStore.getState().clearAssets();
     lastPlotProps = null;
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } }
+    });
+    wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
   });
 
   it("should allow switching points after initial risk parity selection", async () => {
@@ -54,28 +63,40 @@ describe("Detailed Click Flow Integration", () => {
     };
     const mockRiskParityData = { expected_return: 0.015, volatility: 0.07, weights: { A: 0.7, B: 0.3 } };
 
-    (useEfficientFrontier as any).mockReturnValue({ data: mockFrontierData, isLoading: false });
-    (useRiskParity as any).mockReturnValue({ data: mockRiskParityData, isSuccess: true });
+    // 最初はデータなし
+    (useEfficientFrontier as any).mockReturnValue({ data: null, isLoading: false });
+    (useRiskParity as any).mockReturnValue({ data: null, isSuccess: false });
 
     useSimulationStore.getState().setSelectedAssets(["A", "B"]);
 
-    render(<EfficientFrontierPage />, { wrapper });
+    const { rerender } = render(<EfficientFrontierPage />, { wrapper });
+
+    // 成功データをモック
+    (useEfficientFrontier as any).mockReturnValue({ data: mockFrontierData, isSuccess: true, isLoading: false });
+    (useRiskParity as any).mockReturnValue({ data: mockRiskParityData, isSuccess: true, isLoading: false });
 
     // 1. シミュレーション実行
-    const runButton = screen.getByText("Run Simulation");
+    const runButton = screen.getAllByText("Run Simulation")[0];
     fireEvent.click(runButton);
+
+    // rerenderして、新しい simulatedAssetCodes でフックを再実行させる
+    rerender(<EfficientFrontierPage />);
 
     // 2. リスクパリティが自動選択されるのを待つ
     await waitFor(() => {
       expect(screen.getByTestId("allocation-table")).toHaveTextContent("Return: 0.015");
     });
 
-    // 3. チャート上の「Max Sharpe Ratio」をクリックするシミュレーション
+    // 3. チャート上のクリックハンドラを取得して実行
+    const graphDiv = { on: vi.fn(), removeAllListeners: vi.fn() };
+    lastPlotProps.onInitialized({}, graphDiv);
+    const clickHandler = graphDiv.on.mock.calls.find(c => c[0] === 'plotly_click')[1];
+
     act(() => {
-      lastPlotProps.onClick({
+      clickHandler({
         points: [{
-          data: { name: "Max Sharpe Ratio" },
-          pointIndex: 0
+          x: 0.10, // Max Sharpe volatility
+          data: { name: "Max Sharpe Ratio" }
         }]
       });
     });
@@ -85,12 +106,12 @@ describe("Detailed Click Flow Integration", () => {
       expect(screen.getByTestId("allocation-table")).toHaveTextContent("Return: 0.02");
     });
 
-    // 5. 曲線上の別の点（インデックス0）をクリック
+    // 5. 曲線上の別の点をクリック
     act(() => {
-      lastPlotProps.onClick({
+      clickHandler({
         points: [{
-          data: { name: "Efficient Frontier" },
-          pointIndex: 0
+          x: 0.05,
+          data: { name: "Efficient Frontier" }
         }]
       });
     });

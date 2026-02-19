@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { EfficientFrontierChart } from "./EfficientFrontierChart";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useSimulationStore } from "@/store/useSimulationStore";
@@ -8,8 +8,19 @@ let plotClickCallback: (event: any) => void = () => {};
 vi.mock("next/dynamic", () => ({
   default: () => {
     const Component = (props: any) => {
-      plotClickCallback = props.onClick;
-      return <div data-testid="mock-plotly" onClick={() => {}}>Plotly Chart</div>;
+      // Capture the callback from onInitialized
+      if (props.onInitialized) {
+        const mockGraphDiv = {
+          on: (event: string, handler: any) => {
+            if (event === 'plotly_click') {
+              plotClickCallback = handler;
+            }
+          },
+          removeAllListeners: vi.fn()
+        };
+        props.onInitialized({}, mockGraphDiv);
+      }
+      return <div data-testid="mock-plotly">Plotly Chart</div>;
     };
     return Component;
   },
@@ -25,15 +36,16 @@ describe("EfficientFrontierChart", () => {
 
   beforeEach(() => {
     useSimulationStore.getState().clearAssets();
+    plotClickCallback = () => {};
   });
 
   it("updates selectedPoint when clicking on Efficient Frontier", () => {
-    render(<EfficientFrontierChart frontier={mockFrontier} />);
+    render(<EfficientFrontierChart frontier={mockFrontier} assetsKey="test" />);
     
     // Simulate Plotly click event
     plotClickCallback({
       points: [{
-        pointIndex: 1,
+        x: 0.15, // Map to volatility of the second point
         data: { name: "Efficient Frontier" }
       }]
     });
@@ -42,10 +54,11 @@ describe("EfficientFrontierChart", () => {
   });
 
   it("updates selectedPoint when clicking on Max Sharpe Ratio", () => {
-    render(<EfficientFrontierChart frontier={mockFrontier} maxSharpe={mockMaxSharpe} />);
+    render(<EfficientFrontierChart frontier={mockFrontier} maxSharpe={mockMaxSharpe} assetsKey="test" />);
     
     plotClickCallback({
       points: [{
+        x: 0.12,
         data: { name: "Max Sharpe Ratio" }
       }]
     });
@@ -54,10 +67,11 @@ describe("EfficientFrontierChart", () => {
   });
 
   it("updates selectedPoint when clicking on Risk Parity", () => {
-    render(<EfficientFrontierChart frontier={mockFrontier} riskParity={mockRiskParity} />);
+    render(<EfficientFrontierChart frontier={mockFrontier} riskParity={mockRiskParity} assetsKey="test" />);
     
     plotClickCallback({
       points: [{
+        x: 0.11,
         data: { name: "Risk Parity (ERC)" }
       }]
     });

@@ -10,7 +10,7 @@ export default function EfficientFrontierPage() {
   const {
     isSimulating,
     runSimulation,
-    lastRunId,
+    simulationId,
     efData,
     efError,
     rpError,
@@ -55,7 +55,7 @@ export default function EfficientFrontierPage() {
                 frontier={efData!.frontier} 
                 maxSharpe={maxSharpePoint} 
                 riskParity={riskParityPoint}
-                assetsKey={`${selectedAssets.sort().join(",")}-${lastRunId}`}
+                assetsKey={`${selectedAssets.sort().join(",")}-${simulationId}`}
               />
               <AllocationTable 
                 riskParityPoint={riskParityPoint}

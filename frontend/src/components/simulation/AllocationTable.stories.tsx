@@ -34,11 +34,13 @@ const mockPoint = {
 };
 
 export const RiskParity: Story = {
+  args: {
+    riskParityPoint: mockPoint,
+  },
   decorators: [
     (Story) => {
       useEffect(() => {
         const store = useSimulationStore.getState();
-        store.setRiskParityPoint(mockPoint);
         store.setSelectedPoint(mockPoint);
       }, []);
       return <Story />;
@@ -47,11 +49,13 @@ export const RiskParity: Story = {
 };
 
 export const MaxSharpe: Story = {
+  args: {
+    maxSharpePoint: mockPoint,
+  },
   decorators: [
     (Story) => {
       useEffect(() => {
         const store = useSimulationStore.getState();
-        store.setMaxSharpePoint(mockPoint);
         store.setSelectedPoint(mockPoint);
       }, []);
       return <Story />;

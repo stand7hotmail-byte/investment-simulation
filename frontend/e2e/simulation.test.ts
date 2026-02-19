@@ -10,9 +10,9 @@ test.describe('Efficient Frontier Simulation', () => {
     await expect(page.locator('text=No results yet')).toBeVisible();
 
     // 2. Select assets (using labels)
-    // Note: Assuming asset names are consistent with the previous run
-    await page.click('text=東証株価指数');
-    await page.click('text=S&P 500');
+    // Note: Using actual names from seed data
+    await page.click('text=S&P 500 ETF (SPY)');
+    await page.click('text=Nasdaq 100 ETF (QQQ)');
 
     // 3. Click Run Simulation
     const runButton = page.locator('button:has-text("Run Simulation")');

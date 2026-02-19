@@ -56,7 +56,7 @@ This phase focuses on building the user interface for creating, viewing, and edi
     - [x] Integrate with the backend DELETE /api/portfolios/{id} endpoint.
 - [x] **Task: Conductor - User Manual Verification 'Frontend Portfolio Management UI' (Protocol in workflow.md)**
 
-## Phase 3: Basic Accumulation Simulation [checkpoint: pending]
+## Phase 3: Basic Accumulation Simulation [checkpoint: 3eb36af]
 
 This phase focuses on developing the simulation logic in the backend and integrating it with the frontend to display results.
 

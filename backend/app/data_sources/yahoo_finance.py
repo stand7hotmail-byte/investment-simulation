@@ -24,31 +24,31 @@ def fetch_historical_data(ticker: str, start_date: str = None, end_date: str = N
     else:
         start_date_dt = datetime.strptime(start_date, "%Y-%m-%d")
 
-            # Fetch data
-        try:
-            print(f"Fetching data for {ticker} from {start_date_dt} to {end_date_dt} with interval 1d...")
-            data = yf.download(ticker, start=start_date_dt, end=end_date_dt, interval="1d", auto_adjust=False, prepost=False) # Using daily interval and explicit settings
-            print(f"Data for {ticker} fetched. Is empty: {data.empty}")
-            if data.empty:
-                print(f"No data returned for {ticker} from yfinance.download.")
-                return []
-    
-            # Convert to list of dicts with 'date' and 'price'
-            historical_prices = []
-            for index, row in data.iterrows():
-                # Check if 'Adj Close' column exists
-                if 'Adj Close' not in row:
-                    print(f"Error: 'Adj Close' column not found in data for {ticker}. Columns available: {data.columns.tolist()}")
-                    return []
-                historical_prices.append({
-                    "date": index.strftime("%Y-%m-%d"),
-                    "price": round(row['Adj Close'].item(), 2)  # Use .item() to get the scalar value from the Series
-                })
-            print(f"Successfully processed {len(historical_prices)} data points for {ticker}.")
-            return historical_prices
-        except Exception as e:
-            print(f"Error fetching data for {ticker}: {e}")
+    # Fetch data
+    try:
+        print(f"Fetching data for {ticker} from {start_date_dt} to {end_date_dt} with interval 1d...")
+        data = yf.download(ticker, start=start_date_dt, end=end_date_dt, interval="1d", auto_adjust=False, prepost=False) # Using daily interval and explicit settings
+        print(f"Data for {ticker} fetched. Is empty: {data.empty}")
+        if data.empty:
+            print(f"No data returned for {ticker} from yfinance.download.")
             return []
+
+        # Convert to list of dicts with 'date' and 'price'
+        historical_prices = []
+        for index, row in data.iterrows():
+            # Check if 'Adj Close' column exists
+            if 'Adj Close' not in row:
+                print(f"Error: 'Adj Close' column not found in data for {ticker}. Columns available: {data.columns.tolist()}")
+                return []
+            historical_prices.append({
+                "date": index.strftime("%Y-%m-%d"),
+                "price": round(row['Adj Close'].item(), 2)  # Use .item() to get the scalar value from the Series
+            })
+        print(f"Successfully processed {len(historical_prices)} data points for {ticker}.")
+        return historical_prices
+    except Exception as e:
+        print(f"Error fetching data for {ticker}: {e}")
+        return []
 def convert_to_json_format(data_df) -> list[dict]:
     """
     Converts a pandas DataFrame of historical data into the desired JSONB format.

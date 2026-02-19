@@ -2,21 +2,33 @@ import { create } from "zustand";
 import { FrontierPoint } from "@/types/simulation";
 
 interface SimulationState {
-  // State
+  // Selections
   selectedAssetCodes: string[];
+  
+  // Results & Simulation Status
+  simulatedAssetCodes: string[];
+  simulationId: number;
   selectedPoint: FrontierPoint | null;
+  isSimulating: boolean;
   
   // Actions
   toggleAsset: (code: string) => void;
   setSelectedAssets: (codes: string[]) => void;
-  clearAssets: () => void;
-  clearResults: () => void; 
+  
+  runSimulation: () => void;
+  setIsSimulating: (isSimulating: boolean) => void;
   setSelectedPoint: (point: FrontierPoint | null) => void;
+  
+  clearAssets: () => void;
+  clearResults: () => void;
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
   selectedAssetCodes: [],
+  simulatedAssetCodes: [],
+  simulationId: 0,
   selectedPoint: null,
+  isSimulating: false,
 
   toggleAsset: (code) => set((state) => ({
     selectedAssetCodes: state.selectedAssetCodes.includes(code)
@@ -26,9 +38,26 @@ export const useSimulationStore = create<SimulationState>((set) => ({
 
   setSelectedAssets: (codes) => set({ selectedAssetCodes: codes }),
 
-  clearAssets: () => set({ selectedAssetCodes: [], selectedPoint: null }),
+  runSimulation: () => set((state) => ({ 
+    simulatedAssetCodes: state.selectedAssetCodes,
+    simulationId: Date.now(),
+    selectedPoint: null,
+    isSimulating: true
+  })),
 
-  clearResults: () => set({ selectedPoint: null }),
+  setIsSimulating: (isSimulating) => set({ isSimulating }),
 
   setSelectedPoint: (point) => set({ selectedPoint: point }),
+
+  clearAssets: () => set({ 
+    selectedAssetCodes: [], 
+    simulatedAssetCodes: [],
+    selectedPoint: null,
+    isSimulating: false
+  }),
+
+  clearResults: () => set({ 
+    selectedPoint: null,
+    isSimulating: false
+  }),
 }));

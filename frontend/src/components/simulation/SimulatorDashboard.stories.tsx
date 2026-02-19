@@ -8,8 +8,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 
 const Dashboard = () => {
-  const selectedAssets = ["TOPIX", "SP500"];
-  
   const mockFrontier = [
     { volatility: 0.1, expected_return: 0.05, weights: { TOPIX: 0.8, SP500: 0.2 } },
     { volatility: 0.12, expected_return: 0.07, weights: { TOPIX: 0.5, SP500: 0.5 } },
@@ -20,8 +18,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     const store = useSimulationStore.getState();
-    store.setRiskParityPoint(mockRiskParity);
-    store.setMaxSharpePoint(mockMaxSharpe);
     store.setSelectedPoint(mockRiskParity);
   }, []);
 
@@ -38,7 +34,10 @@ const Dashboard = () => {
           riskParity={mockRiskParity}
           assetsKey="TOPIX,SP500"
         />
-        <AllocationTable />
+        <AllocationTable 
+          maxSharpePoint={mockMaxSharpe}
+          riskParityPoint={mockRiskParity}
+        />
       </div>
     </div>
   );

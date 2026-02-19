@@ -1,35 +1,40 @@
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { useRiskParity } from "@/hooks/useRiskParity";
 import { useSimulationStore } from "@/store/useSimulationStore";
+import { useSimulationLifecycle } from "@/hooks/useSimulationLifecycle";
 import { fetchApi } from "@/lib/api";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React from "react";
 
 vi.mock("@/lib/api", () => ({
   fetchApi: vi.fn(),
 }));
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
+// Mock efficient frontier to avoid unneeded API calls in this test
+vi.mock("@/hooks/useEfficientFrontier", () => ({
+  useEfficientFrontier: () => ({ data: { frontier: [] }, isSuccess: true, isLoading: false })
+}));
 
 describe("Risk Parity Integration", () => {
+  let queryClient: QueryClient;
+  let wrapper: ({ children }: { children: React.ReactNode }) => JSX.Element;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    queryClient.clear();
     useSimulationStore.getState().clearAssets();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+    wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
   });
 
-  it("should fetch risk parity data and store it in the simulation store", async () => {
+  it("should fetch risk parity data and store it in the simulation store via lifecycle hook", async () => {
     const mockResponse = {
       expected_return: 0.06,
       volatility: 0.15,
@@ -37,30 +42,17 @@ describe("Risk Parity Integration", () => {
     };
     (fetchApi as any).mockResolvedValue(mockResponse);
 
-    const TestComponent = () => {
-      const selectedAssets = useSimulationStore((state) => state.selectedAssetCodes);
-      const setRiskParityPoint = useSimulationStore((state) => state.setRiskParityPoint);
-      const { data, isSuccess } = useRiskParity({ assets: selectedAssets }, selectedAssets.length >= 2);
-
-      useEffect(() => {
-        if (isSuccess && data) {
-          setRiskParityPoint(data);
-        }
-      }, [isSuccess, data, setRiskParityPoint]);
-
-      return null;
-    };
-
-    // 1. Set assets in store
+    // 1. Set assets in store and run simulation
     act(() => {
       useSimulationStore.getState().setSelectedAssets(["TOPIX", "SP500"]);
+      useSimulationStore.getState().runSimulation();
     });
 
-    const { rerender } = renderHook(() => TestComponent(), { wrapper });
+    const { result } = renderHook(() => useSimulationLifecycle(), { wrapper });
 
-    // 2. Wait for API call and store update
+    // 2. Wait for API call and store update (auto-selection logic in useSimulationLifecycle)
     await waitFor(() => {
-      expect(useSimulationStore.getState().riskParityPoint).toEqual(mockResponse);
+      expect(useSimulationStore.getState().selectedPoint).toEqual(mockResponse);
     });
 
     expect(fetchApi).toHaveBeenCalledWith("/api/simulate/risk-parity", expect.anything());

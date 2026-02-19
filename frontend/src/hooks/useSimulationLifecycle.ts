@@ -1,52 +1,46 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useEfficientFrontier } from "./useEfficientFrontier";
 import { useRiskParity } from "./useRiskParity";
 
 export function useSimulationLifecycle() {
+  // Store state
   const selectedAssets = useSimulationStore((state) => state.selectedAssetCodes);
-  const clearResults = useSimulationStore((state) => state.clearResults);
-  const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
+  const simulatedAssets = useSimulationStore((state) => state.simulatedAssetCodes);
+  const simulationId = useSimulationStore((state) => state.simulationId);
+  const isSimulating = useSimulationStore((state) => state.isSimulating);
   const selectedPoint = useSimulationStore((state) => state.selectedPoint);
   
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [lastRunId, setLastRunId] = useState(0);
+  // Store actions
+  const runSimulationStore = useSimulationStore((state) => state.runSimulation);
+  const setIsSimulating = useSimulationStore((state) => state.setIsSimulating);
+  const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
+  
   const hasAutoSelected = useRef(false);
 
-  // Clear results when assets change
-  useEffect(() => {
-    clearResults();
-    hasAutoSelected.current = false;
-    setIsSimulating(false);
-  }, [selectedAssets, clearResults]);
-
+  // Queries
+  const efRequest = useMemo(() => ({ assets: simulatedAssets, n_points: 50 }), [simulatedAssets]);
   const { 
     data: efData, 
     isSuccess: isEfSuccess, 
     isLoading: isEfLoading,
     error: efError 
-  } = useEfficientFrontier(
-    { assets: selectedAssets, n_points: 50 },
-    isSimulating
-  );
+  } = useEfficientFrontier(efRequest, simulatedAssets.length >= 2);
 
+  const rpRequest = useMemo(() => ({ assets: simulatedAssets }), [simulatedAssets]);
   const { 
     data: rpData, 
     isSuccess: isRpSuccess, 
     isLoading: isRpLoading,
     error: rpError 
-  } = useRiskParity(
-    { assets: selectedAssets },
-    isSimulating
-  );
+  } = useRiskParity(rpRequest, simulatedAssets.length >= 2);
 
   const runSimulation = useCallback(() => {
     hasAutoSelected.current = false;
-    setLastRunId(Date.now());
-    setIsSimulating(true);
-  }, []);
+    runSimulationStore();
+  }, [runSimulationStore]);
 
-  // Auto-select Risk Parity point when results arrive
+  // Auto-select Risk Parity point when NEW results arrive
   useEffect(() => {
     if (isRpSuccess && rpData && !hasAutoSelected.current) {
       setSelectedPoint(rpData);
@@ -54,22 +48,23 @@ export function useSimulationLifecycle() {
     }
   }, [isRpSuccess, rpData, setSelectedPoint]);
 
-  // Handle loading state
+  // Sync global isSimulating state with query status
   useEffect(() => {
-    if (!isEfLoading && !isRpLoading && isSimulating) {
+    const activeLoading = isEfLoading || isRpLoading;
+    if (isSimulating && !activeLoading && (isEfSuccess || efError) && (isRpSuccess || rpError)) {
       setIsSimulating(false);
     }
-  }, [isEfLoading, isRpLoading, isSimulating]);
+  }, [isEfLoading, isRpLoading, isSimulating, isEfSuccess, isRpSuccess, efError, rpError, setIsSimulating]);
 
   return {
     isSimulating: isSimulating || isEfLoading || isRpLoading,
     runSimulation,
-    lastRunId,
+    simulationId,
     efData,
     rpData,
     efError,
     rpError,
-    hasResults: rpData !== undefined && efData !== undefined,
+    hasResults: !!(rpData && efData),
     maxSharpePoint: efData?.max_sharpe || null,
     riskParityPoint: rpData || null,
     selectedPoint,

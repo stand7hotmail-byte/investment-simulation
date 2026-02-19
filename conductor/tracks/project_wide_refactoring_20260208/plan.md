@@ -16,14 +16,14 @@
 - [x] Task: Verify frontend unit test coverage meets requirement (>80%) [30fdbdb]
 - [x] Task: Conductor - User Manual Verification 'Frontend Refactoring' (Protocol in workflow.md) [30fdbdb]
 
-## Phase 3: State Management & Store Refinement
-- [ ] Task: Audit `useSimulationStore.ts` (Zustand) and `useEfficientFrontier.ts` (React Query) for responsibility overlap
-- [ ] Task: Refactor store and hooks to clearly separate UI state from server-synchronized data
-- [ ] Task: Write/Update integration tests for state transitions and synchronization
-- [ ] Task: Verify end-to-end flow with existing Playwright E2E tests
-- [ ] Task: Conductor - User Manual Verification 'State Management Refactoring' (Protocol in workflow.md)
+## Phase 3: State Management & Store Refinement [checkpoint: 3eb36af]
+- [x] Task: Audit `useSimulationStore.ts` (Zustand) and `useEfficientFrontier.ts` (React Query) for responsibility overlap [3eb36af]
+- [x] Task: Refactor store and hooks to clearly separate UI state from server-synchronized data [3eb36af]
+- [x] Task: Write/Update integration tests for state transitions and synchronization [3eb36af]
+- [x] Task: Verify end-to-end flow with existing Playwright E2E tests [3eb36af]
+- [x] Task: Conductor - User Manual Verification 'State Management Refactoring' (Protocol in workflow.md) [3eb36af]
 
-## Phase 4: Final Integration & Quality Gate Verification
-- [ ] Task: Run comprehensive test suite (Backend Pytest + Frontend Vitest + Playwright E2E)
-- [ ] Task: Perform final code review against `workflow.md` quality gates
-- [ ] Task: Conductor - User Manual Verification 'Final Verification' (Protocol in workflow.md)
+## Phase 4: Final Integration & Quality Gate Verification [checkpoint: 3eb36af]
+- [x] Task: Run comprehensive test suite (Backend Pytest + Frontend Vitest + Playwright E2E) [3eb36af]
+- [x] Task: Perform final code review against `workflow.md` quality gates [3eb36af]
+- [x] Task: Conductor - User Manual Verification 'Final Verification' (Protocol in workflow.md) [3eb36af]

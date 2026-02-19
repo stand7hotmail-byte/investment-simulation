@@ -6,18 +6,18 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Ongoing Tracks
 
-- [~] **Track: ユーザーがポートフォリオを作成・保存し、基本的な積み立て投資シミュレーションを実行できるコア機能を構築する**
-  *Link: [./tracks/create_portfolio_simulation_20260120/](./tracks/create_portfolio_simulation_20260120/)*
-
 ---
 
 ## ✅ Completed Tracks
 
+- [x] **Track: Project-Wide Refactoring for Separation of Concerns**
+  *Link: [./tracks/project_wide_refactoring_20260208/](./tracks/project_wide_refactoring_20260208/)*
+
+- [x] **Track: ユーザーがポートフォリオを作成・保存し、基本的な積み立て投資シミュレーションを実行できるコア機能を構築する**
+  *Link: [./tracks/create_portfolio_simulation_20260120/](./tracks/create_portfolio_simulation_20260120/)*
+
 - [x] **Track: 過去資産データ収集・活用機能の実装**
   *Link: [./archive/collect_historical_asset_data_20260211/](./archive/collect_historical_asset_data_20260211/)*
-
-- [x] **Track: Project-Wide Refactoring for Separation of Concerns**
-  *Link: [./archive/project_wide_refactoring_20260208/](./archive/project_wide_refactoring_20260208/)*
 
 - [x] **Track: リスクパリティ戦略の追加実装**
   *Link: [./archive/implement_risk_parity_20260202/](./archive/implement_risk_parity_20260202/)*

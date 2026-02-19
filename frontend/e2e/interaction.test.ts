@@ -5,8 +5,8 @@ test.describe('Chart Interaction', () => {
     await page.goto('/simulation/efficient-frontier');
     
     // Select assets and run simulation to populate the chart
-    await page.click('text=東証株価指数');
-    await page.click('text=S&P 500');
+    await page.click('text=S&P 500 ETF (SPY)');
+    await page.click('text=Nasdaq 100 ETF (QQQ)');
     await page.click('button:has-text("Run Simulation")');
     
     // Wait for the table to appear (meaning simulation is done)
