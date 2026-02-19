@@ -11,7 +11,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## ✅ Completed Tracks
 
 - [x] **Track: Project-Wide Refactoring for Separation of Concerns**
-  *Link: [./tracks/project_wide_refactoring_20260208/](./tracks/project_wide_refactoring_20260208/)*
+  *Link: [./archive/project_wide_refactoring_20260208/](./archive/project_wide_refactoring_20260208/)*
 
 - [x] **Track: ユーザーがポートフォリオを作成・保存し、基本的な積み立て投資シミュレーションを実行できるコア機能を構築する**
   *Link: [./tracks/create_portfolio_simulation_20260120/](./tracks/create_portfolio_simulation_20260120/)*
