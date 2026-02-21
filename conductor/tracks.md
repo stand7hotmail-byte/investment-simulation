@@ -6,7 +6,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Ongoing Tracks
 
-- [~] **Track: 多くの資産の過去データを利用したい。**
+- [x] **Track: 多くの資産の過去データを利用したい。**
   *Link: [./tracks/expand_asset_universe_20260219/](./tracks/expand_asset_universe_20260219/)*
 
 ---
