@@ -16,6 +16,10 @@ class TestCollectHistoricalData(unittest.TestCase):
         Base.metadata.create_all(bind=self.engine)
         self.db = self.SessionLocal()
 
+        # Clear existing assets to ensure a clean state for the test
+        self.db.query(AssetData).delete()
+        self.db.commit()
+
         # Add some dummy asset data for testing
         dummy_assets = [
             AssetData(asset_code="TEST1", name="Test Asset 1", asset_class="Stock", expected_return=0.05, volatility=0.10),
@@ -28,8 +32,12 @@ class TestCollectHistoricalData(unittest.TestCase):
         self.db.close()
         Base.metadata.drop_all(bind=self.engine)
 
+    @patch('scripts.collect_historical_data.SessionLocal')
     @patch('scripts.collect_historical_data.fetch_historical_data')
-    def test_collect_historical_data_script(self, mock_fetch_historical_data):
+    def test_collect_historical_data_script(self, mock_fetch_historical_data, mock_session_local):
+        # Mock SessionLocal to return our test db session
+        mock_session_local.return_value = self.db
+        
         # Mock fetch_historical_data to return some sample data
         mock_fetch_historical_data.return_value = [
             {"date": "2023-01-01", "price": 100.0},
