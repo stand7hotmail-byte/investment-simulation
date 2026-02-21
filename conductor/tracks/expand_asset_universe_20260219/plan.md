@@ -14,7 +14,7 @@
     - [ ] データベース上で、`historical_prices` が正しく格納されているかクエリで確認。
 - [x] **Task: Conductor - User Manual Verification 'バックエンド資産データ拡充' (Protocol in workflow.md)**
 
-## Phase 2: フロントエンド - 資産選択UIのフィルタリング機能
+## Phase 2: フロントエンド - 資産選択UI의 フィルタリング機能 [checkpoint: 043972b]
 
 - [x] **Task: アセットクラス・フィルタリングのロジック実装**
     - [x] `frontend/src/hooks/useAssets.ts` または関連ストアを修正し、利用可能なアセットクラスのユニークリストを取得できるようにする。
@@ -23,7 +23,7 @@
     - [x] 資産選択リストの上部に、アセットクラスを選択するためのタブ（Tabs）またはボタン・グループを追加。
     - [x] フィルタ選択時にリストが即座に更新されることを確認。
     - [x] ユニットテストを作成し、各フィルタが正しく動作することを検証。
-- [ ] **Task: Conductor - User Manual Verification 'フロントエンド・フィルタリングUI' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'フロントエンド・フィルタリングUI' (Protocol in workflow.md)**
 
 ## Phase 3: 最終統合とパフォーマンス確認
 
