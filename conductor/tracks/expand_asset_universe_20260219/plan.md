@@ -27,8 +27,11 @@
 
 ## Phase 3: 最終統合とパフォーマンス確認
 
-- [ ] **Task: 大量データ表示の最適化確認**
-    - [ ] 資産数が100件を超えた場合でも、スクロールやフィルタリングがスムーズに行えるか確認（必要に応じて React.memo 等を適用）。
-- [ ] **Task: 全体的な動作確認 (End-to-End)**
-    - [ ] 新規追加された資産（例：BTCやGLD）を選択し、効率的フロンティアや積立シミュレーションが正常に動作し、チャートが表示されることを確認。
-- [ ] **Task: Conductor - User Manual Verification '全体統合検証' (Protocol in workflow.md)**
+- [x] **Task: 大量データ表示の最適化確認** [d07bdfd]
+    - [x] 資産数が100件を超えた場合でも、スクロールやフィルタリングがスムーズに行えるか確認（必要に応じて React.memo 等を適用）。
+- [x] **Task: 全体的な動作確認 (End-to-End)** [d07bdfd]
+    - [x] 新規追加された資産（例：BTCやGLD）を選択し、効率的フロンティアや積立シミュレーションが正常に動作し、チャートが表示されることを確認。
+- [x] **Task: Conductor - User Manual Verification '全体統合検証' (Protocol in workflow.md)**
+
+## Phase: Review Fixes
+- [x] **Task: Apply review suggestions (fix failing test)** af96185
