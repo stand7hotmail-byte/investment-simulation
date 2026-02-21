@@ -9,12 +9,14 @@ test.describe('Efficient Frontier Simulation', () => {
     // 1. Check initial state
     await expect(page.locator('text=No results yet')).toBeVisible();
 
-    // 2. Select assets (using labels)
-    // Note: Using actual names from seed data
-    await page.click('text=S&P 500 ETF (SPY)');
-    await page.click('text=Nasdaq 100 ETF (QQQ)');
+    // 2. Wait for assets to load (look for the "All" filter button or a specific asset)
+    await expect(page.locator('text=All (')).toBeVisible({ timeout: 10000 });
 
-    // 3. Click Run Simulation
+    // 3. Select assets using checkbox IDs
+    await page.check('#asset-SPY');
+    await page.check('#asset-QQQ');
+
+    // 4. Click Run Simulation
     const runButton = page.locator('button:has-text("Run Simulation")');
     await expect(runButton).toBeEnabled();
     await runButton.click();

@@ -67,7 +67,7 @@ describe("AssetSelector", () => {
     expect(screen.queryByText("Bitcoin")).not.toBeInTheDocument();
 
     // Click 'All' filter button
-    const allFilter = screen.getByRole("button", { name: /^All$/i });
+    const allFilter = screen.getByRole("button", { name: /All/i });
     fireEvent.click(allFilter);
 
     // All assets should be shown again

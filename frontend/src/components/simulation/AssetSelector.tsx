@@ -9,6 +9,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import React from "react";
+
+interface AssetItemProps {
+  asset: {
+    asset_code: string;
+    name: string;
+  };
+  isSelected: boolean;
+  onToggle: (code: string) => void;
+}
+
+const AssetItem = React.memo(({ asset, isSelected, onToggle }: AssetItemProps) => {
+  return (
+    <div className="flex items-center space-x-3 group py-0.5">
+      <Checkbox
+        id={`asset-${asset.asset_code}`}
+        checked={isSelected}
+        onCheckedChange={() => onToggle(asset.asset_code)}
+        className="border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+      />
+      <label
+        htmlFor={`asset-${asset.asset_code}`}
+        className="text-sm font-medium leading-none text-slate-600 group-hover:text-slate-900 cursor-pointer transition-colors"
+      >
+        {asset.name}
+        <span className="text-[10px] text-slate-400 ml-1.5 font-normal uppercase tracking-wider">
+          {asset.asset_code}
+        </span>
+      </label>
+    </div>
+  );
+});
+
+AssetItem.displayName = "AssetItem";
 
 export function AssetSelector() {
   const { data: assets, isLoading, error } = useAssets();
@@ -87,23 +121,12 @@ export function AssetSelector() {
               ))
             ) : filteredAssets.length > 0 ? (
               filteredAssets.map((asset) => (
-                <div key={asset.asset_code} className="flex items-center space-x-3 group py-0.5">
-                  <Checkbox
-                    id={`asset-${asset.asset_code}`}
-                    checked={selectedAssetCodes.includes(asset.asset_code)}
-                    onCheckedChange={() => toggleAsset(asset.asset_code)}
-                    className="border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <label
-                    htmlFor={`asset-${asset.asset_code}`}
-                    className="text-sm font-medium leading-none text-slate-600 group-hover:text-slate-900 cursor-pointer transition-colors"
-                  >
-                    {asset.name}
-                    <span className="text-[10px] text-slate-400 ml-1.5 font-normal uppercase tracking-wider">
-                      {asset.asset_code}
-                    </span>
-                  </label>
-                </div>
+                <AssetItem
+                  key={asset.asset_code}
+                  asset={asset}
+                  isSelected={selectedAssetCodes.includes(asset.asset_code)}
+                  onToggle={toggleAsset}
+                />
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-slate-400">

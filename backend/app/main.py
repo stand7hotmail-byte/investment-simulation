@@ -103,7 +103,7 @@ def delete_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUI
     return {"message": "Allocation deleted successfully"}
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
-def read_assets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
     assets = crud.get_assets(db, skip=skip, limit=limit)
     return assets
 

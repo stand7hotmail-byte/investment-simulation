@@ -4,9 +4,12 @@ test.describe('Chart Interaction', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/simulation/efficient-frontier');
     
+    // Wait for assets to load
+    await expect(page.locator('text=All (')).toBeVisible({ timeout: 10000 });
+
     // Select assets and run simulation to populate the chart
-    await page.click('text=S&P 500 ETF (SPY)');
-    await page.click('text=Nasdaq 100 ETF (QQQ)');
+    await page.check('#asset-SPY');
+    await page.check('#asset-QQQ');
     await page.click('button:has-text("Run Simulation")');
     
     // Wait for the table to appear (meaning simulation is done)

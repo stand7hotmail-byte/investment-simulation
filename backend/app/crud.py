@@ -109,7 +109,7 @@ def delete_portfolio_allocation(db: Session, portfolio_id: uuid.UUID, allocation
         return True
     return False
 
-def get_assets(db: Session, skip: int = 0, limit: int = 100) -> List[models.AssetData]:
+def get_assets(db: Session, skip: int = 0, limit: int = 1000) -> List[models.AssetData]:
     return db.query(models.AssetData).offset(skip).limit(limit).all()
 
 def get_asset_by_code(db: Session, asset_code: str) -> Optional[models.AssetData]:
