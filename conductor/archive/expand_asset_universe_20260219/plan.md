@@ -1,0 +1,37 @@
+# Implementation Plan: 資産ユニバースの拡大とフィルタリング機能の実装
+
+このプランは、システムで扱える資産の種類を大幅に増やし、それをユーザーが効率的に利用するための基盤構築手順を定義します。
+
+## Phase 1: バックエンド - 資産マスタの拡充とデータ収集 [checkpoint: d062ae0]
+
+- [x] **Task: シードデータ・リストの定義と拡張**
+    - [ ] `backend/app/seed_assets.py` を読み込み、現在のリストを確認。
+    - [ ] 仕様書に基づき、ETF、暗号資産、コモディティ、リートのティッカーシンボルを含む詳細な拡張リスト（アセットクラス情報付き）を作成。
+    - [ ] 拡張リストをデータベースに投入するスクリプトを更新/実行。
+- [x] **Task: 過去データ一括収集の実行と検証**
+    - [ ] `backend/scripts/collect_historical_data.py` を使用して、新規追加された全資産の過去データ（最大20年分）を取得。
+    - [ ] データ取得中にエラーが発生した資産を特定し、ティッカーの修正や対象外への変更を行う。
+    - [ ] データベース上で、`historical_prices` が正しく格納されているかクエリで確認。
+- [x] **Task: Conductor - User Manual Verification 'バックエンド資産データ拡充' (Protocol in workflow.md)**
+
+## Phase 2: フロントエンド - 資産選択UI의 フィルタリング機能 [checkpoint: 043972b]
+
+- [x] **Task: アセットクラス・フィルタリングのロジック実装**
+    - [x] `frontend/src/hooks/useAssets.ts` または関連ストアを修正し、利用可能なアセットクラスのユニークリストを取得できるようにする。
+    - [x] `AssetSelector.tsx` 内で、選択されたフィルタ（例: 「すべて」「株式」「暗号資産」）に基づきリストを絞り込むフィルタリング関数を作成。
+- [x] **Task: UIコンポーネントの作成と統合**
+    - [x] 資産選択リストの上部に、アセットクラスを選択するためのタブ（Tabs）またはボタン・グループを追加。
+    - [x] フィルタ選択時にリストが即座に更新されることを確認。
+    - [x] ユニットテストを作成し、各フィルタが正しく動作することを検証。
+- [x] **Task: Conductor - User Manual Verification 'フロントエンド・フィルタリングUI' (Protocol in workflow.md)**
+
+## Phase 3: 最終統合とパフォーマンス確認
+
+- [x] **Task: 大量データ表示の最適化確認** [d07bdfd]
+    - [x] 資産数が100件を超えた場合でも、スクロールやフィルタリングがスムーズに行えるか確認（必要に応じて React.memo 等を適用）。
+- [x] **Task: 全体的な動作確認 (End-to-End)** [d07bdfd]
+    - [x] 新規追加された資産（例：BTCやGLD）を選択し、効率的フロンティアや積立シミュレーションが正常に動作し、チャートが表示されることを確認。
+- [x] **Task: Conductor - User Manual Verification '全体統合検証' (Protocol in workflow.md)**
+
+## Phase: Review Fixes
+- [x] **Task: Apply review suggestions (fix failing test)** af96185
