@@ -474,6 +474,7 @@ INSERT INTO asset_data (asset_code, name, asset_class, expected_return, volatili
 |--------------|---------|------|
 | `/api/assets` | GET | 利用可能資産一覧取得 |
 | `/api/assets/{code}` | GET | 資産詳細取得 |
+| `/api/asset-classes` | GET | 利用可能なアセットクラス（株式、債券等）の一覧取得 |
 
 ### リクエスト/レスポンス例
 
