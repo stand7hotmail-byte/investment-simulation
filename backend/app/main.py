@@ -157,8 +157,103 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     
     return result
 
+@app.post("/api/simulate/custom-portfolio", response_model=schemas.PortfolioPointResponse)
+def simulate_custom_portfolio(request: schemas.CustomPortfolioRequest, db: Session = Depends(get_db)):
+    # 1. Validate weights and sum to 1
+    total_weight = sum(request.weights.values())
+    if not np.isclose(total_weight, 1.0, atol=1e-4): # Allow small floating point errors
+        raise HTTPException(status_code=400, detail="Total weights must sum to 1 (or 100%)")
+
+    # 2. Fetch asset data
+    assets_data = []
+    for code in request.assets:
+        asset = crud.get_asset_by_code(db, code)
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        assets_data.append(asset)
+    
+    if len(assets_data) < 1: # Custom portfolio can have a single asset
+        raise HTTPException(status_code=400, detail="At least one asset is required for custom portfolio calculation")
+
+    # 3. Prepare simulation inputs
+    returns_series, volatilities_series, corr_matrix_df = simulation.prepare_simulation_inputs(assets_data)
+    cov_matrix = simulation.build_covariance_matrix(volatilities_series, corr_matrix_df.tolist())
+
+    # Ensure weights are in the correct order as assets_data
+    ordered_weights = np.array([request.weights[code] for code in request.assets])
+
+    # 4. Calculate portfolio stats
+    expected_return, volatility = simulation.calculate_portfolio_stats(
+        returns_series,
+        cov_matrix,
+        ordered_weights
+    )
+
+    return {
+        "expected_return": expected_return,
+        "volatility": volatility,
+        "weights": request.weights
+    }
+
+@app.post("/api/simulate/portfolio-points", response_model=List[schemas.PortfolioPointResponse])
+def simulate_portfolio_points(request: schemas.PortfolioPointsRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    results: List[schemas.PortfolioPointResponse] = []
+
+    for portfolio_id in request.portfolio_ids:
+        db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
+        if not db_portfolio:
+            raise HTTPException(status_code=404, detail=f"Portfolio {portfolio_id} not found or not owned by user")
+        
+        allocations = crud.get_portfolio_allocations(db, portfolio_id=portfolio_id, user_id=user_id)
+        if not allocations:
+            # If no allocations, return a default point or skip
+            results.append(schemas.PortfolioPointResponse(
+                expected_return=0.0,
+                volatility=0.0,
+                weights={}
+            ))
+            continue
+        
+        asset_codes = [alloc.asset_code for alloc in allocations]
+        # Weights need to be normalized if they are not already summing to 1
+        weights = np.array([float(alloc.weight) for alloc in allocations])
+        # Normalize weights to sum to 1
+        weights = weights / np.sum(weights)
+
+        assets_data = []
+        for code in asset_codes:
+            asset = crud.get_asset_by_code(db, code)
+            if not asset:
+                raise HTTPException(status_code=404, detail=f"Asset {code} in portfolio {portfolio_id} not found")
+            assets_data.append(asset)
+        
+        if len(assets_data) < 1:
+            results.append(schemas.PortfolioPointResponse(
+                expected_return=0.0,
+                volatility=0.0,
+                weights={}
+            ))
+            continue
+
+        returns_series, volatilities_series, corr_matrix_df = simulation.prepare_simulation_inputs(assets_data)
+        cov_matrix = simulation.build_covariance_matrix(volatilities_series, corr_matrix_df.tolist())
+
+        expected_return, volatility = simulation.calculate_portfolio_stats(
+            returns_series,
+            cov_matrix,
+            weights
+        )
+        
+        results.append(schemas.PortfolioPointResponse(
+            expected_return=expected_return,
+            volatility=volatility,
+            weights={asset_codes[i]: float(weights[i]) for i in range(len(asset_codes))}
+        ))
+        
+    return results
+
 @app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
-def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db)):
+def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
     # キャッシュのチェック (Side effect - separate)
     parameters = request.model_dump()
     cached_result = crud.get_simulation_result(db, "risk_parity", parameters)
@@ -202,7 +297,7 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
     }
 
     # キャッシュに保存 (Side effect)
-    crud.create_simulation_result(db, "risk_parity", parameters, result)
+    crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
     
     return result
 
@@ -289,6 +384,57 @@ def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: S
     )
     
     return result
+
+@app.post("/api/simulation-results", response_model=schemas.SimulationResult, status_code=status.HTTP_201_CREATED)
+def create_simulation_result_endpoint(
+    simulation_result: schemas.SimulationResultCreate,
+    db: Session = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id)
+):
+    return crud.create_simulation_result(
+        db=db,
+        user_id=user_id,
+        simulation_type=simulation_result.simulation_type,
+        parameters=simulation_result.parameters,
+        results=simulation_result.results,
+        portfolio_id=simulation_result.portfolio_id
+    )
+
+@app.get("/api/simulation-results", response_model=List[schemas.SimulationResult])
+def read_simulation_results_endpoint(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id)
+):
+    return crud.get_simulation_results(db=db, user_id=user_id, skip=skip, limit=limit)
+
+@app.get("/api/simulation-results/{result_id}", response_model=schemas.SimulationResult)
+def read_simulation_result_endpoint(
+    result_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id)
+):
+    db_result = crud.get_simulation_result_by_id(db=db, result_id=result_id, user_id=user_id)
+    if db_result is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation result not found or not owned by user")
+    return db_result
+
+@app.delete("/api/simulation-results/{result_id}", status_code=status.HTTP_200_OK)
+def delete_simulation_result_endpoint(
+    result_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    user_id: uuid.UUID = Depends(get_current_user_id)
+):
+    if not crud.delete_simulation_result(db=db, result_id=result_id, user_id=user_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation result not found or not owned by user")
+    return {"message": "Simulation result deleted successfully"}
+
+
+@app.get("/api/asset-classes", response_model=schemas.AssetClassesResponse)
+def get_asset_classes_endpoint(db: Session = Depends(get_db)):
+    asset_classes = crud.get_asset_classes(db)
+    return {"asset_classes": asset_classes}
 
 @app.get("/")
 def read_root():

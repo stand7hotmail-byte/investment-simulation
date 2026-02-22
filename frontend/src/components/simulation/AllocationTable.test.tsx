@@ -13,9 +13,13 @@ describe("AllocationTable", () => {
   });
 
   it("renders nothing when no point is selected", () => {
-    (useSimulationStore as any).mockReturnValue(null);
+    (useSimulationStore as any).mockImplementation((selector) => selector({
+      selectedPoint: null,
+      setSelectedPoint: vi.fn(),
+      selectedComparisonPortfolioIds: [],
+    }));
     (useAssets as any).mockReturnValue({ data: [] });
-    const { container } = render(<AllocationTable />);
+    const { container } = render(<AllocationTable comparisonPortfolioPoints={[]} />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -30,10 +34,14 @@ describe("AllocationTable", () => {
       { asset_code: "SP500", name: "S&P 500" },
     ];
 
-    (useSimulationStore as any).mockReturnValue(mockPoint);
+    (useSimulationStore as any).mockImplementation((selector) => selector({
+      selectedPoint: mockPoint,
+      setSelectedPoint: vi.fn(),
+      selectedComparisonPortfolioIds: [],
+    }));
     (useAssets as any).mockReturnValue({ data: mockAssets });
 
-    render(<AllocationTable />);
+    render(<AllocationTable comparisonPortfolioPoints={[]} riskParityPoint={mockPoint} maxSharpePoint={mockPoint} />);
     
     expect(screen.getByText("Asset Allocation Details")).toBeInTheDocument();
     expect(screen.getByText("TOPIX")).toBeInTheDocument();

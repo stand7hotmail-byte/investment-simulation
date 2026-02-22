@@ -16,6 +16,7 @@ const navigation = [
   { name: "Efficient Frontier", href: "/simulation/efficient-frontier", icon: TrendingUp },
   { name: "Accumulation Sim", href: "/simulation/accumulation", icon: LineChart },
   { name: "Portfolios", href: "/portfolios", icon: Wallet },
+  { name: "Simulation History", href: "/simulation/history", icon: LineChart }, // New link
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

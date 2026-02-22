@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useAssets } from "@/hooks/useAssets";
+import { useAssetClasses } from "@/hooks/useAssetClasses"; // New import
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CircleX } from "lucide-react"; // New import for Clear button
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,22 +48,24 @@ AssetItem.displayName = "AssetItem";
 
 export function AssetSelector() {
   const { data: assets, isLoading, error } = useAssets();
-  const { selectedAssetCodes, toggleAsset } = useSimulationStore();
-  const [activeFilter, setActiveFilter] = useState<string>("All");
-
-  // Extract unique asset classes for filtering
-  const assetClasses = useMemo(() => {
-    if (!assets || assets.length === 0) return ["All"];
-    const classes = new Set(assets.map((a) => a.asset_class).filter(Boolean) as string[]);
-    return ["All", ...Array.from(classes).sort()];
-  }, [assets]);
+  const { data: availableAssetClasses, isLoading: isLoadingAssetClasses, error: errorAssetClasses } = useAssetClasses(); // Use new hook
+  const { 
+    selectedAssetCodes, 
+    toggleAsset, 
+    selectedAssetClasses, 
+    toggleAssetClass,
+    clearAssetClasses,
+    setSelectedAssets // For clearing asset selections when filtering
+  } = useSimulationStore();
 
   // Filter assets based on active filter
   const filteredAssets = useMemo(() => {
     if (!assets) return [];
-    if (activeFilter === "All") return assets;
-    return assets.filter((a) => a.asset_class === activeFilter);
-  }, [assets, activeFilter]);
+    if (selectedAssetClasses.length === 0) return assets; // No filter selected, show all
+    return assets.filter((asset) => 
+      asset.asset_class && selectedAssetClasses.includes(asset.asset_class)
+    );
+  }, [assets, selectedAssetClasses]);
 
   if (error) {
     return (
@@ -88,25 +92,43 @@ export function AssetSelector() {
         <CardTitle className="text-lg font-semibold text-slate-800">Select Assets</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0">
-        {/* Filter Buttons */}
+        {/* Filter Checkboxes for Asset Classes */}
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {assetClasses.map((cls) => (
-            <Button
-              key={cls}
-              variant="outline"
-              size="xs"
-              className={cn(
-                "px-2.5 py-1 h-7 text-xs rounded-full transition-all border",
-                activeFilter === cls 
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm" 
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+          {isLoadingAssetClasses ? (
+            <Skeleton className="h-7 w-full max-w-[200px]" />
+          ) : (
+            <>
+              {availableAssetClasses?.map((cls) => (
+                <Button
+                  key={cls}
+                  variant="outline"
+                  size="xs"
+                  className={cn(
+                    "px-2.5 py-1 h-7 text-xs rounded-full transition-all border",
+                    selectedAssetClasses.includes(cls)
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                  )}
+                  onClick={() => toggleAssetClass(cls)}
+                >
+                  {cls}
+                </Button>
+              ))}
+              {selectedAssetClasses.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  className="px-2.5 py-1 h-7 text-xs rounded-full transition-all text-slate-500 hover:text-slate-700"
+                  onClick={() => {
+                    clearAssetClasses();
+                    setSelectedAssets([]); // Clear asset selection when clearing filters
+                  }}
+                >
+                  <CircleX className="h-3 w-3 mr-1" /> Clear Filters
+                </Button>
               )}
-              onClick={() => setActiveFilter(cls)}
-            >
-              {cls}
-              {cls === "All" && assets && ` (${assets.length})`}
-            </Button>
-          ))}
+            </>
+          )}
         </div>
 
         <ScrollArea className="flex-1 pr-4 -mr-4">

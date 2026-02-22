@@ -51,3 +51,18 @@ export interface HistoricalDataResponse {
   asset_code: string;
   historical_prices: HistoricalPricePoint[];
 }
+
+export interface CustomPortfolioRequest {
+  assets: string[];
+  weights: Record<string, number>;
+}
+
+export interface PortfolioPointResponse {
+  expected_return: number;
+  volatility: number;
+  weights: Record<string, number>;
+}
+
+export interface AssetClassesResponse {
+  asset_classes: string[];
+}

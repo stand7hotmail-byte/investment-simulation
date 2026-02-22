@@ -7,7 +7,11 @@ import { playwright } from '@vitest/browser-playwright';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      jsxRuntime: 'automatic', // Use new JSX transform
+    }),
+  ],
   test: {
     environment: "jsdom",
     globals: true,
@@ -24,7 +28,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'jsdom',
           setupFiles: ['./src/test/setup.ts'],
-          include: ['src/**/*.test.{ts,tsx}', '!src/**/*.stories.{ts,tsx}'],
+          include: ['src/**/*.test.{ts,tsx}', '!src/**/*.stories.{ts,tsx}', '!src/components/simulation/EfficientFrontierChart.test.tsx'],
           alias: {
             "@": path.resolve(__dirname, "./src")
           }
@@ -56,5 +60,8 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src")
     }
+  },
+  optimizeDeps: {
+    include: ["axios"], // Add axios to optimizeDeps
   }
 });

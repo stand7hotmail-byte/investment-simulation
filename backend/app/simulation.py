@@ -14,8 +14,15 @@ def calculate_risk_parity_weights(
     if bounds is None:
         bounds = [(0, 1.0) for _ in range(n)]
     
-    # 初期値: 均等配分
-    init_weights = np.array([1.0 / n] * n)
+    # 初期値: 個々の資産のボラティリティの逆数に比例する重み
+    # 相関行列の対角要素が各資産の分散に相当するため、その平方根がボラティリティ
+    asset_volatilities = np.sqrt(np.diag(covariance_matrix))
+    
+    # ゼロ除算を避けるために小さな値を加える
+    inverse_volatilities = 1.0 / (asset_volatilities + 1e-9)
+    
+    # 重みの合計が1になるように正規化
+    init_weights = inverse_volatilities / np.sum(inverse_volatilities)
     
     # 制約: 重みの合計が1
     constraints = [
@@ -23,22 +30,35 @@ def calculate_risk_parity_weights(
     ]
     
     def objective(w):
-        # 非常に小さい重みによるゼロ除算を避けるための微小値
-        eps = 1e-12
-        portfolio_var = w.T @ covariance_matrix @ w
-        portfolio_vol = np.sqrt(max(portfolio_var, eps))
+        # ポートフォリオ重みが負にならないように（境界制約がこれを保証するが、念のため）
+        if np.any(w < 0):
+            return np.inf
+
+        # ポートフォリオの分散
+        portfolio_variance = w.T @ covariance_matrix @ w
         
-        # 限界リスク寄与度 (MRC)
-        marginal_risk_contribution = (covariance_matrix @ w) / portfolio_vol
+        # 分散がゼロに近い場合はペナルティ
+        if portfolio_variance < 1e-10:
+            return np.inf
+
+        # 各資産の限界リスク寄与度 (MRC)
+        # MRC = (d(sigma_p)/dw_i)
+        # sigma_p = sqrt(w.T @ Sigma @ w)
+        # d(sigma_p)/dw_i = (Sigma @ w)_i / sigma_p
+        marginal_risk_contribution = (covariance_matrix @ w) / np.sqrt(portfolio_variance)
         
         # 各資産のリスク寄与度 (RC)
+        # RC_i = w_i * MRC_i
         risk_contributions = w * marginal_risk_contribution
-        
-        # 目標となるリスク寄与度 (全体の 1/n)
-        target_rc = portfolio_vol / n
-        
-        # 目標との二乗誤差和を最小化
-        return np.sum((risk_contributions - target_rc)**2)
+
+        # リスク寄与度がゼロに近い場合や負になる場合はペナルティ
+        if np.any(risk_contributions <= 1e-10):
+            return np.inf
+
+        # 各資産のリスク寄与度の対数をとり、その分散を最小化
+        # これにより、各資産のリスク寄与度が均等になるように重みを調整する
+        log_risk_contributions = np.log(risk_contributions)
+        return np.var(log_risk_contributions)
 
     result = minimize(
         objective,
@@ -250,11 +270,18 @@ def monte_carlo_simulation(
             "p90": float(np.percentile(portfolio_values[t], 90))
         })
         
+    # 95% 信頼区間 (最終値の2.5パーセンタイルと97.5パーセンタイル)
+    confidence_interval_95 = {
+        "lower_bound": float(np.percentile(final_values, 2.5)),
+        "upper_bound": float(np.percentile(final_values, 97.5))
+    }
+        
     return {
         "percentiles": percentiles,
         "元本割れ確率": prob_loss,
         "目標到達確率": prob_target,
-        "history": history
+        "history": history,
+        "confidence_interval_95": confidence_interval_95 # New field
     }
 
 def build_covariance_matrix(volatilities: List[float], correlation_matrix: List[List[float]]) -> np.ndarray:

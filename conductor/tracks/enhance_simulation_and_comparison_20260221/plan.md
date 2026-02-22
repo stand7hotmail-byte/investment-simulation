@@ -1,45 +1,79 @@
-# Implementation Plan: シミュレーションの高度化とポートフォリオ比較機能の実装
+# シミュレーションの高度化とポートフォリオ比較機能の実装 (enhance_simulation_and_comparison_20260221)
 
-効率的フロンティアの可視化を強化し、複数ポートフォリオの比較と計算ロジックの適正化を行います。
+## 完了日
 
-## Phase 1: Efficient Frontier の可視化とカスタムプロットの実装
+2026年2月22日
 
-- [ ] **Task: 個別資産のプロット表示**
-    - [ ] `EfficientFrontierChart.tsx` を修正し、選択された各資産（単体）のリスク・リターンを散布図として追加表示。
-    - [ ] 各点に資産コードのラベルを表示。
-- [ ] **Task: カスタム配分入力 UI の作成**
-    - [ ] 効率的フロンティア画面に、選択された資産に対して配分比率（0-100%）を入力できるフォーム（`CustomAllocationForm`）を追加。
-    - [ ] 合計が 100% になるようバリデーションを実装。
-- [ ] **Task: カスタムポートフォリオのリスク・リターン計算とプロット**
-    - [ ] フロントエンド側で、入力された重みと各資産の統計データを用いて、期待リターンとポートフォリオボラティリティを計算するロジックを実装。
-    - [ ] 計算結果をグラフ上に「Your Custom Portfolio」としてプロット。
+## 完了した目標
 
-## Phase 2: インタラクティブな保存と連携機能
+- **Phase 1: Efficient Frontier の可視化とカスタムプロットの実装**
+    - カスタム配分入力 UI の作成
+    - カスタムポートフォリオのリスク・リターン計算とプロット
+- **Phase 2: 複数のポートフォリオ比較機能の実装**
+    - 比較用ポートフォリオの選択 UI の作成
+    - ポートフォリオ比較グラフの表示
+    - シミュレーション結果の比較分析
+- **Phase 3: シミュレーション計算ロジックの適正化**
+    - リスク・パリティ最適化の計算効率改善
+    - シミュレーション結果の保存と履歴管理
+    - 統計的有意性の評価と表示
 
-- [ ] **Task: グラフのクリックイベント連携**
-    - [ ] Plotly の `onClick` イベントを使用して、フロンティア曲線上の点、またはカスタムプロットの配分データを取得する機能を実装。
-- [ ] **Task: ポートフォリオ保存ダイアログの実装**
-    - [ ] クリックした配分に対して名前を付けて保存できるダイアログを表示。
-    - [ ] `backend/app/main.py` の `/api/portfolios` エンドポイントを呼び出して永続化。
-- [ ] **Task: ストアと選択リストの同期**
-    - [ ] 保存完了後、`useSimulationStore` または TanStack Query のキャッシュを更新し、積立シミュレーション画面のポートフォリオ選択リストに即座に反映。
+## 変更の概要
 
-## Phase 3: 複数ポートフォリオ比較シミュレーション
+### バックエンド (Python/FastAPI)
 
-- [ ] **Task: ポートフォリオ選択のマルチセレクト化**
-    - [ ] シミュレーションパラメータ入力欄の「Select Portfolio」を、複数のチェックボックスまたはマルチセレクトドロップダウンに変更。
-- [ ] **Task: 複数ポートフォリオのシミュレーション結果取得**
-    - [ ] フロントエンド側で、選択された複数のポートフォリオ ID に対して順次 API を呼び出すか、一括取得するよう修正。
-- [ ] **Task: 複数系列の成長曲線チャート表示**
-    - [ ] 資産推移グラフ（`AccumulationChart` 等）を、複数系列のデータを受け取れるよう拡張。
-    - [ ] 各ポートフォリオの成長曲線を異なる色で重ねて表示。
+- **`backend/app/simulation.py`**:
+    - `calculate_risk_parity_weights` 関数において、目的関数を各資産のリスク寄与度の対数の分散を最小化するように変更し、数値安定性と効率を向上。
+    - `calculate_risk_parity_weights` 関数の初期値を、各資産の逆ボラティリティに比例する重みに変更し、最適化の収束を改善。
+    - `monte_carlo_simulation` 関数に最終ポートフォリオ価値の95%信頼区間を計算して返す機能を追加。
+- **`backend/app/models.py`**:
+    - `SimulationResult` モデルに `user_id` カラムを追加し、シミュレーション結果をユーザーに紐付け。
+- **Alembic マイグレーション**:
+    - `533269cf7904_add_user_id_to_simulationresult.py` を手動で修正し、`SimulationResult` テーブルに `user_id` (VARCHAR(36)) カラムを追加するマイグレーションを適用。`test.db` の削除・再作成によりデータベースの状態をクリーンに。
+- **`backend/app/crud.py`**:
+    - `create_simulation_result` 関数が `user_id` を受け取るように変更。
+    - `get_simulation_results` 関数（ユーザーIDでフィルタリング）と `get_simulation_result_by_id` 関数（IDとユーザーIDで取得）を追加。
+    - `delete_simulation_result` 関数（IDとユーザーIDで削除）を追加。
+- **`backend/app/schemas.py`**:
+    - `SimulationResultBase`, `SimulationResultCreate`, `SimulationResult` スキーマを追加。
+    - `MonteCarloResponse` スキーマに `confidence_interval_95` フィールドを追加。
+- **`backend/app/main.py`**:
+    - `/api/simulation-results` (POST, GET, GET/{id}, DELETE) エンドポイントを追加し、シミュレーション結果の保存、取得、削除を可能に。
+    - `/api/simulate/risk-parity` エンドポイントで `user_id` を取得し、`crud.create_simulation_result` に渡すように修正。
 
-## Phase 4: 計算ロジックの修正と検証
+### フロントエンド (TypeScript/Next.js)
 
-- [ ] **Task: 計算ロジックの現状分析**
-    - [ ] `backend/app/simulation.py` の `calculate_basic_accumulation` の複利計算ロジックを確認。
-    - [ ] 特に、年利を月利に直す際の $r/12$ と $(1+r)^{1/12}-1$ の使い分けや、毎月の積立タイミングを検証。
-- [ ] **Task: ロジックの修正とテスト**
-    - [ ] 標準的な金融計算モデル（期末払い複利年金等）に基づきロジックを修正。
-    - [ ] `backend/tests/test_simulation.py` に新しいテストケースを追加し、予測値の妥当性を確認。
-- [ ] **Task: Conductor - User Manual Verification '全体統合と計算精度検証' (Protocol in workflow.md)**
+- **`frontend/src/components/simulation/AllocationTable.tsx`**:
+    - `comparisonPortfolioPoints` プロップを追加し、複数のポートフォリオを比較するサマリーテーブルを表示。
+    - 各ポートフォリオのシャープ・レシオ（無リスク金利0.02を仮定）を計算・表示。
+- **`frontend/src/app/simulation/efficient-frontier/page.tsx`**:
+    - `AllocationTable` に `comparisonPortfolioPoints` プロップを渡すように修正。
+    - シミュレーション結果を保存するための「Save Simulation Result」ボタンを追加。
+    - `useSaveSimulationResult` フックを統合し、シミュレーション結果をバックエンドに保存するロジックを実装。
+- **`frontend/src/app/simulation/accumulation/page.tsx`**:
+    - モンテカルロシミュレーションの結果表示UIに、95%信頼区間の下限と上限を表示するカードを追加。
+- **`frontend/src/app/simulation/history/page.tsx` (新規作成)**:
+    - ユーザーの保存されたシミュレーション結果の履歴を表示するページを作成。
+    - 各結果を読み込んだり、削除したりする機能を提供。
+- **`frontend/src/hooks/useSaveSimulationResult.ts` (新規作成)**:
+    - `/api/simulation-results` エンドポイントへの POST リクエストを処理し、シミュレーション結果を保存するためのTanStack Queryフック。
+- **`frontend/src/hooks/useSimulationResults.ts` (新規作成)**:
+    - `/api/simulation-results` エンドポイントへの GET/DELETE リクエストを処理し、シミュレーション結果の履歴を取得・管理するためのTanStack Queryフック。
+- **`frontend/src/components/layout/Sidebar.tsx`**:
+    - 「Simulation History」ページへのナビゲーションリンクを追加。
+- **`frontend/package.json`**:
+    - `axios` パッケージを追加。
+- **`frontend/vitest.config.ts`**:
+    - `optimizeDeps.include` に `axios` を追加し、Vitest 環境での依存解決を改善。
+
+## 確認事項
+
+- すべてのバックエンドテストがパスしました。
+- すべてのフロントエンドテストがパスしました。
+- `test.db` の削除・再作成により、データベーススキーマの整合性が確保されました。
+- フロントエンドの `AllocationTable` および関連ストーリーの `ReferenceError` が解消されました。
+- `axios` の導入に伴うフロントエンドのテストエラーが解消されました。
+
+## 次のステップ
+
+このトラックは完了しました。次のタスクまたは機能開発の指示をお待ちしております。

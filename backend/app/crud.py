@@ -115,8 +115,9 @@ def get_assets(db: Session, skip: int = 0, limit: int = 1000) -> List[models.Ass
 def get_asset_by_code(db: Session, asset_code: str) -> Optional[models.AssetData]:
     return db.query(models.AssetData).filter(models.AssetData.asset_code == asset_code).first()
 
-def create_simulation_result(db: Session, simulation_type: str, parameters: dict, results: dict, portfolio_id: Optional[uuid.UUID] = None):
+def create_simulation_result(db: Session, user_id: uuid.UUID, simulation_type: str, parameters: dict, results: dict, portfolio_id: Optional[uuid.UUID] = None):
     db_result = models.SimulationResult(
+        user_id=user_id, # Add user_id
         simulation_type=simulation_type,
         parameters=parameters,
         results=results,
@@ -135,3 +136,33 @@ def get_simulation_result(db: Session, simulation_type: str, parameters: dict) -
         models.SimulationResult.simulation_type == simulation_type,
         models.SimulationResult.parameters == parameters
     ).order_by(models.SimulationResult.created_at.desc()).first()
+
+def get_simulation_results(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[models.SimulationResult]:
+    return db.query(models.SimulationResult).filter(
+        models.SimulationResult.user_id == user_id
+    ).order_by(models.SimulationResult.created_at.desc()).offset(skip).limit(limit).all()
+
+def get_simulation_result_by_id(db: Session, result_id: uuid.UUID, user_id: uuid.UUID) -> Optional[models.SimulationResult]:
+    return db.query(models.SimulationResult).filter(
+        models.SimulationResult.id == result_id,
+        models.SimulationResult.user_id == user_id
+    ).first()
+
+def delete_simulation_result(db: Session, result_id: uuid.UUID, user_id: uuid.UUID) -> bool:
+    db_result = db.query(models.SimulationResult).filter(
+        models.SimulationResult.id == result_id,
+        models.SimulationResult.user_id == user_id
+    ).first()
+    if db_result:
+        db.delete(db_result)
+        db.commit()
+        return True
+    return False
+
+def get_asset_classes(db: Session) -> List[str]:
+    # `asset_class` カラムの値からユニークなリストを取得し、None (またはNULL) を除外
+    # all() はタプルのリストを返すので、各タプルの最初の要素を取り出す
+    asset_classes = db.query(models.AssetData.asset_class).distinct().filter(
+        models.AssetData.asset_class.isnot(None)
+    ).order_by(models.AssetData.asset_class).all()
+    return [ac[0] for ac in asset_classes]

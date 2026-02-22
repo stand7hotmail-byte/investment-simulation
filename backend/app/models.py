@@ -43,6 +43,7 @@ class SimulationResult(Base):
     __tablename__ = "simulation_results"
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    user_id = Column(GUID, nullable=False) # Add user_id
     portfolio_id = Column(GUID, ForeignKey("portfolios.id"), nullable=True) # Optional link to a portfolio
     simulation_type = Column(String, nullable=False) # 'efficient_frontier', 'risk_parity', etc.
     parameters = Column(JSON, nullable=False) # Parameters used for calculation

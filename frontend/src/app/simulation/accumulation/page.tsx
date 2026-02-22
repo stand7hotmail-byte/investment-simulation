@@ -186,6 +186,27 @@ export default function AccumulationPage() {
                 </CardContent>
               </Card>
 
+              {/* Confidence Interval Display */}
+              {results.confidence_interval_95 && (
+                <Card className="bg-blue-50 border-blue-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-blue-900 text-sm font-medium uppercase tracking-wider">
+                      95% Confidence Interval (Final Value)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-lg text-blue-700">
+                        Lower Bound: ¥{results.confidence_interval_95.lower_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </p>
+                      <p className="text-lg text-blue-700">
+                        Upper Bound: ¥{results.confidence_interval_95.upper_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <Card>
                 <CardHeader>
                   <CardTitle>Growth Projection</CardTitle>

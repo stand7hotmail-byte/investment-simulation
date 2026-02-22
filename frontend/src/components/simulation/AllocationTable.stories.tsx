@@ -33,9 +33,27 @@ const mockPoint = {
   },
 };
 
+const mockComparisonPoints = [
+  {
+    expected_return: 0.07,
+    volatility: 0.13,
+    weights: {
+      "Portfolio A": 1,
+    },
+  },
+  {
+    expected_return: 0.06,
+    volatility: 0.11,
+    weights: {
+      "Portfolio B": 1,
+    },
+  },
+];
+
 export const RiskParity: Story = {
   args: {
     riskParityPoint: mockPoint,
+    comparisonPortfolioPoints: mockComparisonPoints, // New prop
   },
   decorators: [
     (Story) => {
@@ -51,6 +69,7 @@ export const RiskParity: Story = {
 export const MaxSharpe: Story = {
   args: {
     maxSharpePoint: mockPoint,
+    comparisonPortfolioPoints: mockComparisonPoints, // New prop
   },
   decorators: [
     (Story) => {
@@ -64,6 +83,9 @@ export const MaxSharpe: Story = {
 };
 
 export const CustomPoint: Story = {
+  args: { // Add args for consistency
+    comparisonPortfolioPoints: mockComparisonPoints, // New prop
+  },
   decorators: [
     (Story) => {
       useEffect(() => {

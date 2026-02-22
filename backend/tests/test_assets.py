@@ -82,3 +82,18 @@ def test_get_asset_historical_data_no_historical_prices(test_client, session_ove
     data = response.json()
     assert data["asset_code"] == "NO_HIST"
     assert data["historical_prices"] == []
+
+def test_get_asset_classes(test_client, session_override):
+    # Add some assets with different asset classes
+    session_override.add(models.AssetData(asset_code="TEST1", name="Test Asset 1", asset_class="Stock"))
+    session_override.add(models.AssetData(asset_code="TEST2", name="Test Asset 2", asset_class="Bond"))
+    session_override.add(models.AssetData(asset_code="TEST3", name="Test Asset 3", asset_class="Stock"))
+    session_override.add(models.AssetData(asset_code="TEST4", name="Test Asset 4", asset_class=None)) # Asset with no class
+    session_override.commit()
+
+    response = test_client.get("/api/asset-classes")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert "asset_classes" in data
+    # The list should contain unique and sorted asset classes, excluding None
+    assert data["asset_classes"] == ["Bond", "Stock"]

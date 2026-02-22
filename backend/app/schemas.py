@@ -88,6 +88,7 @@ class MonteCarloResponse(BaseModel):
     元本割れ確率: float
     目標到達確率: float | None = None
     history: List[MonteCarloHistory]
+    confidence_interval_95: dict[str, float] | None = None # New: 95%信頼区間 (下限と上限)
 
 class BasicAccumulationRequest(BaseModel):
     portfolio_id: uuid.UUID
@@ -119,3 +120,34 @@ class HistoricalPricePoint(BaseModel):
 class HistoricalDataResponse(BaseModel):
     asset_code: str
     historical_prices: List[HistoricalPricePoint]
+
+class CustomPortfolioRequest(BaseModel):
+    assets: List[str] # List of asset codes
+    weights: dict[str, float] # Dictionary of asset_code -> weight (e.g., {"SPY": 0.5, "TLT": 0.5})
+
+class PortfolioPointResponse(BaseModel):
+    expected_return: float
+    volatility: float
+    weights: dict[str, float] # Include weights for consistency with FrontierPoint
+
+class PortfolioPointsRequest(BaseModel):
+    portfolio_ids: List[uuid.UUID]
+
+class SimulationResultBase(BaseModel):
+    simulation_type: str
+    parameters: dict
+    results: dict
+    portfolio_id: uuid.UUID | None = None
+
+class SimulationResultCreate(SimulationResultBase):
+    pass
+
+class SimulationResult(SimulationResultBase):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AssetClassesResponse(BaseModel):
+    asset_classes: List[str]
