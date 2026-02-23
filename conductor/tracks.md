@@ -8,9 +8,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## ✅ Completed Tracks
 
-- [x] **Track: アセットクラス別フィルタリング機能の実装**
-  *Link: [./tracks/implement_asset_class_filtering_20260222/](./tracks/implement_asset_class_filtering_20260222/)*
-
 - [x] **Track: シミュレーションの高度化とポートフォリオ比較機能の実装**
   *Link: [./tracks/enhance_simulation_and_comparison_20260221/](./tracks/enhance_simulation_and_comparison_20260221/)*
 
