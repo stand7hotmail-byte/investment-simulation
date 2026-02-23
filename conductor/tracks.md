@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Ongoing Tracks
 
+- [ ] **Track: デプロイする。**
+*Link: [./tracks/deployment_and_setup_20260223/](./tracks/deployment_and_setup_20260223/)*
+
 ---
 
 ## ✅ Completed Tracks
