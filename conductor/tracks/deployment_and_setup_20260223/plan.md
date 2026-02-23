@@ -1,10 +1,10 @@
 # Implementation Plan: デプロイ・本番環境構築 (Deployment and Production Setup)
 
-## Phase 1: CLI ツールとプロジェクトの初期セットアップ
+## Phase 1: CLI ツールとプロジェクトの初期セットアップ [checkpoint: d36c35b]
 - [x] Task: CLI ツールのインストールと認証
     - [x] Vercel CLI のインストールとログイン (`vercel login`)
     - [x] Railway CLI のインストールとログイン (`railway login`)
-- [ ] Task: Conductor - User Manual Verification 'CLI ツールとプロジェクトの初期セットアップ' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'CLI ツールとプロジェクトの初期セットアップ' (Protocol in workflow.md)
 
 ## Phase 2: バックエンドとデータベースのデプロイ (Railway)
 - [ ] Task: Railway プロジェクトと PostgreSQL のプロビジョニング
