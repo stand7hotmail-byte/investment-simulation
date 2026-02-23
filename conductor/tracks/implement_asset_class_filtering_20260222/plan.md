@@ -47,3 +47,8 @@
     - `frontend/e2e/simulation.test.ts` に、アセットクラスフィルタリングがシミュレーションに正しく適用されることを検証するE2Eテストを追加。
 - [x] **Task 3.4: パフォーマンスとUI/UXの最終確認** (ebea176)
     - フィルタリング操作がスムーズであるか、UIが直感的であるかを確認。
+
+## 3. Review Fixes
+
+### Phase: Review Fixes
+- [x] Task: Apply review suggestions (bee1f87)
