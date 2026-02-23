@@ -6,11 +6,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Ongoing Tracks
 
-## ✅ Completed Tracks
-
-- [x] **Track: シミュレーションの高度化とポートフォリオ比較機能の実装**
-  *Link: [./tracks/enhance_simulation_and_comparison_20260221/](./tracks/enhance_simulation_and_comparison_20260221/)*
-
 ---
 
 ## ✅ Completed Tracks
