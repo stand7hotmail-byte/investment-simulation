@@ -1,18 +1,15 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { FrontierPoint } from "@/types/simulation";
+import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
+import { Portfolio } from "@/types/portfolio";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import { useAssets } from "@/hooks/useAssets"; // Add this import
+import { useAssets } from "@/hooks/useAssets";
 
 const Plot = dynamic(() => import("react-plotly.js"), { 
   ssr: false,
   loading: () => <div className="flex h-[450px] items-center justify-center bg-slate-50 rounded-md text-slate-400">Initializing Chart...</div>
 });
-
-import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
-import { Portfolio } from "@/types/portfolio"; // New import
-// ... (rest of imports)
 
 interface Props {
   frontier: FrontierPoint[];

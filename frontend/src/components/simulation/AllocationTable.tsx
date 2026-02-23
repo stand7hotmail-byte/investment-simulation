@@ -15,9 +15,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, MousePointer2 } from "lucide-react";
 
-import { FrontierPoint } from "@/types/simulation";
-
-import { PortfolioPointResponse } from "@/types/simulation"; // New import for PortfolioPointResponse
+import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
 
 interface Props {
   riskParityPoint?: FrontierPoint | null;

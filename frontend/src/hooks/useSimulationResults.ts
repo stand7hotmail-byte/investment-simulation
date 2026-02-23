@@ -1,8 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { SimulationResult } from "@/types/simulation";
+import { SimulationResult, FrontierPoint } from "@/types/simulation";
 import { useSimulationStore } from "@/store/useSimulationStore";
-import { FrontierPoint } from "@/types/simulation";
 
 const getSimulationResults = async (): Promise<SimulationResult[]> => {
   const response = await axios.get("/api/simulation-results");

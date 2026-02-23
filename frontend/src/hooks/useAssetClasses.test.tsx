@@ -2,12 +2,12 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAssetClasses } from "./useAssetClasses";
 import { describe, it, expect, vi } from "vitest";
-import axios from "axios";
-import * as React from "react"; // Add React import
+import { fetchApi } from "@/lib/api"; // Updated to use fetchApi
+import * as React from "react";
 
-// Mock axios to control API responses
-vi.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+// Mock fetchApi to control API responses
+vi.mock("@/lib/api");
+const mockedFetchApi = vi.mocked(fetchApi);
 
 const createWrapper = (queryClient: QueryClient) => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -20,8 +20,8 @@ const createWrapper = (queryClient: QueryClient) => {
 describe("useAssetClasses", () => {
   it("fetches asset classes successfully", async () => {
     const mockAssetClasses = ["Stock", "Bond", "Crypto"];
-    mockedAxios.get.mockResolvedValueOnce({
-      data: { asset_classes: mockAssetClasses },
+    mockedFetchApi.mockResolvedValueOnce({
+      asset_classes: mockAssetClasses,
     });
 
     const queryClient = new QueryClient({
@@ -43,7 +43,7 @@ describe("useAssetClasses", () => {
 
   it("handles fetch error", async () => {
     const errorMessage = "Network Error";
-    mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
+    mockedFetchApi.mockRejectedValueOnce(new Error(errorMessage));
 
     const queryClient = new QueryClient({
       defaultOptions: {

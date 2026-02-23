@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { AssetClassesResponse } from "@/types/simulation"; // Updated import
+import { fetchApi } from "@/lib/api"; // Updated to use fetchApi
+import { AssetClassesResponse } from "@/types/simulation";
 
 const getAssetClasses = async (): Promise<string[]> => {
-  const response = await axios.get<AssetClassesResponse>("/api/asset-classes");
-  return response.data.asset_classes;
+  const data = await fetchApi<AssetClassesResponse>("/api/asset-classes");
+  return data.asset_classes;
 };
 
 export const useAssetClasses = () => {

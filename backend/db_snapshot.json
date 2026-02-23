@@ -6,7 +6,7 @@
     "count": 1,
     "rows": [
       {
-        "version_num": "efa4648a057f"
+        "version_num": "533269cf7904"
       }
     ]
   },
@@ -34,8 +34,249 @@
       "historical_prices",
       "updated_at"
     ],
-    "count": 0,
-    "rows": []
+    "count": 24,
+    "rows": [
+      {
+        "asset_code": "SPY",
+        "name": "S&P 500 ETF (SPY)",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "QQQ",
+        "name": "Nasdaq 100 ETF (QQQ)",
+        "asset_class": "Stock",
+        "expected_return": 0.08,
+        "volatility": 0.2,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "VTI",
+        "name": "Vanguard Total Stock Market ETF (VTI)",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "VOO",
+        "name": "Vanguard S&P 500 ETF (VOO)",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "VYM",
+        "name": "Vanguard High Dividend Yield ETF (VYM)",
+        "asset_class": "Stock",
+        "expected_return": 0.06,
+        "volatility": 0.14,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "DIA",
+        "name": "SPDR Dow Jones Industrial Average ETF (DIA)",
+        "asset_class": "Stock",
+        "expected_return": 0.06,
+        "volatility": 0.15,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "1306.T",
+        "name": "NEXT FUNDS TOPIX ETF (1306)",
+        "asset_class": "Stock",
+        "expected_return": 0.05,
+        "volatility": 0.17,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "1321.T",
+        "name": "NEXT FUNDS Nikkei 225 ETF (1321)",
+        "asset_class": "Stock",
+        "expected_return": 0.05,
+        "volatility": 0.18,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "2558.T",
+        "name": "MAXIS S&P 500 ETF (2558)",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "1557.T",
+        "name": "SPDR S&P 500 ETF (1557)",
+        "asset_class": "Stock",
+        "expected_return": 0.07,
+        "volatility": 0.16,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "BND",
+        "name": "Vanguard Total Bond Market ETF (BND)",
+        "asset_class": "Bond",
+        "expected_return": 0.03,
+        "volatility": 0.05,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "AGG",
+        "name": "iShares Core U.S. Aggregate Bond ETF (AGG)",
+        "asset_class": "Bond",
+        "expected_return": 0.03,
+        "volatility": 0.05,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "TLT",
+        "name": "iShares 20+ Year Treasury Bond ETF (TLT)",
+        "asset_class": "Bond",
+        "expected_return": 0.04,
+        "volatility": 0.12,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "2510.T",
+        "name": "NEXT FUNDS Japan Govt Bond ETF (2510)",
+        "asset_class": "Bond",
+        "expected_return": 0.01,
+        "volatility": 0.03,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "2511.T",
+        "name": "NEXT FUNDS Foreign Govt Bond ETF (2511)",
+        "asset_class": "Bond",
+        "expected_return": 0.02,
+        "volatility": 0.06,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "GLD",
+        "name": "SPDR Gold Shares (GLD)",
+        "asset_class": "Commodity",
+        "expected_return": 0.04,
+        "volatility": 0.15,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "SLV",
+        "name": "iShares Silver Trust (SLV)",
+        "asset_class": "Commodity",
+        "expected_return": 0.05,
+        "volatility": 0.25,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "DBC",
+        "name": "Invesco DB Commodity Index ETF (DBC)",
+        "asset_class": "Commodity",
+        "expected_return": 0.04,
+        "volatility": 0.18,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "VNQ",
+        "name": "Vanguard Real Estate ETF (VNQ)",
+        "asset_class": "REIT",
+        "expected_return": 0.06,
+        "volatility": 0.22,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "IYR",
+        "name": "iShares U.S. Real Estate ETF (IYR)",
+        "asset_class": "REIT",
+        "expected_return": 0.06,
+        "volatility": 0.21,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "1343.T",
+        "name": "NEXT FUNDS TSE REIT Index ETF (1343)",
+        "asset_class": "REIT",
+        "expected_return": 0.04,
+        "volatility": 0.15,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "1555.T",
+        "name": "Listed Index Fund Australian REIT (1555)",
+        "asset_class": "REIT",
+        "expected_return": 0.05,
+        "volatility": 0.18,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "BTC-USD",
+        "name": "Bitcoin USD (BTC-USD)",
+        "asset_class": "Crypto",
+        "expected_return": 0.15,
+        "volatility": 0.6,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      },
+      {
+        "asset_code": "ETH-USD",
+        "name": "Ethereum USD (ETH-USD)",
+        "asset_class": "Crypto",
+        "expected_return": 0.18,
+        "volatility": 0.7,
+        "correlation_matrix": "{}",
+        "historical_prices": null,
+        "updated_at": "2026-02-22 15:04:59.815208"
+      }
+    ]
   },
   "portfolio_allocations": {
     "columns": [
