@@ -32,7 +32,7 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
     return null;
   }
 
-  const strategyName = getStrategyName(selectedPoint, riskParityPoint, maxSharpePoint);
+  const strategyName = getStrategyName(selectedPoint, riskParityPoint ?? null, maxSharpePoint ?? null);
 
   const getAssetName = (code: string) => {
     const asset = assets?.find((a) => a.asset_code === code);

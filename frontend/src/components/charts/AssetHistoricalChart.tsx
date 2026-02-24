@@ -47,13 +47,15 @@ export const AssetHistoricalChart: React.FC<AssetHistoricalChartProps> = ({ asse
   ];
 
   const layout: Partial<Plotly.Layout> = {
-    title: `${assetCode} Historical Price Trend`,
+    title: {
+      text: `${assetCode} Historical Price Trend`
+    },
     xaxis: {
-      title: 'Date',
+      title: { text: 'Date' },
       type: 'date',
     },
     yaxis: {
-      title: 'Price',
+      title: { text: 'Price' },
       tickprefix: '$', // Assuming currency is USD
     },
     hovermode: 'x unified',

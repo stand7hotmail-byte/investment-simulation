@@ -38,6 +38,10 @@ class GUID(TypeDecorator):
         else:
             return uuid.UUID(value)
 
-engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})
+engine_args = {}
+if settings.sqlalchemy_database_url.startswith("sqlite"):
+    engine_args["connect_args"] = {"check_same_thread": False}
+
+engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

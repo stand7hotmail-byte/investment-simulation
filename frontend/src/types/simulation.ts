@@ -40,6 +40,10 @@ export interface BasicAccumulationHistory {
 export interface BasicAccumulationResponse {
   final_value: number;
   history: BasicAccumulationHistory[];
+  confidence_interval_95?: {
+    lower_bound: number;
+    upper_bound: number;
+  };
 }
 
 export interface HistoricalPricePoint {
@@ -63,6 +67,25 @@ export interface PortfolioPointResponse {
   weights: Record<string, number>;
 }
 
+export interface PortfolioPointsRequest {
+  portfolio_ids: string[];
+}
+
 export interface AssetClassesResponse {
   asset_classes: string[];
+}
+
+export interface SimulationResultBase {
+  simulation_type: string;
+  parameters: Record<string, any>;
+  results: Record<string, any>;
+  portfolio_id?: string | null;
+}
+
+export interface SimulationResultCreate extends SimulationResultBase {}
+
+export interface SimulationResult extends SimulationResultBase {
+  id: string;
+  user_id: string;
+  created_at: string;
 }

@@ -3,6 +3,7 @@ import { AllocationTable } from "./AllocationTable";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PortfolioPointResponse } from "@/types/simulation";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ const mockPoint = {
   },
 };
 
-const mockComparisonPoints = [
+const mockComparisonPoints: PortfolioPointResponse[] = [
   {
     expected_return: 0.07,
     volatility: 0.13,
