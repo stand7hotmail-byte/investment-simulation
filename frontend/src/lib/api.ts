@@ -1,18 +1,43 @@
+import { supabase } from "./supabase";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: "Unknown error" }));
-    throw new Error(error.detail || response.statusText);
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...options?.headers,
+  };
+
+  if (token) {
+    (headers as any)["Authorization"] = `Bearer ${token}`;
   }
 
-  return response.json();
+  const url = `${API_BASE_URL}${path}`;
+  console.log(`Fetching API: ${url}`);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Could not read error body");
+      console.error(`API Error [${response.status}]: ${errorText}`);
+      let errorDetail = "Unknown error";
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorDetail = errorJson.detail || errorDetail;
+      } catch (e) {}
+      throw new Error(errorDetail);
+    }
+
+    return response.json();
+  } catch (error: any) {
+    console.error(`Fetch failed for ${url}:`, error);
+    throw error;
+  }
 }
