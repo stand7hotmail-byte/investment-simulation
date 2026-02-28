@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { fetchApi } from "@/lib/api";
 import { SimulationResult, SimulationResultCreate } from "@/types/simulation";
 
 const saveSimulationResult = async (data: SimulationResultCreate): Promise<SimulationResult> => {
-  const response = await axios.post("/api/simulation-results", data);
-  return response.data;
+  return await fetchApi<SimulationResult>("/api/simulation-results", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };
 
 export const useSaveSimulationResult = () => {

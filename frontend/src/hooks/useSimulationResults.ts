@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { fetchApi } from "@/lib/api";
 import { SimulationResult, FrontierPoint } from "@/types/simulation";
 import { useSimulationStore } from "@/store/useSimulationStore";
 
 const getSimulationResults = async (): Promise<SimulationResult[]> => {
-  const response = await axios.get("/api/simulation-results");
-  return response.data;
+  return await fetchApi<SimulationResult[]>("/api/simulation-results");
 };
 
 const deleteSimulationResult = async (resultId: string): Promise<void> => {
-  await axios.delete(`/api/simulation-results/${resultId}`);
+  await fetchApi(`/api/simulation-results/${resultId}`, {
+    method: "DELETE",
+  });
 };
 
 export const useSimulationResults = () => {
@@ -29,9 +30,6 @@ export const useSimulationResults = () => {
   });
 
   const loadSimulationResult = (result: SimulationResult) => {
-    // Determine which point to select for EfficientFrontierChart
-    // For simplicity, let's try to select max_sharpe or risk_parity if available
-    // Otherwise, just pick the first point from the frontier or custom_portfolio
     let pointToSelect: FrontierPoint | null = null;
     if (result.simulation_type === "efficient_frontier") {
       if (result.results.max_sharpe) {
@@ -48,7 +46,6 @@ export const useSimulationResults = () => {
     if (pointToSelect) {
       setSelectedPoint(pointToSelect);
     }
-    // TODO: Navigate back to efficient-frontier page after loading
   };
 
   return {
