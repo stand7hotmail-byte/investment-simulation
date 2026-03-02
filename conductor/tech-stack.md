@@ -177,6 +177,15 @@
 | **Monitoring** | Railway Dashboard | 標準 | ログ・メトリクス確認 |
 | **DNS** | Cloudflare | Free | CDN + SSL |
 
+### Production Environment Details (2026-03-02 Update)
+
+| サービス | 役割 | 本番URL / 接続先 | 備考 |
+|---------|------|-----------------|------|
+| **Vercel** | Frontend | [https://investment-sim-frontend.vercel.app/](https://investment-sim-frontend.vercel.app/) | Next.js (Production Build) |
+| **Railway** | Backend | [https://postgresql-production-ba08.up.railway.app](https://postgresql-production-ba08.up.railway.app) | FastAPI (Auto-deploy from main) |
+| **Railway** | Database | `postgresql-production-ba08.up.railway.app:5432` | PostgreSQL 15 |
+| **Supabase** | Auth | `https://zsftocgledceyzxklauw.supabase.co` | JWT (ES256/HS256) |
+
 ### Testing
 
 | カテゴリ | 技術 | 用途 |
@@ -1061,6 +1070,11 @@ LOG_LEVEL=INFO
 MAX_SIMULATIONS=50000
 MAX_ASSETS_PER_PORTFOLIO=20
 ```
+
+**Production Configuration Notes:**
+- `ALLOWED_ORIGINS` は Vercel の本番ドメイン (`*.vercel.app`) に設定済み。
+- `DATABASE_URL` は Railway 内部ネットワーク (`.railway.internal`) を優先するようにサービス内で構成。
+- `NEXT_PUBLIC_API_URL` はフロントエンド環境変数にて Railway のパブリックドメインに設定済み。
 
 ---
 
