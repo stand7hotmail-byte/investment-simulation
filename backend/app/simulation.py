@@ -72,16 +72,15 @@ def get_asset_returns(historical_prices: List[Dict[str, Any]]) -> np.ndarray:
     return (prices[1:] / prices[:-1]) - 1
 
 def calculate_stats_from_historical_data(historical_prices_data: List[List[Dict[str, Any]]]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    # Check for empty data before processing to match test expectations
     for p in historical_prices_data:
         if not p: raise ValueError("Historical prices data cannot be empty for an asset.")
-        
     all_asset_returns = [get_asset_returns(p) for p in historical_prices_data]
     min_len = min(len(r) for r in all_asset_returns)
     aligned_returns = np.array([r[-min_len:] for r in all_asset_returns]).T
     annualization_factor = 252 if min_len > 200 else 52
     annual_returns = np.mean(aligned_returns, axis=0) * annualization_factor
-    covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor
+    # Add small epsilon to diagonal for numerical stability (ensure positive-definite)
+    covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor + np.eye(len(historical_prices_data)) * 1e-8
     correlation_matrix = np.corrcoef(aligned_returns, rowvar=False)
     annual_volatilities = np.std(aligned_returns, axis=0) * np.sqrt(annualization_factor)
     return annual_returns, annual_volatilities, correlation_matrix
@@ -95,13 +94,24 @@ def run_monte_carlo_simulation(
     n_simulations: int = 10000,
     extra_investments: Optional[List[Any]] = None,
     target_amount: Optional[float] = None,
-    mu: float = None, # Alias for expected_return
-    sigma: float = None # Alias for volatility
+    mu: float = None,
+    sigma: float = None
 ) -> Dict[str, Any]:
     mu_val = expected_return if expected_return is not None else mu
     sigma_val = volatility if volatility is not None else sigma
     
-    daily_returns = np.random.normal(mu_val, sigma_val, (years, n_simulations))
+    # Use Geometric Brownian Motion logic for more realistic path simulation
+    # S_t = S_{t-1} * exp((mu - 0.5 * sigma^2) * dt + sigma * sqrt(dt) * Z)
+    # Since we use 1-year steps (dt = 1):
+    dt = 1.0
+    drift = (mu_val - 0.5 * sigma_val**2) * dt
+    diffusion = sigma_val * np.sqrt(dt)
+    
+    # Generate log-returns (normal distribution)
+    log_returns = np.random.normal(drift, diffusion, (years, n_simulations))
+    # Convert log-returns to actual price multipliers: exp(log_return)
+    multipliers = np.exp(log_returns)
+    
     portfolio_values = np.zeros((years + 1, n_simulations))
     portfolio_values[0] = initial_investment
     
@@ -113,15 +123,20 @@ def run_monte_carlo_simulation(
             extra_map[y] = a
     
     for t in range(1, years + 1):
-        portfolio_values[t] = portfolio_values[t-1] * (1 + daily_returns[t-1])
+        # Apply market returns
+        portfolio_values[t] = portfolio_values[t-1] * multipliers[t-1]
+        # Apply periodic contributions (simplified as end-of-year lump sum for dt=1)
         portfolio_values[t] += monthly_contribution * 12
         if t in extra_map: portfolio_values[t] += extra_map[t]
             
     final_values = portfolio_values[-1]
     percentiles = {str(p): float(np.percentile(final_values, p)) for p in [10, 25, 50, 75, 90]}
+    
+    # Calculate principal invested
     total_invested = initial_investment + (monthly_contribution * 12 * years) + sum(extra_map.values())
     prob_loss = float(np.mean(final_values < total_invested))
     prob_target = float(np.mean(final_values >= target_amount)) if target_amount else None
+    
     history = []
     for t in range(years + 1):
         history.append({
@@ -133,7 +148,6 @@ def run_monte_carlo_simulation(
     confidence_interval_95 = {"lower_bound": float(np.percentile(final_values, 2.5)), "upper_bound": float(np.percentile(final_values, 97.5))}
     return {"percentiles": percentiles, "元本割れ確率": prob_loss, "目標到達確率": prob_target, "history": history, "confidence_interval_95": confidence_interval_95}
 
-# Alias for test compatibility
 monte_carlo_simulation = run_monte_carlo_simulation
 
 def calculate_basic_accumulation(
@@ -143,7 +157,7 @@ def calculate_basic_accumulation(
     volatility: float = None,
     years: int = None,
     n_scenarios: int = 1,
-    mu: float = None # Alias for expected_return
+    mu: float = None
 ) -> Dict[str, Any]:
     exp_ret = expected_return if expected_return is not None else mu
     history = []
@@ -171,5 +185,5 @@ def prepare_simulation_inputs(assets: List[Any]) -> tuple[np.ndarray, List[float
         for j in range(n):
             if i != j:
                 target_code = assets[j].asset_code
-                correlation_matrix_array[i, j] = assets[i].correlation_matrix.get(target_code, 0.0) if assets[i].correlation_matrix else 0.0
+                correlation_matrix_array[i, j] = assets[i].correlation_matrix.get(target_code, 0.0) if (hasattr(assets[i], 'correlation_matrix') and assets[i].correlation_matrix) else 0.0
     return returns_array, volatilities_list, correlation_matrix_array

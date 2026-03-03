@@ -1,8 +1,12 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, DECIMAL, JSON
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 from datetime import datetime, UTC
 from .database import Base, GUID
+
+# Cross-DB compatible JSON type: JSONB for Postgres, JSON for others (SQLite)
+JSON_TYPE = JSON().with_variant(JSONB, "postgresql")
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
@@ -38,8 +42,8 @@ class AssetData(Base):
     asset_class = Column(String)
     expected_return = Column(DECIMAL(8,6))
     volatility = Column(DECIMAL(8,6))
-    correlation_matrix = Column(JSON) 
-    historical_prices = Column(JSON)
+    correlation_matrix = Column(JSON_TYPE) 
+    historical_prices = Column(JSON_TYPE)
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)) 
 
 class SimulationResult(Base):
@@ -49,6 +53,6 @@ class SimulationResult(Base):
     user_id = Column(GUID, nullable=False)
     portfolio_id = Column(GUID, ForeignKey("portfolios.id"), nullable=True)
     simulation_type = Column(String, nullable=False)
-    parameters = Column(JSON, nullable=False) 
-    results = Column(JSON, nullable=False)
+    parameters = Column(JSON_TYPE, nullable=False) 
+    results = Column(JSON_TYPE, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))

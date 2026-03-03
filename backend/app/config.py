@@ -9,6 +9,7 @@ DATABASE_PATH = os.path.join(BASE_DIR, "test.db")
 class Settings(BaseSettings):
     database_url: str = Field(default=f"sqlite:///{DATABASE_PATH}", validation_alias="DATABASE_URL")
     supabase_jwt_secret: str | None = Field(default=None, validation_alias="SUPABASE_JWT_SECRET")
+    supabase_url: str | None = Field(default=None, validation_alias="SUPABASE_URL")
 
     @property
     def sqlalchemy_database_url(self) -> str:
