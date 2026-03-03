@@ -66,8 +66,11 @@ def test_monte_carlo_simulation_basic():
         n_simulations=n_simulations
     )
     
-    expected_final = initial_investment * (1 + mu)**years
+    # Since we use Geometric Brownian Motion: S_t = S_0 * exp((mu - 0.5*sigma^2)*t)
+    # With sigma=0, it becomes S_t = S_0 * exp(mu*t)
+    expected_final = initial_investment * np.exp(mu * years)
     assert results["percentiles"]["50"] == pytest.approx(expected_final, rel=1e-2)
+
     assert results["元本割れ確率"] == 0.0
 
 def test_monte_carlo_with_contributions():
