@@ -14,7 +14,7 @@ class GUID(TypeDecorator):
     CHAR(32), storing as stringified hex values.
     """
     impl = CHAR
-    cache_ok = True # Add this line to resolve SAWarning
+    cache_ok = True
 
     def load_dialect_impl(self, dialect):
         if dialect.name == 'postgresql':
@@ -25,18 +25,21 @@ class GUID(TypeDecorator):
     def process_bind_param(self, value, dialect):
         if value is None:
             return value
-        elif dialect.name == 'postgresql':
+        if dialect.name == 'postgresql':
+            # For Postgres, just ensure it is a string representation of UUID
             return str(value)
         else:
+            # For others (SQLite), store hex string without dashes
             if not isinstance(value, uuid.UUID):
-                return str(uuid.UUID(value))
-            return str(value)
+                return uuid.UUID(value).hex
+            return value.hex
 
     def process_result_value(self, value, dialect):
         if value is None:
             return value
-        else:
+        if not isinstance(value, uuid.UUID):
             return uuid.UUID(value)
+        return value
 
 engine_args = {}
 if settings.sqlalchemy_database_url.startswith("sqlite"):

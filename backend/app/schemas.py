@@ -95,6 +95,9 @@ class BasicAccumulationRequest(BaseModel):
     initial_investment: float
     monthly_contribution: float
     years: int
+    expected_return: float | None = None
+    volatility: float | None = None
+    n_scenarios: int = 1000
 
 class BasicAccumulationHistory(BaseModel):
     year: int

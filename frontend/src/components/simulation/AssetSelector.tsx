@@ -153,8 +153,13 @@ export function AssetSelector() {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-slate-400">
                 <p className="text-sm italic">No assets found</p>
-                {assets?.length === 0 && (
-                  <p className="text-xs mt-2 text-slate-300">Database appears to be empty</p>
+                {assets && assets.length > 0 ? (
+                  <p className="text-xs mt-2 text-slate-300">Try changing your filters</p>
+                ) : (
+                  <div className="text-center space-y-2">
+                    <p className="text-xs mt-2 text-slate-300">Database appears to be empty or connection failed</p>
+                    <p className="text-[10px] text-slate-200">API: {process.env.NEXT_PUBLIC_API_URL}</p>
+                  </div>
                 )}
               </div>
             )}

@@ -115,6 +115,9 @@ def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
 
 @app.post("/api/simulate/efficient-frontier", response_model=schemas.EfficientFrontierResponse)
 def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: Session = Depends(get_db)):
+    if len(request.assets) < 2:
+        raise HTTPException(status_code=400, detail="At least 2 assets are required for efficient frontier calculation")
+    
     assets_data = []
     for code in request.assets:
         asset = crud.get_asset_by_code(db, code)
@@ -127,6 +130,9 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
 
 @app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
 def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    if len(request.assets) < 2:
+        raise HTTPException(status_code=400, detail="At least 2 assets are required for risk parity calculation")
+        
     parameters = request.model_dump()
     cached = crud.get_simulation_result(db, "risk_parity", parameters)
     if cached: return cached.results
@@ -152,17 +158,71 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
     crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
     return result
 
-# NEW: Basic Accumulation Simulation
+@app.post("/api/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
+def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db)):
+    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == request.portfolio_id).first()
+    if not db_portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+        
+    if not db_portfolio.allocations or len(db_portfolio.allocations) < 2:
+        raise HTTPException(status_code=400, detail="Portfolio must have at least 2 allocations for Monte Carlo simulation")
+
+    assets_data = []
+    weights = []
+    for alloc in db_portfolio.allocations:
+        asset = crud.get_asset_by_code(db, alloc.asset_code)
+        if asset:
+            assets_data.append(asset)
+            weights.append(float(alloc.weight))
+            
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    port_return, port_vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+    
+    return simulation.run_monte_carlo_simulation(
+        initial_investment=request.initial_investment,
+        monthly_contribution=request.monthly_contribution,
+        expected_return=port_return,
+        volatility=port_vol,
+        years=request.years,
+        n_simulations=request.n_simulations,
+        extra_investments=request.extra_investments,
+        target_amount=request.target_amount
+    )
+
 @app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
 def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db)):
+    # Fallback to portfolio if expected_return/volatility not provided
+    exp_ret = request.expected_return
+    vol = request.volatility
+    
+    if exp_ret is None or vol is None:
+        db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == request.portfolio_id).first()
+        if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
+        
+        assets_data = []
+        weights = []
+        for alloc in db_portfolio.allocations:
+            asset = crud.get_asset_by_code(db, alloc.asset_code)
+            if asset:
+                assets_data.append(asset)
+                weights.append(float(alloc.weight))
+        
+        if not assets_data: raise HTTPException(status_code=400, detail="Portfolio has no valid assets")
+        returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+        cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+        exp_ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+
     return simulation.calculate_basic_accumulation(
         initial_investment=request.initial_investment,
         monthly_contribution=request.monthly_contribution,
-        expected_return=request.expected_return,
-        volatility=request.volatility,
+        expected_return=exp_ret,
+        volatility=vol,
         years=request.years,
         n_scenarios=request.n_scenarios
     )
+
+# --- PORTFOLIO ENDPOINTS ---
 
 @app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=201)
 def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
@@ -171,6 +231,59 @@ def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(g
 @app.get("/api/portfolios", response_model=List[schemas.Portfolio])
 def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
     return crud.get_portfolios(db, user_id=user_id, skip=skip, limit=limit)
+
+@app.get("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
+def read_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
+    if db_portfolio is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    return db_portfolio
+
+@app.put("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
+def update_portfolio(portfolio_id: uuid.UUID, portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_portfolio = crud.update_portfolio(db, portfolio_id=portfolio_id, user_id=user_id, portfolio_update=portfolio)
+    if db_portfolio is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    return db_portfolio
+
+@app.delete("/api/portfolios/{portfolio_id}")
+def delete_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    success = crud.delete_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    return {"message": "Portfolio deleted successfully"}
+
+# --- ALLOCATION ENDPOINTS ---
+
+@app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation, status_code=201)
+def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.PortfolioAllocationCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
+    if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
+    return crud.create_portfolio_allocation(db, allocation, portfolio_id)
+
+@app.get("/api/portfolios/{portfolio_id}/allocations", response_model=List[schemas.PortfolioAllocation])
+def read_portfolio_allocations(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    return crud.get_portfolio_allocations(db, portfolio_id, user_id)
+
+@app.get("/api/portfolios/{portfolio_id}/allocations/{allocation_id}", response_model=schemas.PortfolioAllocation)
+def read_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_allocation = crud.get_portfolio_allocation(db, portfolio_id, allocation_id, user_id)
+    if not db_allocation: raise HTTPException(status_code=404, detail="Allocation not found")
+    return db_allocation
+
+@app.put("/api/portfolios/{portfolio_id}/allocations/{allocation_id}", response_model=schemas.PortfolioAllocation)
+def update_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, allocation: schemas.PortfolioAllocationUpdate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_allocation = crud.update_portfolio_allocation(db, portfolio_id, allocation_id, user_id, allocation)
+    if not db_allocation: raise HTTPException(status_code=404, detail="Allocation not found")
+    return db_allocation
+
+@app.delete("/api/portfolios/{portfolio_id}/allocations/{allocation_id}")
+def delete_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    success = crud.delete_portfolio_allocation(db, portfolio_id, allocation_id, user_id)
+    if not success: raise HTTPException(status_code=404, detail="Allocation not found")
+    return {"message": "Allocation deleted successfully"}
+
+# --- SIMULATION RESULT ENDPOINTS ---
 
 @app.post("/api/simulation-results", response_model=schemas.SimulationResult, status_code=201)
 def create_simulation_result_endpoint(simulation_result: schemas.SimulationResultCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
@@ -181,7 +294,7 @@ def create_simulation_result_endpoint(simulation_result: schemas.SimulationResul
 
 @app.get("/api/simulation-results", response_model=List[schemas.SimulationResult])
 def read_simulation_results_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    return crud.get_simulation_results(db=db, user_id=user_id, skip=skip, limit=limit)
+    return crud.get_simulation_results(db, user_id=user_id, skip=skip, limit=limit)
 
 @app.delete("/api/simulation-results/{result_id}", status_code=204)
 def delete_simulation_result_endpoint(result_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):

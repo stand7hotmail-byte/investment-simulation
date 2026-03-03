@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, DECIMAL, JSON
+from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime, UTC
 from .database import Base, GUID
-
-from sqlalchemy.orm import relationship
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
@@ -11,12 +10,13 @@ class Portfolio(Base):
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
     user_id = Column(GUID, nullable=False)
     name = Column(String, nullable=False)
-    description = Column(String)
+    description = Column(String, nullable=True)
     is_current = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
-    allocations = relationship("PortfolioAllocation", backref="portfolio", cascade="all, delete-orphan")
+    # Relationship to allocations
+    allocations = relationship("PortfolioAllocation", back_populates="portfolio", cascade="all, delete-orphan", lazy="selectin")
 
 class PortfolioAllocation(Base):
     __tablename__ = "portfolio_allocations"
@@ -27,6 +27,9 @@ class PortfolioAllocation(Base):
     weight = Column(DECIMAL(7,6), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
+    # Back relationship to portfolio
+    portfolio = relationship("Portfolio", back_populates="allocations")
+
 class AssetData(Base):
     __tablename__ = "asset_data"
 
@@ -35,17 +38,17 @@ class AssetData(Base):
     asset_class = Column(String)
     expected_return = Column(DECIMAL(8,6))
     volatility = Column(DECIMAL(8,6))
-    correlation_matrix = Column(JSON) # Stores correlation coefficients with other assets
-    historical_prices = Column(JSON) # Stores historical price data
-    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    correlation_matrix = Column(JSON) 
+    historical_prices = Column(JSON)
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)) 
 
 class SimulationResult(Base):
     __tablename__ = "simulation_results"
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
-    user_id = Column(GUID, nullable=False) # Add user_id
-    portfolio_id = Column(GUID, ForeignKey("portfolios.id"), nullable=True) # Optional link to a portfolio
-    simulation_type = Column(String, nullable=False) # 'efficient_frontier', 'risk_parity', etc.
-    parameters = Column(JSON, nullable=False) # Parameters used for calculation
-    results = Column(JSON, nullable=False) # Actual calculation results
+    user_id = Column(GUID, nullable=False)
+    portfolio_id = Column(GUID, ForeignKey("portfolios.id"), nullable=True)
+    simulation_type = Column(String, nullable=False)
+    parameters = Column(JSON, nullable=False) 
+    results = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
