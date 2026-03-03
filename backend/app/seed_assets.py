@@ -1,23 +1,21 @@
 import sys
 import os
+import asyncio
+from datetime import datetime, timedelta, UTC
 
 # Add the project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal
 from app import models
+from app.data_sources.yahoo_finance import fetch_historical_data
 
 def seed_assets():
     db = SessionLocal()
     try:
-        # Clear existing assets to avoid duplicates when re-seeding
-        # Note: In production, you might want a more sophisticated merge strategy
-        db.query(models.AssetData).delete()
-        db.commit()
-        print("Cleared existing assets.")
-
-        # Expanded asset data
-        assets = [
+        # Check if assets already exist to avoid unnecessary re-seeding
+        # We merge instead of delete to preserve historical data if it exists
+        assets_list = [
             # Stocks - US
             {"asset_code": "SPY", "name": "S&P 500 ETF (SPY)", "asset_class": "Stock", "expected_return": 0.07, "volatility": 0.16},
             {"asset_code": "QQQ", "name": "Nasdaq 100 ETF (QQQ)", "asset_class": "Stock", "expected_return": 0.08, "volatility": 0.20},
@@ -55,16 +53,47 @@ def seed_assets():
             {"asset_code": "ETH-USD", "name": "Ethereum USD (ETH-USD)", "asset_class": "Crypto", "expected_return": 0.18, "volatility": 0.70},
         ]
 
-        for asset_data in assets:
-            # Set default empty correlation matrix
-            if "correlation_matrix" not in asset_data:
-                asset_data["correlation_matrix"] = {}
-            
-            db_asset = models.AssetData(**asset_data)
-            db.add(db_asset)
+        for asset_data in assets_list:
+            # Upsert logic
+            existing_asset = db.query(models.AssetData).filter(models.AssetData.asset_code == asset_data["asset_code"]).first()
+            if existing_asset:
+                # Update basic info but don't clear historical prices if they exist
+                existing_asset.name = asset_data["name"]
+                existing_asset.asset_class = asset_data["asset_class"]
+                existing_asset.expected_return = asset_data["expected_return"]
+                existing_asset.volatility = asset_data["volatility"]
+            else:
+                db_asset = models.AssetData(**asset_data)
+                db.add(db_asset)
         
         db.commit()
-        print(f"Successfully seeded {len(assets)} assets.")
+        print(f"Successfully seeded {len(assets_list)} assets.")
+
+        # Trigger historical data collection for all assets that don't have it
+        assets = db.query(models.AssetData).all()
+        for asset in assets:
+            if not asset.historical_prices:
+                print(f"Collecting initial historical data for {asset.asset_code}...")
+                end_date = datetime.now(UTC)
+                start_date = end_date - timedelta(days=365 * 20)
+                
+                historical_data = fetch_historical_data(
+                    asset.asset_code,
+                    start_date=start_date.strftime("%Y-%m-%d"),
+                    end_date=end_date.strftime("%Y-%m-%d")
+                )
+                
+                if historical_data:
+                    historical_data.sort(key=lambda x: x['date'])
+                    asset.historical_prices = historical_data
+                    db.add(asset)
+                    print(f"Success for {asset.asset_code}.")
+                else:
+                    print(f"No data for {asset.asset_code}.")
+        
+        db.commit()
+        print("Historical data sync complete.")
+
     except Exception as e:
         print(f"Error seeding assets: {e}")
         db.rollback()

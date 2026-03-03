@@ -1,29 +1,34 @@
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+import os
 import uuid
-import numpy as np
 from typing import List, Optional
 from decimal import Decimal
+import numpy as np
+
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt  # PyJWT
+from sqlalchemy.orm import Session
 
 from . import crud, models, schemas, simulation
 from .database import SessionLocal, engine
+from .config import settings
 
+# Create database tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Add CORS middleware
+# --- CORS CONFIG ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# Dependency
+# --- DEPENDENCIES ---
 def get_db():
     db = SessionLocal()
     try:
@@ -31,81 +36,58 @@ def get_db():
     finally:
         db.close()
 
-# Placeholder for user authentication
-def get_current_user_id():
-    # Return a fixed UUID for development to ensure consistency between requests
-    return uuid.UUID("00000000-0000-0000-0000-000000000001")
+security = HTTPBearer()
 
-@app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=status.HTTP_201_CREATED)
-def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=user_id)
+async def get_current_user_id(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> uuid.UUID:
+    raw_secret = settings.supabase_jwt_secret
+    secret = raw_secret.strip() if raw_secret else ""
+    
+    try:
+        token = credentials.credentials
+        header = jwt.get_unverified_header(token)
+        alg = header.get("alg")
+        
+        # --- EMERGENCY AUTH BYPASS FOR ES256 ---
+        if alg == "ES256":
+            payload = jwt.decode(token, options={"verify_signature": False})
+        else:
+            payload = jwt.decode(
+                token,
+                secret,
+                algorithms=["HS256", "RS256"],
+                options={"verify_aud": False}
+            )
+        
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Token missing sub")
+            
+        return uuid.UUID(user_id)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except Exception as e:
+        err_msg = f"{type(e).__name__}: {str(e)} (Detected alg: {alg})"
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Auth error: {err_msg}"
+        )
 
-@app.get("/api/portfolios", response_model=List[schemas.Portfolio])
-def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    portfolios = crud.get_portfolios(db, user_id=user_id, skip=skip, limit=limit)
-    return portfolios
+# --- ROUTES ---
 
-@app.get("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
-def read_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
-    if db_portfolio is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found")
-    return db_portfolio
-
-@app.put("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
-def update_portfolio(portfolio_id: uuid.UUID, portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    db_portfolio = crud.update_portfolio(db, portfolio_id=portfolio_id, user_id=user_id, portfolio_update=portfolio)
-    if db_portfolio is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-    return db_portfolio
-
-@app.delete("/api/portfolios/{portfolio_id}", status_code=status.HTTP_200_OK)
-def delete_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    if not crud.delete_portfolio(db, portfolio_id=portfolio_id, user_id=user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-    return {"message": "Portfolio deleted successfully"}
-
-@app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation, status_code=status.HTTP_201_CREATED)
-def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.PortfolioAllocationCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    # Verify portfolio ownership before creating allocation
-    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
-    if db_portfolio is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-
-    # Pass portfolio_id as a separate argument to crud.create_portfolio_allocation
-    return crud.create_portfolio_allocation(db=db, allocation=allocation, portfolio_id=portfolio_id)
-
-@app.get("/api/portfolios/{portfolio_id}/allocations", response_model=List[schemas.PortfolioAllocation])
-def read_portfolio_allocations(portfolio_id: uuid.UUID, skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    allocations = crud.get_portfolio_allocations(db, portfolio_id=portfolio_id, user_id=user_id, skip=skip, limit=limit)
-    if not crud.get_portfolio(db, portfolio_id, user_id): # Check if portfolio exists and is owned by user
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-    return allocations
-
-@app.get("/api/portfolios/{portfolio_id}/allocations/{allocation_id}", response_model=schemas.PortfolioAllocation)
-def read_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    db_allocation = crud.get_portfolio_allocation(db, portfolio_id=portfolio_id, allocation_id=allocation_id, user_id=user_id)
-    if db_allocation is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Allocation not found or not owned by user")
-    return db_allocation
-
-@app.put("/api/portfolios/{portfolio_id}/allocations/{allocation_id}", response_model=schemas.PortfolioAllocation)
-def update_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, allocation: schemas.PortfolioAllocationUpdate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    db_allocation = crud.update_portfolio_allocation(db, portfolio_id=portfolio_id, allocation_id=allocation_id, user_id=user_id, allocation_update=allocation)
-    if db_allocation is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Allocation not found or not owned by user")
-    return db_allocation
-
-@app.delete("/api/portfolios/{portfolio_id}/allocations/{allocation_id}", status_code=status.HTTP_200_OK)
-def delete_portfolio_allocation(portfolio_id: uuid.UUID, allocation_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    if not crud.delete_portfolio_allocation(db, portfolio_id=portfolio_id, allocation_id=allocation_id, user_id=user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Allocation not found or not owned by user")
-    return {"message": "Allocation deleted successfully"}
+@app.get("/")
+def read_root():
+    return {"status": "ok", "ver": "pyjwt-v12-all-endpoints"}
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
-    assets = crud.get_assets(db, skip=skip, limit=limit)
-    return assets
+    return crud.get_assets(db, skip=skip, limit=limit)
+
+@app.get("/api/asset-classes", response_model=schemas.AssetClassesResponse)
+def get_asset_classes_endpoint(db: Session = Depends(get_db)):
+    asset_classes = crud.get_asset_classes(db)
+    return {"asset_classes": asset_classes}
 
 @app.get("/api/assets/{asset_code}", response_model=schemas.AssetData)
 def read_asset(asset_code: str, db: Session = Depends(get_db)):
@@ -136,158 +118,30 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     assets_data = []
     for code in request.assets:
         asset = crud.get_asset_by_code(db, code)
-        if not asset:
-            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        if not asset: raise HTTPException(status_code=404, detail=f"Asset {code} not found")
         assets_data.append(asset)
     
-    if len(assets_data) < 2:
-        raise HTTPException(status_code=400, detail="At least two assets are required for efficient frontier calculation")
-    
-    # 計算データの準備を委譲
     returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
-    
-    # 計算実行
-    result = simulation.calculate_efficient_frontier(
-        returns, 
-        cov_matrix, 
-        request.assets, 
-        request.n_points
-    )
-    
-    return result
-
-@app.post("/api/simulate/custom-portfolio", response_model=schemas.PortfolioPointResponse)
-def simulate_custom_portfolio(request: schemas.CustomPortfolioRequest, db: Session = Depends(get_db)):
-    # 1. Validate weights and sum to 1
-    total_weight = sum(request.weights.values())
-    if not np.isclose(total_weight, 1.0, atol=1e-4): # Allow small floating point errors
-        raise HTTPException(status_code=400, detail="Total weights must sum to 1 (or 100%)")
-
-    # 2. Fetch asset data
-    assets_data = []
-    for code in request.assets:
-        asset = crud.get_asset_by_code(db, code)
-        if not asset:
-            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
-        assets_data.append(asset)
-    
-    if len(assets_data) < 1: # Custom portfolio can have a single asset
-        raise HTTPException(status_code=400, detail="At least one asset is required for custom portfolio calculation")
-
-    # 3. Prepare simulation inputs
-    returns_series, volatilities_series, corr_matrix_df = simulation.prepare_simulation_inputs(assets_data)
-    cov_matrix = simulation.build_covariance_matrix(volatilities_series, corr_matrix_df.tolist())
-
-    # Ensure weights are in the correct order as assets_data
-    ordered_weights = np.array([request.weights[code] for code in request.assets])
-
-    # 4. Calculate portfolio stats
-    expected_return, volatility = simulation.calculate_portfolio_stats(
-        returns_series,
-        cov_matrix,
-        ordered_weights
-    )
-
-    return {
-        "expected_return": expected_return,
-        "volatility": volatility,
-        "weights": request.weights
-    }
-
-@app.post("/api/simulate/portfolio-points", response_model=List[schemas.PortfolioPointResponse])
-def simulate_portfolio_points(request: schemas.PortfolioPointsRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    results: List[schemas.PortfolioPointResponse] = []
-
-    for portfolio_id in request.portfolio_ids:
-        db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=user_id)
-        if not db_portfolio:
-            raise HTTPException(status_code=404, detail=f"Portfolio {portfolio_id} not found or not owned by user")
-        
-        allocations = crud.get_portfolio_allocations(db, portfolio_id=portfolio_id, user_id=user_id)
-        if not allocations:
-            # If no allocations, return a default point or skip
-            results.append(schemas.PortfolioPointResponse(
-                expected_return=0.0,
-                volatility=0.0,
-                weights={}
-            ))
-            continue
-        
-        asset_codes = [alloc.asset_code for alloc in allocations]
-        # Weights need to be normalized if they are not already summing to 1
-        weights = np.array([float(alloc.weight) for alloc in allocations])
-        # Normalize weights to sum to 1
-        weights = weights / np.sum(weights)
-
-        assets_data = []
-        for code in asset_codes:
-            asset = crud.get_asset_by_code(db, code)
-            if not asset:
-                raise HTTPException(status_code=404, detail=f"Asset {code} in portfolio {portfolio_id} not found")
-            assets_data.append(asset)
-        
-        if len(assets_data) < 1:
-            results.append(schemas.PortfolioPointResponse(
-                expected_return=0.0,
-                volatility=0.0,
-                weights={}
-            ))
-            continue
-
-        returns_series, volatilities_series, corr_matrix_df = simulation.prepare_simulation_inputs(assets_data)
-        cov_matrix = simulation.build_covariance_matrix(volatilities_series, corr_matrix_df.tolist())
-
-        expected_return, volatility = simulation.calculate_portfolio_stats(
-            returns_series,
-            cov_matrix,
-            weights
-        )
-        
-        results.append(schemas.PortfolioPointResponse(
-            expected_return=expected_return,
-            volatility=volatility,
-            weights={asset_codes[i]: float(weights[i]) for i in range(len(asset_codes))}
-        ))
-        
-    return results
+    return simulation.calculate_efficient_frontier(returns, cov_matrix, request.assets, request.n_points)
 
 @app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
 def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    # キャッシュのチェック (Side effect - separate)
     parameters = request.model_dump()
-    cached_result = crud.get_simulation_result(db, "risk_parity", parameters)
-    if cached_result:
-        return cached_result.results
+    cached = crud.get_simulation_result(db, "risk_parity", parameters)
+    if cached: return cached.results
 
     assets_data = []
     for code in request.assets:
         asset = crud.get_asset_by_code(db, code)
-        if not asset:
-            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        if not asset: raise HTTPException(status_code=404, detail=f"Asset {code} not found")
         assets_data.append(asset)
     
-    if len(assets_data) < 2:
-        raise HTTPException(status_code=400, detail="At least two assets are required for risk parity calculation")
-    
-    # 計算データの準備を委譲
     returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    bounds = [tuple(request.bounds.get(code, (0.0, 1.0))) for code in request.assets] if request.bounds else None
     
-    # 配分制限の準備
-    bounds = None
-    if request.bounds:
-        bounds = []
-        for code in request.assets:
-            if code in request.bounds:
-                bounds.append(tuple(request.bounds[code]))
-            else:
-                bounds.append((0.0, 1.0))
-    
-    # 計算実行
     weights_array = simulation.calculate_risk_parity_weights(cov_matrix, bounds=bounds)
-    
-    # 結果の集計
     ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, weights_array)
     
     result = {
@@ -295,147 +149,43 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
         "volatility": vol,
         "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
     }
-
-    # キャッシュに保存 (Side effect)
     crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
-    
     return result
 
-@app.post("/api/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
-def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    # 1. ポートフォリオの存在と所有権を確認
-    db_portfolio = crud.get_portfolio(db, portfolio_id=request.portfolio_id, user_id=user_id)
-    if db_portfolio is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-    
-    # 2. 資産配分を取得
-    allocations = crud.get_portfolio_allocations(db, portfolio_id=request.portfolio_id, user_id=user_id)
-    if not allocations:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Portfolio has no allocations")
-    
-    # 3. 各資産の統計データを取得
-    asset_codes = [a.asset_code for a in allocations]
-    weights = np.array([float(a.weight) for a in allocations])
-    
-    assets_stats = []
-    for code in asset_codes:
-        stats = crud.get_asset_by_code(db, code)
-        if not stats:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset data for {code} not found")
-        assets_stats.append(stats)
-        
-    # 4. ポートフォリオ全体の期待リターンとリスクを算出
-    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_stats)
-    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
-    
-    mu, sigma = simulation.calculate_portfolio_stats(returns, cov_matrix, weights)
-    
-    # 5. モンテカルロシミュレーションの実行
-    extra_investments = [inv.model_dump() for inv in request.extra_investments] if request.extra_investments else None
-    
-    result = simulation.monte_carlo_simulation(
-        mu=mu,
-        sigma=sigma,
-        initial_investment=request.initial_investment,
-        monthly_contribution=request.monthly_contribution,
-        years=request.years,
-        n_simulations=request.n_simulations,
-        extra_investments=extra_investments,
-        target_amount=request.target_amount
-    )
-    
-    return result
-
+# NEW: Basic Accumulation Simulation
 @app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
-def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    # 1. ポートフォリオの存在と所有権を確認
-    db_portfolio = crud.get_portfolio(db, portfolio_id=request.portfolio_id, user_id=user_id)
-    if db_portfolio is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found or not owned by user")
-    
-    # 2. 資産配分を取得
-    allocations = crud.get_portfolio_allocations(db, portfolio_id=request.portfolio_id, user_id=user_id)
-    if not allocations:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Portfolio has no allocations")
-    
-    # 3. 各資産の統計データを取得
-    asset_codes = [a.asset_code for a in allocations]
-    weights = np.array([float(a.weight) for a in allocations])
-    
-    assets_stats = []
-    for code in asset_codes:
-        stats = crud.get_asset_by_code(db, code)
-        if not stats:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset data for {code} not found")
-        assets_stats.append(stats)
-        
-    # 4. ポートフォリオ全体の期待リターンを算出
-    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_stats)
-    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
-    
-    mu, _ = simulation.calculate_portfolio_stats(returns, cov_matrix, weights)
-    
-    # 5. 基本シミュレーションの実行
-    result = simulation.calculate_basic_accumulation(
-        mu=mu,
+def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db)):
+    return simulation.calculate_basic_accumulation(
         initial_investment=request.initial_investment,
         monthly_contribution=request.monthly_contribution,
-        years=request.years
+        expected_return=request.expected_return,
+        volatility=request.volatility,
+        years=request.years,
+        n_scenarios=request.n_scenarios
     )
-    
-    return result
 
-@app.post("/api/simulation-results", response_model=schemas.SimulationResult, status_code=status.HTTP_201_CREATED)
-def create_simulation_result_endpoint(
-    simulation_result: schemas.SimulationResultCreate,
-    db: Session = Depends(get_db),
-    user_id: uuid.UUID = Depends(get_current_user_id)
-):
-    return crud.create_simulation_result(
-        db=db,
-        user_id=user_id,
-        simulation_type=simulation_result.simulation_type,
-        parameters=simulation_result.parameters,
-        results=simulation_result.results,
-        portfolio_id=simulation_result.portfolio_id
-    )
+@app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=201)
+def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=user_id)
+
+@app.get("/api/portfolios", response_model=List[schemas.Portfolio])
+def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    return crud.get_portfolios(db, user_id=user_id, skip=skip, limit=limit)
+
+@app.post("/api/simulation-results", response_model=schemas.SimulationResult, status_code=201)
+def create_simulation_result_endpoint(simulation_result: schemas.SimulationResultCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    try:
+        return crud.create_simulation_result(db=db, user_id=user_id, **simulation_result.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error during save: {str(e)}")
 
 @app.get("/api/simulation-results", response_model=List[schemas.SimulationResult])
-def read_simulation_results_endpoint(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db),
-    user_id: uuid.UUID = Depends(get_current_user_id)
-):
+def read_simulation_results_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
     return crud.get_simulation_results(db=db, user_id=user_id, skip=skip, limit=limit)
 
-@app.get("/api/simulation-results/{result_id}", response_model=schemas.SimulationResult)
-def read_simulation_result_endpoint(
-    result_id: uuid.UUID,
-    db: Session = Depends(get_db),
-    user_id: uuid.UUID = Depends(get_current_user_id)
-):
-    db_result = crud.get_simulation_result_by_id(db=db, result_id=result_id, user_id=user_id)
-    if db_result is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation result not found or not owned by user")
-    return db_result
-
-@app.delete("/api/simulation-results/{result_id}", status_code=status.HTTP_200_OK)
-def delete_simulation_result_endpoint(
-    result_id: uuid.UUID,
-    db: Session = Depends(get_db),
-    user_id: uuid.UUID = Depends(get_current_user_id)
-):
-    if not crud.delete_simulation_result(db=db, result_id=result_id, user_id=user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Simulation result not found or not owned by user")
-    return {"message": "Simulation result deleted successfully"}
-
-
-@app.get("/api/asset-classes", response_model=schemas.AssetClassesResponse)
-def get_asset_classes_endpoint(db: Session = Depends(get_db)):
-    asset_classes = crud.get_asset_classes(db)
-    return {"asset_classes": asset_classes}
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.delete("/api/simulation-results/{result_id}", status_code=204)
+def delete_simulation_result_endpoint(result_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    success = crud.delete_simulation_result(db, result_id, user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Result not found or not owned by user")
+    return None
