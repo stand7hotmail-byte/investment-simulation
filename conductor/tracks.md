@@ -38,3 +38,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Implement Asset Allocations Management API**
   *Link: [./tracks/implement_asset_allocations_api_20260121/](./tracks/implement_asset_allocations_api_20260121/)*
+
+---
+
+## 🚀 Active Tracks
+
+- [ ] **Track: クリーン・ミニマルなUI改善とダッシュボードの導入**
+  *Link: [./tracks/ui_enhancement_and_dashboard_20260303/](./tracks/ui_enhancement_and_dashboard_20260303/)*
