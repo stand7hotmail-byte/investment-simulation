@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## ✅ Completed Tracks
 
+- [x] **Track: 本番環境へのデプロイと公開**
+  *Link: [./tracks/deployment_and_production_setup_20260304/](./tracks/deployment_and_production_setup_20260304/)*
+
 - [x] **Track: クリーン・ミニマルなUI改善とダッシュボードの導入**
   *Link: [./archive/ui_enhancement_and_dashboard_20260303/](./archive/ui_enhancement_and_dashboard_20260303/)*
 
@@ -48,6 +51,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-- [ ] **Track: 本番環境へのデプロイと公開**
-  *Link: [./tracks/deployment_and_production_setup_20260304/](./tracks/deployment_and_production_setup_20260304/)*
+- [ ] **Track: ログ解析による統計表示スキルの作成**
+  *Link: [./tracks/log_stats_skill_20260304/](./tracks/log_stats_skill_20260304/)*
+
 
