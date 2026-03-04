@@ -7,7 +7,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## ✅ Completed Tracks
 
 - [x] **Track: クリーン・ミニマルなUI改善とダッシュボードの導入**
-  *Link: [./tracks/ui_enhancement_and_dashboard_20260303/](./tracks/ui_enhancement_and_dashboard_20260303/)*
+  *Link: [./archive/ui_enhancement_and_dashboard_20260303/](./archive/ui_enhancement_and_dashboard_20260303/)*
 
 - [x] **Track: 多くの資産の過去データを利用したい。**
   *Link: [./archive/expand_asset_universe_20260219/](./archive/expand_asset_universe_20260219/)*
