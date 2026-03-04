@@ -14,7 +14,10 @@ vi.mock('@/lib/api', () => ({
 // Mock next/dynamic to return our mock Plotly component directly
 vi.mock('next/dynamic', () => ({
   default: () => {
-    const MockPlot = ({ layout }: any) => <div data-testid="mock-plotly">{layout?.title}</div>;
+    const MockPlot = ({ layout }: any) => {
+      const title = typeof layout?.title === 'object' ? layout.title.text : layout?.title;
+      return <div data-testid="mock-plotly">{title}</div>;
+    };
     return MockPlot;
   }
 }));

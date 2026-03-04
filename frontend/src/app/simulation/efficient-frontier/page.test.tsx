@@ -55,9 +55,9 @@ describe("EfficientFrontierPage", () => {
 
     render(<EfficientFrontierPage />, { wrapper });
 
-    expect(screen.getByText("Efficient Frontier Simulation")).toBeInTheDocument();
+    expect(screen.getByText("Efficient Frontier")).toBeInTheDocument();
     expect(screen.getByTestId("asset-selector")).toBeInTheDocument();
-    expect(screen.getByText("No results yet")).toBeInTheDocument();
+    expect(screen.getByText("Ready to Analyze")).toBeInTheDocument();
   });
 
   it("triggers simulation and displays results including risk parity", async () => {

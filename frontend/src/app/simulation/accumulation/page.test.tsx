@@ -36,11 +36,11 @@ describe("AccumulationPage", () => {
   it("renders the simulation input form", () => {
     render(<AccumulationPage />);
     
-    expect(screen.getByText("Accumulation Simulation")).toBeDefined();
+    expect(screen.getByText("Accumulation Sim")).toBeDefined();
     expect(screen.getByLabelText(/Initial Investment/i)).toBeDefined();
     expect(screen.getByLabelText(/Monthly Contribution/i)).toBeDefined();
-    expect(screen.getByLabelText(/Investment Period/i)).toBeDefined();
-    expect(screen.getByLabelText(/Select Portfolio/i)).toBeDefined();
+    expect(screen.getByLabelText(/Period/i)).toBeDefined();
+    expect(screen.getByLabelText(/Target Portfolio/i)).toBeDefined();
   });
 
   it("submits the form and displays results", async () => {
@@ -60,10 +60,10 @@ describe("AccumulationPage", () => {
     // Fill the form
     fireEvent.change(screen.getByLabelText(/Initial Investment/i), { target: { value: "1000000" } });
     fireEvent.change(screen.getByLabelText(/Monthly Contribution/i), { target: { value: "10000" } });
-    fireEvent.change(screen.getByLabelText(/Investment Period/i), { target: { value: "10" } });
+    fireEvent.change(screen.getByLabelText(/Period/i), { target: { value: "10" } });
     
     // Select portfolio
-    fireEvent.change(screen.getByLabelText(/Select Portfolio/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/Target Portfolio/i), { target: { value: "1" } });
 
     // Submit - Use queryAll and take the first one to be safe, though there should only be one
     const submitBtns = screen.queryAllByRole("button", { name: /Run Simulation/i });
