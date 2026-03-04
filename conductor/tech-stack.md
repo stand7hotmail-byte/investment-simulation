@@ -1,7 +1,7 @@
 # 完全技術スタック仕様書
 ## 投資シミュレーション&データ可視化Webアプリケーション
 
-**最終更新:** 2026年2月21日  
+**最終更新:** 2026年3月4日  
 **想定規模:** 100-1,000ユーザー  
 **開発体制:** 個人開発  
 **予算:** Railway Starter ($5/月) + その他無料枠
@@ -46,7 +46,8 @@
    - 効率的フロンティア曲線
    - 資産価格推移（折れ線グラフ）
    - 相関行列ヒートマップ
-   - アニメーション付きシミュレーション結果
+   - **マーケットサマリー・ダッシュボード:** 主要資産の直近価格とトレンド（Sparkline）の可視化
+   - **クリーン・ミニマルUI:** カードベースの整理されたレイアウト
 
 ### 非機能要件
 
@@ -121,9 +122,9 @@
 | **Framework** | Next.js | 14.x (App Router) | ルーティング、レイアウト、静的ビルド |
 | **Language** | TypeScript | 5.x | 型安全性、開発効率 |
 | **Runtime** | React | 18.x | UIコンポーネント |
-| **Styling** | Tailwind CSS | 3.x | ユーティリティファーストCSS |
+| **Styling** | Tailwind CSS | 4.x | ユーティリティファーストCSS |
 | **UI Components** | shadcn/ui | Latest | フォーム、ダイアログ、テーブル等 |
-| **State Management** | Zustand | 4.x | グローバルUI状態管理 |
+| **State Management** | Zustand | 4.x | グローバルUI・UI永続化状態管理 |
 | **Data Fetching** | TanStack Query | 5.x | サーバー状態管理、キャッシング |
 | **Form Management** | React Hook Form | 7.x | フォーム管理 |
 | **Validation** | Zod | 3.x | スキーマバリデーション |
@@ -145,7 +146,7 @@
 | **科学計算** | SciPy | 1.11+ | 最適化、統計関数 |
 | **データ収集** | yfinance | Latest | 過去の金融データ取得 |
 | **最適化** | cvxpy | 1.4+ | 凸最適化（効率的フロンティア） |
-| **Auth** | python-jose | 3.3+ | JWT検証 |
+| **Auth** | PyJWT | 2.11+ | JWT検証（ python-jose から移行） |
 | **HTTP Client** | httpx | 0.26+ | Supabase API呼び出し |
 | **Environment** | python-dotenv | 1.0+ | 環境変数管理 |
 
@@ -164,7 +165,7 @@
 | カテゴリ | 技術 | 用途 |
 |---------|------|------|
 | **Provider** | Supabase Auth | ユーザー認証・JWT発行 |
-| **Strategy** | JWT (RS256) | トークンベース認証 |
+| **Strategy** | JWT (RS256/ES256) | トークンベース認証 |
 | **Storage** | httpOnly Cookie (Optional) | XSS対策 |
 
 ### Deployment
@@ -477,13 +478,14 @@ INSERT INTO asset_data (asset_code, name, asset_class, expected_return, volatili
 | `/api/simulate/risk-parity` | POST | リスクパリティ戦略算出 |
 | `/api/simulate/rebalance` | POST | リバランス提案計算 |
 
-#### マスタデータ
+#### マスタデータ・サマリー
 
 | エンドポイント | メソッド | 説明 |
 |--------------|---------|------|
 | `/api/assets` | GET | 利用可能資産一覧取得 |
 | `/api/assets/{code}` | GET | 資産詳細取得 |
 | `/api/asset-classes` | GET | 利用可能なアセットクラス（株式、債券等）の一覧取得 |
+| `/api/market-summary` | GET | 主要資産の直近価格とトレンド（ダッシュボード用） |
 
 ### リクエスト/レスポンス例
 
@@ -890,8 +892,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 # backend/app/auth.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt
-import httpx
+import jwt  # PyJWT
 import os
 
 security = HTTPBearer()
@@ -918,7 +919,7 @@ async def get_current_user(
                 detail="Invalid authentication credentials"
             )
         return user_id
-    except JWTError:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
@@ -1198,7 +1199,7 @@ const MonteCarloChart = dynamic(
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2026-02-04  
-**Status:** Core simulation features (Efficient Frontier, Risk Parity) and backend caching mechanism implemented.
+**Document Version:** 1.1  
+**Last Updated:** 2026-03-04  
+**Status:** Dashboard and Clean UI implemented. Backend enhanced with PyJWT and market-summary endpoints.
 **Author:** Investment Simulator Development Team.co
