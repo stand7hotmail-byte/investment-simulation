@@ -51,7 +51,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-- [~] **Track: ログ解析による統計表示スキルの作成**
+- [x] **Track: ログ解析による統計表示スキルの作成**
   *Link: [./tracks/log_stats_skill_20260304/](./tracks/log_stats_skill_20260304/)*
 
 
