@@ -6,7 +6,21 @@ import os
 # Add scripts directory to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 
-from log_stats import parse_log_line, extract_latest_session, aggregate_skills, aggregate_tools, aggregate_errors
+from log_stats import parse_log_line, extract_latest_session, aggregate_skills, aggregate_tools, aggregate_errors, format_table
+
+def test_format_table():
+    title = "Skill Stats"
+    headers = ["Skill Name", "Count"]
+    data = {
+        "skill-1": 2,
+        "skill-2": 1
+    }
+    table = format_table(title, headers, data)
+    assert title in table
+    assert headers[0] in table
+    assert headers[1] in table
+    assert "skill-1" in table
+    assert "2" in table
 
 def test_aggregate_errors():
     logs = [

@@ -74,3 +74,68 @@ def aggregate_errors(logs):
             if tool_name:
                 errors[tool_name] = errors.get(tool_name, 0) + 1
     return errors
+
+def format_table(title, headers, data):
+    """
+    Formats a dictionary as an ASCII table.
+    """
+    if not data:
+        return f"\n### {title}\nNo data to display.\n"
+    
+    # Calculate column widths
+    col1_width = max(len(headers[0]), max((len(str(k)) for k in data.keys()), default=0))
+    col2_width = max(len(headers[1]), max((len(str(v)) for v in data.values()), default=0))
+    
+    # Build the table
+    lines = []
+    lines.append(f"\n### {title}")
+    
+    separator = f"+-{'-' * col1_width}-+-{'-' * col2_width}-+"
+    header_row = f"| {headers[0]:<{col1_width}} | {headers[1]:<{col2_width}} |"
+    
+    lines.append(separator)
+    lines.append(header_row)
+    lines.append(separator)
+    
+    for key, value in sorted(data.items(), key=lambda x: x[1], reverse=True):
+        row = f"| {str(key):<{col1_width}} | {str(value):<{col2_width}} |"
+        lines.append(row)
+    
+    lines.append(separator)
+    return "\n".join(lines)
+
+def main(log_file_path):
+    """
+    Main entry point for log analysis.
+    """
+    if not os.path.exists(log_file_path):
+        print(f"Error: Log file not found at {log_file_path}")
+        return
+    
+    with open(log_file_path, 'r') as f:
+        lines = f.readlines()
+    
+    logs = extract_latest_session(lines)
+    if not logs:
+        print("No session data found in the log file.")
+        return
+    
+    # Aggregations
+    skills = aggregate_skills(logs)
+    tools = aggregate_tools(logs)
+    errors = aggregate_errors(logs)
+    
+    # Output tables
+    print(format_table("Skill Invocation Statistics", ["Skill Name", "Count"], skills))
+    print(format_table("Tool Invocation Statistics", ["Tool Name", "Count"], tools))
+    print(format_table("Error Frequency Statistics", ["Tool Name", "Count"], errors))
+
+if __name__ == "__main__":
+    import sys
+    import os
+    
+    path = "dev_server.log"
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    
+    main(path)
