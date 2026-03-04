@@ -44,5 +44,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+---
+
 ## 🚀 Active Tracks
+
+- [ ] **Track: 本番環境へのデプロイと公開**
+  *Link: [./tracks/deployment_and_production_setup_20260304/](./tracks/deployment_and_production_setup_20260304/)*
 
