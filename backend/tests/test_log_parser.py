@@ -22,3 +22,40 @@ def test_parse_empty_line():
     line = ''
     result = parse_log_line(line)
     assert result is None
+
+def test_extract_latest_session_single_session():
+    from app.log_utils import extract_latest_session
+    logs = [
+        '{"timestamp": "2026-03-04T12:00:00Z", "message": "Gemini CLI started"}',
+        '{"timestamp": "2026-03-04T12:01:00Z", "message": "doing work"}'
+    ]
+    result = extract_latest_session(logs)
+    assert len(result) == 2
+    assert result[0]["message"] == "Gemini CLI started"
+
+def test_extract_latest_session_multiple_sessions():
+    from app.log_utils import extract_latest_session
+    logs = [
+        '{"timestamp": "2026-03-04T11:00:00Z", "message": "Gemini CLI started"}',
+        '{"timestamp": "2026-03-04T11:01:00Z", "message": "old session data"}',
+        '{"timestamp": "2026-03-04T12:00:00Z", "message": "Gemini CLI started"}',
+        '{"timestamp": "2026-03-04T12:01:00Z", "message": "new session data"}'
+    ]
+    result = extract_latest_session(logs)
+    assert len(result) == 2
+    assert result[0]["message"] == "Gemini CLI started"
+    assert result[1]["message"] == "new session data"
+
+def test_extract_latest_session_no_start_marker():
+    from app.log_utils import extract_latest_session
+    logs = [
+        '{"timestamp": "2026-03-04T12:01:00Z", "message": "new session data"}'
+    ]
+    result = extract_latest_session(logs)
+    assert len(result) == 1
+    assert result[0]["message"] == "new session data"
+
+def test_extract_latest_session_empty_logs():
+    from app.log_utils import extract_latest_session
+    result = extract_latest_session([])
+    assert result == []
