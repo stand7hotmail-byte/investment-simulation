@@ -6,14 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { usePortfolios } from "@/hooks/usePortfolios";
 import { fetchApi } from "@/lib/api";
-import { BasicAccumulationResponse, BasicAccumulationRequest } from "@/types/simulation";
+import { BasicAccumulationResponse } from "@/types/simulation";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
-import { TrendingUp, Wallet, Calendar } from "lucide-react";
+import { TrendingUp, Wallet, Calendar, Calculator, Info } from "lucide-react";
 
 const Plot = dynamic(() => import("react-plotly.js"), { 
   ssr: false,
@@ -69,8 +69,8 @@ export default function AccumulationPage() {
       type: 'scatter',
       mode: 'lines+markers',
       name: 'Projected Value',
-      line: { color: '#10b981', width: 3 },
-      marker: { color: '#10b981', size: 6 },
+      line: { color: 'rgb(59 130 246)', width: 3 },
+      marker: { color: 'rgb(59 130 246)', size: 6 },
       hovertemplate: 'Year %{x}: ¥%{y:,.0f}<extra></extra>',
     }
   ] : [];
@@ -78,36 +78,39 @@ export default function AccumulationPage() {
   const layout = {
     autosize: true,
     height: 400,
-    margin: { l: 80, r: 20, t: 40, b: 60 },
-    xaxis: { title: { text: 'Years' }, fixedrange: true },
-    yaxis: { title: { text: 'Portfolio Value (¥)' }, tickformat: ',.0f', fixedrange: true },
+    margin: { l: 80, r: 20, t: 20, b: 60 },
+    xaxis: { title: { text: 'Years' }, fixedrange: true, gridcolor: "#f1f5f9" },
+    yaxis: { title: { text: 'Value (¥)' }, tickformat: ',.0f', fixedrange: true, gridcolor: "#f1f5f9" },
     hovermode: 'x unified' as const,
     plot_bgcolor: "white",
     paper_bgcolor: "white",
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto py-8 px-4">
+    <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Accumulation Simulation</h1>
-        <p className="text-slate-500">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Accumulation Sim</h1>
+        <p className="text-slate-500 text-lg">
           Estimate the future value of your portfolio based on initial investment and monthly contributions.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Input Section */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Simulation Parameters</CardTitle>
-              <CardDescription>Enter your investment details</CardDescription>
+        <div className="lg:col-span-4 space-y-6">
+          <Card className="border-none shadow-sm bg-white">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-indigo-500" />
+                <CardTitle className="text-lg">Parameters</CardTitle>
+              </div>
+              <CardDescription>Configure your investment plan</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="portfolio_id" className="flex items-center gap-2">
-                    <Wallet className="h-4 w-4" /> Select Portfolio
+                  <Label htmlFor="portfolio_id" className="text-sm font-medium">
+                    Target Portfolio
                   </Label>
                   <select
                     id="portfolio_id"
@@ -125,42 +128,48 @@ export default function AccumulationPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="initial_investment" className="flex items-center gap-2">
-                    ¥ Initial Investment
+                  <Label htmlFor="initial_investment" className="text-sm font-medium">
+                    Initial Investment (¥)
                   </Label>
                   <Input
                     id="initial_investment"
                     type="number"
+                    className="h-10"
                     {...register("initial_investment", { valueAsNumber: true })}
                   />
                   {errors.initial_investment && <p className="text-xs text-destructive">{errors.initial_investment.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="monthly_contribution" className="flex items-center gap-2">
-                    ¥ Monthly Contribution
+                  <Label htmlFor="monthly_contribution" className="text-sm font-medium">
+                    Monthly Contribution (¥)
                   </Label>
                   <Input
                     id="monthly_contribution"
                     type="number"
+                    className="h-10"
                     {...register("monthly_contribution", { valueAsNumber: true })}
                   />
                   {errors.monthly_contribution && <p className="text-xs text-destructive">{errors.monthly_contribution.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="years" className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" /> Investment Period (Years)
+                  <Label htmlFor="years" className="text-sm font-medium">
+                    Period (Years)
                   </Label>
-                  <Input
-                    id="years"
-                    type="number"
-                    {...register("years", { valueAsNumber: true })}
-                  />
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id="years"
+                      type="number"
+                      className="h-10"
+                      {...register("years", { valueAsNumber: true })}
+                    />
+                    <Calendar className="h-5 w-5 text-slate-400" />
+                  </div>
                   {errors.years && <p className="text-xs text-destructive">{errors.years.message}</p>}
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isSimulating || portfoliosLoading}>
+                <Button type="submit" className="w-full h-11 text-base font-medium shadow-sm" disabled={isSimulating || portfoliosLoading}>
                   {isSimulating ? "Calculating..." : "Run Simulation"}
                 </Button>
               </form>
@@ -169,50 +178,54 @@ export default function AccumulationPage() {
         </div>
 
         {/* Results Section */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-8 space-y-6">
           {results ? (
-            <>
-              <Card className="bg-emerald-50 border-emerald-100">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-emerald-900 text-sm font-medium uppercase tracking-wider">Projected Final Value</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-emerald-700">
-                      ¥{results.final_value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                    </span>
-                    <TrendingUp className="h-6 w-6 text-emerald-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Confidence Interval Display */}
-              {results.confidence_interval_95 && (
-                <Card className="bg-blue-50 border-blue-100">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-none shadow-sm bg-primary text-primary-foreground">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-blue-900 text-sm font-medium uppercase tracking-wider">
-                      95% Confidence Interval (Final Value)
-                    </CardTitle>
+                    <CardDescription className="text-primary-foreground/70 uppercase text-xs font-bold tracking-wider">
+                      Projected Final Value
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex flex-col gap-1">
-                      <p className="text-lg text-blue-700">
-                        Lower Bound: ¥{results.confidence_interval_95.lower_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </p>
-                      <p className="text-lg text-blue-700">
-                        Upper Bound: ¥{results.confidence_interval_95.upper_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold">
+                        ¥{results.final_value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </span>
+                      <TrendingUp className="h-6 w-6 text-primary-foreground/50" />
                     </div>
                   </CardContent>
                 </Card>
-              )}
 
-              <Card>
+                {results.confidence_interval_95 && (
+                  <Card className="border-none shadow-sm bg-white">
+                    <CardHeader className="pb-2">
+                      <CardDescription className="text-slate-500 uppercase text-xs font-bold tracking-wider">
+                        95% Confidence Range
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col justify-center">
+                      <div className="text-sm font-medium text-slate-900">
+                        Lower: <span className="text-rose-600 font-bold">¥{results.confidence_interval_95.lower_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
+                      <div className="text-sm font-medium text-slate-900">
+                        Upper: <span className="text-emerald-600 font-bold">¥{results.confidence_interval_95.upper_bound.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              <Card className="border-none shadow-sm bg-white overflow-hidden">
                 <CardHeader>
-                  <CardTitle>Growth Projection</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-xl">Growth Projection</CardTitle>
+                    <Info className="h-4 w-4 text-slate-400" />
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="w-full overflow-hidden rounded-md border border-slate-100 bg-white">
+                <CardContent className="p-0 sm:p-6">
+                  <div className="w-full bg-white">
                     <Plot
                       data={chartData as any}
                       layout={layout as any}
@@ -223,23 +236,23 @@ export default function AccumulationPage() {
                   </div>
                 </CardContent>
               </Card>
-            </>
+            </div>
           ) : (
-            <div className="flex h-full min-h-[400px] items-center justify-center bg-white rounded-xl border-2 border-dashed border-slate-200 text-slate-400 text-center p-8 shadow-inner">
-              <div className="max-w-xs space-y-4">
-                <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                  <TrendingUp className="h-8 w-8 text-slate-300" />
+            <Card className="h-full min-h-[500px] flex flex-col items-center justify-center border-dashed border-2 bg-white/50 text-center border-slate-200">
+              <div className="max-w-xs space-y-4 px-6">
+                <div className="bg-white shadow-sm w-20 h-20 rounded-3xl flex items-center justify-center mx-auto">
+                  <TrendingUp className="h-10 w-10 text-primary/40" />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-lg font-medium text-slate-500">
+                  <p className="text-xl font-semibold text-slate-900">
                     Ready to Simulate
                   </p>
-                  <p className="text-sm">
+                  <p className="text-slate-500">
                     Select a portfolio and enter your investment goals to see how your wealth could grow over time.
                   </p>
                 </div>
               </div>
-            </div>
+            </Card>
           )}
         </div>
       </div>
