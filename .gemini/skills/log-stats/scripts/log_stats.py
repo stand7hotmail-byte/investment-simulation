@@ -35,3 +35,42 @@ def extract_latest_session(lines):
         return []
     
     return parsed_logs[latest_start_index:]
+
+def aggregate_skills(logs):
+    """
+    Aggregates skill activations from logs.
+    Returns a dictionary of skill names and their activation counts.
+    """
+    skills = {}
+    for log in logs:
+        if log.get("event") == "activate_skill":
+            skill_name = log.get("skill")
+            if skill_name:
+                skills[skill_name] = skills.get(skill_name, 0) + 1
+    return skills
+
+def aggregate_tools(logs):
+    """
+    Aggregates tool calls from logs.
+    Returns a dictionary of tool names and their call counts.
+    """
+    tools = {}
+    for log in logs:
+        if log.get("event") == "tool_call":
+            tool_name = log.get("tool")
+            if tool_name:
+                tools[tool_name] = tools.get(tool_name, 0) + 1
+    return tools
+
+def aggregate_errors(logs):
+    """
+    Aggregates errors from logs.
+    Returns a dictionary of tool names and their error counts.
+    """
+    errors = {}
+    for log in logs:
+        if log.get("event") == "tool_result" and log.get("status") == "failure":
+            tool_name = log.get("tool")
+            if tool_name:
+                errors[tool_name] = errors.get(tool_name, 0) + 1
+    return errors

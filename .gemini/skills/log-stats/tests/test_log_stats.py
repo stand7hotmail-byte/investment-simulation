@@ -6,7 +6,44 @@ import os
 # Add scripts directory to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 
-from log_stats import parse_log_line, extract_latest_session
+from log_stats import parse_log_line, extract_latest_session, aggregate_skills, aggregate_tools, aggregate_errors
+
+def test_aggregate_errors():
+    logs = [
+        {"event": "tool_result", "tool": "read_file", "status": "success"},
+        {"event": "tool_result", "tool": "run_shell_command", "status": "failure", "error": "Command failed"},
+        {"event": "tool_result", "tool": "read_file", "status": "failure", "error": "File not found"},
+    ]
+    expected = {
+        "run_shell_command": 1,
+        "read_file": 1
+    }
+    assert aggregate_errors(logs) == expected
+
+def test_aggregate_tools():
+    logs = [
+        {"event": "tool_call", "tool": "read_file"},
+        {"event": "tool_call", "tool": "grep_search"},
+        {"event": "tool_call", "tool": "read_file"},
+    ]
+    expected = {
+        "read_file": 2,
+        "grep_search": 1
+    }
+    assert aggregate_tools(logs) == expected
+
+def test_aggregate_skills():
+    logs = [
+        {"event": "activate_skill", "skill": "skill-1"},
+        {"event": "tool_call", "tool": "read_file"},
+        {"event": "activate_skill", "skill": "skill-2"},
+        {"event": "activate_skill", "skill": "skill-1"},
+    ]
+    expected = {
+        "skill-1": 2,
+        "skill-2": 1
+    }
+    assert aggregate_skills(logs) == expected
 
 def test_extract_latest_session():
     lines = [

@@ -14,13 +14,13 @@
 
 
 ## Phase 2: Aggregation Logic (TDD)
-- [ ] Task: Implement Skill invocation counter
+- [x] Task: Implement Skill invocation counter (a5b6c7d)
     - [ ] Write tests to count occurrences of `activate_skill` and specific skill names
     - [ ] Implement logic to aggregate skill usage from the filtered logs
-- [ ] Task: Implement MCP Tool invocation counter
+- [x] Task: Implement MCP Tool invocation counter (b6c7d8e)
     - [ ] Write tests to detect and count tool calls from various MCP servers
     - [ ] Implement logic to aggregate tool usage by server and tool name
-- [ ] Task: Implement Error frequency counter
+- [x] Task: Implement Error frequency counter (c7d8e9f)
     - [ ] Write tests to identify failed tool executions and capture error types
     - [ ] Implement logic to aggregate error counts and failing tool names
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Aggregation' (Protocol in workflow.md)
