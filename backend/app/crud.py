@@ -154,3 +154,39 @@ def get_asset_classes(db: Session) -> List[str]:
         models.AssetData.asset_class.isnot(None)
     ).order_by(models.AssetData.asset_class).all()
     return [ac[0] for ac in asset_classes]
+
+def get_market_summary(db: Session, asset_codes: List[str]) -> List[schemas.MarketSummaryItem]:
+    items = []
+    for code in asset_codes:
+        asset = get_asset_by_code(db, code)
+        if not asset or not asset.historical_prices:
+            continue
+        
+        # historical_prices is a list of dicts like {"date": "...", "price": ...}
+        # Sort by date to ensure we get the latest
+        prices = sorted(asset.historical_prices, key=lambda x: x['date'])
+        if len(prices) < 2:
+            continue
+            
+        current = prices[-1]
+        previous = prices[-2]
+        
+        current_price = float(current['price'])
+        previous_price = float(previous['price'])
+        
+        if previous_price == 0:
+            change_pct = 0.0
+        else:
+            change_pct = ((current_price - previous_price) / previous_price) * 100
+        
+        # Get last 30 points for sparkline (for mini-charts)
+        sparkline = [float(p['price']) for p in prices[-30:]]
+        
+        items.append(schemas.MarketSummaryItem(
+            asset_code=asset.asset_code,
+            name=asset.name,
+            current_price=current_price,
+            change_percentage=change_pct,
+            sparkline=sparkline
+        ))
+    return items

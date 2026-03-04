@@ -97,6 +97,13 @@ def get_asset_classes_endpoint(db: Session = Depends(get_db)):
     asset_classes = crud.get_asset_classes(db)
     return {"asset_classes": asset_classes}
 
+@app.get("/api/market-summary", response_model=schemas.MarketSummaryResponse)
+def get_market_summary_endpoint(db: Session = Depends(get_db)):
+    # Representative assets for dashboard
+    target_assets = ["SPY", "1321.T", "BTC-USD", "GLD", "TLT"]
+    items = crud.get_market_summary(db, target_assets)
+    return {"items": items}
+
 @app.get("/api/assets/{asset_code}", response_model=schemas.AssetData)
 def read_asset(asset_code: str, db: Session = Depends(get_db)):
     db_asset = crud.get_asset_by_code(db, asset_code=asset_code)

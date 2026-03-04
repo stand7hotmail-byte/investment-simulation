@@ -154,3 +154,13 @@ class SimulationResult(SimulationResultBase):
 
 class AssetClassesResponse(BaseModel):
     asset_classes: List[str]
+
+class MarketSummaryItem(BaseModel):
+    asset_code: str
+    name: str
+    current_price: float
+    change_percentage: float
+    sparkline: List[float] | None = None
+
+class MarketSummaryResponse(BaseModel):
+    items: List[MarketSummaryItem]
