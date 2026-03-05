@@ -2,16 +2,10 @@ import sys
 import os
 import argparse
 
-# プロジェクトルートからの相対パスで backend/app をインポート可能にする
-script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, "..", "..", "..", ".."))
-backend_path = os.path.join(project_root, "backend")
-
-if backend_path not in sys.path:
-    sys.path.insert(0, backend_path)
+# backend ディレクトリをパスに追加
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.log_utils import (
-    parse_log_line,
     extract_latest_session,
     aggregate_skill_usage,
     aggregate_mcp_tool_usage,
@@ -19,23 +13,13 @@ from app.log_utils import (
     format_stats_table
 )
 
-# Re-export for testing purposes
-__all__ = [
-    'parse_log_line',
-    'extract_latest_session',
-    'aggregate_skill_usage',
-    'aggregate_mcp_tool_usage',
-    'aggregate_error_usage',
-    'format_stats_table'
-]
-
 def main():
     parser = argparse.ArgumentParser(description="Analyze Gemini CLI logs for usage statistics.")
     parser.add_argument("log_file", nargs="?", default="dev_server.log", help="Path to the log file (default: dev_server.log)")
     args = parser.parse_args()
 
-    # ログファイルは通常プロジェクトルートにある
-    log_path = os.path.join(project_root, args.log_file)
+    # The log file is expected to be at the project root
+    log_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', args.log_file))
     
     if not os.path.exists(log_path):
         print(f"Error: Log file not found at {log_path}")
@@ -54,13 +38,14 @@ def main():
         print("No valid logs found in the latest session.")
         return
 
-    # 集計実行
+    # Aggregation
     skill_usage = aggregate_skill_usage(latest_session_logs)
     mcp_tool_usage = aggregate_mcp_tool_usage(latest_session_logs)
     error_usage = aggregate_error_usage(latest_session_logs)
 
-    # 結果表示
-    print("\n" + "="*40)
+    # Display results
+    print("
+" + "="*40)
     print("      GEMINI CLI USAGE STATISTICS      ")
     print("="*40)
 
