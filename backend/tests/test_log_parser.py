@@ -59,3 +59,20 @@ def test_extract_latest_session_empty_logs():
     from app.log_utils import extract_latest_session
     result = extract_latest_session([])
     assert result == []
+
+def test_aggregate_skill_usage():
+    from app.log_utils import aggregate_skill_usage
+    logs = [
+        {"type": "tool_call", "tool": "activate_skill", "arguments": {"name": "skill-a"}},
+        {"type": "tool_call", "tool": "activate_skill", "arguments": {"name": "skill-b"}},
+        {"type": "tool_call", "tool": "activate_skill", "arguments": {"name": "skill-a"}},
+        {"type": "tool_call", "tool": "other_tool", "arguments": {}}
+    ]
+    result = aggregate_skill_usage(logs)
+    assert result["skill-a"] == 2
+    assert result["skill-b"] == 1
+    assert "other_tool" not in result
+
+def test_aggregate_skill_usage_empty():
+    from app.log_utils import aggregate_skill_usage
+    assert aggregate_skill_usage([]) == {}

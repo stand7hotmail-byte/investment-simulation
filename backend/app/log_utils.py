@@ -37,3 +37,17 @@ def extract_latest_session(logs: List[str]) -> List[Dict[str, Any]]:
             break
             
     return parsed_logs[start_index:]
+
+def aggregate_skill_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int]:
+    """
+    Aggregates skill activations from parsed log entries.
+    Identifies 'activate_skill' tool calls and counts the occurrences of each skill name.
+    """
+    skill_counts = {}
+    for entry in parsed_logs:
+        if entry.get("type") == "tool_call" and entry.get("tool") == "activate_skill":
+            args = entry.get("arguments", {})
+            skill_name = args.get("name")
+            if skill_name:
+                skill_counts[skill_name] = skill_counts.get(skill_name, 0) + 1
+    return skill_counts
