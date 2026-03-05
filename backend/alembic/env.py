@@ -14,10 +14,13 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
 from app.models import Base
+from app.config import settings
 target_metadata = Base.metadata
+
+# Override the sqlalchemy.url from alembic.ini with the one from settings
+print(f"DEBUG: Alembic overriding URL with: {settings.sqlalchemy_database_url[:20]}...")
+config.set_main_option("sqlalchemy.url", settings.sqlalchemy_database_url)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
