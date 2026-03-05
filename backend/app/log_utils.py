@@ -67,3 +67,16 @@ def aggregate_mcp_tool_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int
             if tool_name and tool_name not in excluded_tools:
                 tool_counts[tool_name] = tool_counts.get(tool_name, 0) + 1
     return tool_counts
+
+def aggregate_error_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int]:
+    """
+    Aggregates tool execution errors from parsed log entries.
+    Identifies 'tool_response' entries with status 'error'.
+    """
+    error_counts = {}
+    for entry in parsed_logs:
+        if entry.get("type") == "tool_response" and entry.get("status") == "error":
+            tool_name = entry.get("tool")
+            if tool_name:
+                error_counts[tool_name] = error_counts.get(tool_name, 0) + 1
+    return error_counts

@@ -93,3 +93,21 @@ def test_aggregate_mcp_tool_usage():
 def test_aggregate_mcp_tool_usage_empty():
     from app.log_utils import aggregate_mcp_tool_usage
     assert aggregate_mcp_tool_usage([]) == {}
+
+def test_aggregate_error_usage():
+    from app.log_utils import aggregate_error_usage
+    logs = [
+        {"type": "tool_call", "tool": "google_search", "arguments": {"query": "fail"}},
+        {"type": "tool_response", "tool": "google_search", "status": "error", "error": "rate limit"},
+        {"type": "tool_call", "tool": "read_file", "arguments": {"file_path": "a.txt"}},
+        {"type": "tool_response", "tool": "read_file", "status": "success"},
+        {"type": "tool_call", "tool": "google_search", "arguments": {"query": "fail2"}},
+        {"type": "tool_response", "tool": "google_search", "status": "error", "error": "timeout"}
+    ]
+    result = aggregate_error_usage(logs)
+    assert result["google_search"] == 2
+    assert "read_file" not in result
+
+def test_aggregate_error_usage_empty():
+    from app.log_utils import aggregate_error_usage
+    assert aggregate_error_usage([]) == {}
