@@ -12,17 +12,17 @@
     - [ ] Implement logic to filter logs belonging only to the most recent run
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
-## Phase 2: Aggregation Logic (TDD)
-- [~] Task: Implement Skill invocation counter
+## Phase 2: Aggregation Logic (TDD) [checkpoint: 09ec5ea]
+- [x] Task: Implement Skill invocation counter (43f15cf)
     - [ ] Write tests to count occurrences of `activate_skill` and specific skill names
     - [ ] Implement logic to aggregate skill usage from the filtered logs
-- [ ] Task: Implement MCP Tool invocation counter
+- [x] Task: Implement MCP Tool invocation counter (b283399)
     - [ ] Write tests to detect and count tool calls from various MCP servers
     - [ ] Implement logic to aggregate tool usage by server and tool name
-- [ ] Task: Implement Error frequency counter
+- [x] Task: Implement Error frequency counter (09ec5ea)
     - [ ] Write tests to identify failed tool executions and capture error types
     - [ ] Implement logic to aggregate error counts and failing tool names
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Aggregation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Aggregation' (Protocol in workflow.md)
 
 ## Phase 3: Formatting & Skill Integration
 - [ ] Task: Implement terminal table formatter
