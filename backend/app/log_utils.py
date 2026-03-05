@@ -80,3 +80,32 @@ def aggregate_error_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int]:
             if tool_name:
                 error_counts[tool_name] = error_counts.get(tool_name, 0) + 1
     return error_counts
+
+def format_stats_table(title: str, data: Dict[str, int], headers: List[str]) -> str:
+    """
+    Formats usage statistics into a clean ASCII table.
+    """
+    if not data:
+        return f"\n=== {title} ===\nNo data available.\n"
+    
+    # Sort data by count descending
+    sorted_items = sorted(data.items(), key=lambda x: x[1], reverse=True)
+    
+    # Determine column widths
+    col1_width = max(len(headers[0]), max(len(str(k)) for k in data.keys())) + 2
+    col2_width = max(len(headers[1]), max(len(str(v)) for v in data.values())) + 2
+    
+    # Build table
+    lines = []
+    lines.append(f"\n=== {title} ===")
+    
+    # Header row
+    header_row = f"{headers[0]:<{col1_width}}| {headers[1]:<{col2_width}}"
+    lines.append(header_row)
+    lines.append("-" * len(header_row))
+    
+    # Data rows
+    for name, count in sorted_items:
+        lines.append(f"{str(name):<{col1_width}}| {str(count):<{col2_width}}")
+    
+    return "\n".join(lines) + "\n"
