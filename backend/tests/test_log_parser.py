@@ -76,3 +76,20 @@ def test_aggregate_skill_usage():
 def test_aggregate_skill_usage_empty():
     from app.log_utils import aggregate_skill_usage
     assert aggregate_skill_usage([]) == {}
+
+def test_aggregate_mcp_tool_usage():
+    from app.log_utils import aggregate_mcp_tool_usage
+    logs = [
+        {"type": "tool_call", "tool": "google_search", "arguments": {"query": "test"}},
+        {"type": "tool_call", "tool": "google_search", "arguments": {"query": "test2"}},
+        {"type": "tool_call", "tool": "read_file", "arguments": {"file_path": "a.txt"}},
+        {"type": "tool_call", "tool": "activate_skill", "arguments": {"name": "skill-a"}}
+    ]
+    result = aggregate_mcp_tool_usage(logs)
+    assert result["google_search"] == 2
+    assert result["read_file"] == 1
+    assert "activate_skill" not in result
+
+def test_aggregate_mcp_tool_usage_empty():
+    from app.log_utils import aggregate_mcp_tool_usage
+    assert aggregate_mcp_tool_usage([]) == {}

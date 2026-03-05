@@ -51,3 +51,19 @@ def aggregate_skill_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int]:
             if skill_name:
                 skill_counts[skill_name] = skill_counts.get(skill_name, 0) + 1
     return skill_counts
+
+def aggregate_mcp_tool_usage(parsed_logs: List[Dict[str, Any]]) -> Dict[str, int]:
+    """
+    Aggregates MCP tool calls from parsed log entries.
+    Identifies 'tool_call' entries excluding built-in skill activation.
+    """
+    tool_counts = {}
+    # activate_skill is treated separately as it triggers a skill, not just a tool.
+    excluded_tools = {"activate_skill"}
+    
+    for entry in parsed_logs:
+        if entry.get("type") == "tool_call":
+            tool_name = entry.get("tool")
+            if tool_name and tool_name not in excluded_tools:
+                tool_counts[tool_name] = tool_counts.get(tool_name, 0) + 1
+    return tool_counts
