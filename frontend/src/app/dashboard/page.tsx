@@ -20,7 +20,7 @@ import { format } from "date-fns";
 
 export default function DashboardPage() {
   const { data: marketData, isLoading: marketLoading } = useMarketSummary();
-  const { data: historyData, isLoading: historyLoading } = useSimulationResults();
+  const { simulationResults: historyData, isLoading: historyLoading } = useSimulationResults();
 
   const recentHistory = historyData?.slice(0, 5) || [];
 

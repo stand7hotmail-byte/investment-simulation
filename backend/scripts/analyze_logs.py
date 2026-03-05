@@ -18,18 +18,33 @@ def main():
     parser.add_argument("log_file", nargs="?", default="dev_server.log", help="Path to the log file (default: dev_server.log)")
     args = parser.parse_args()
 
-    # The log file is expected to be at the project root
-    log_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', args.log_file))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
+    
+    if os.path.isabs(args.log_file):
+        log_path = args.log_file
+    else:
+        log_path = os.path.join(project_root, args.log_file)
     
     if not os.path.exists(log_path):
         print(f"Error: Log file not found at {log_path}")
         return
 
-    try:
-        with open(log_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-    except Exception as e:
-        print(f"Error reading log file: {e}")
+    lines = []
+    encodings = ['utf-8', 'utf-16', 'utf-16-le', 'utf-16-be', 'cp932']
+    
+    success = False
+    for enc in encodings:
+        try:
+            with open(log_path, 'r', encoding=enc) as f:
+                lines = f.readlines()
+            success = True
+            break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+            
+    if not success:
+        print(f"Error: Could not decode log file with any of the attempted encodings: {encodings}")
         return
 
     latest_session_logs = extract_latest_session(lines)
@@ -38,14 +53,11 @@ def main():
         print("No valid logs found in the latest session.")
         return
 
-    # Aggregation
     skill_usage = aggregate_skill_usage(latest_session_logs)
     mcp_tool_usage = aggregate_mcp_tool_usage(latest_session_logs)
     error_usage = aggregate_error_usage(latest_session_logs)
 
-    # Display results
-    print("
-" + "="*40)
+    print("\n" + "="*40)
     print("      GEMINI CLI USAGE STATISTICS      ")
     print("="*40)
 

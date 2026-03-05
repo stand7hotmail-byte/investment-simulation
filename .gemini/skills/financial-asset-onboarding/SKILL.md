@@ -5,58 +5,32 @@ description: Adds new financial assets (ETFs, stocks, crypto, etc.) to the inves
 
 # Financial Asset Onboarding
 
-## Overview
-
-This skill provides a streamlined workflow for onboarding new assets into the Investment Simulation application. It ensures consistent data entry, proper seeding of the database, and automatic collection of historical price data from Yahoo Finance.
+This skill automates the process of adding new investment assets to the database.
 
 ## Workflow
 
-Follow these steps precisely to add new assets:
+1. **Ticker Verification:** 
+   - Check if the ticker symbol exists on Yahoo Finance using `yfinance`.
+   - Verify that at least 2 years of historical data is available.
 
-### 1. Identify Asset Details
-Gather the necessary information for each asset:
-- **Ticker Symbol:** The Yahoo Finance ticker (e.g., `1306.T`, `BTC-USD`).
-- **Name:** A descriptive name for the asset.
-- **Asset Class:** One of `Stock`, `Bond`, `Commodity`, `REIT`, or `Crypto`.
-- **Reference:** See `references/asset_classes.md` for common tickers and categories.
+2. **Metadata Generation:**
+   - Determine the correct `asset_class` (Stock, Bond, Crypto, Commodity, REIT).
+   - Get the full descriptive name of the asset.
 
-### 2. Update Seed Data
-Use the provided script to append new assets to `backend/app/seed_assets.py`.
+3. **Database Insertion:**
+   - Update `backend/app/seed_assets.py` with the new ticker and metadata.
+   - Run the seed script to populate the `asset_data` table.
 
-```bash
-# Example: Adding a new ETF
-python .gemini/skills/financial-asset-onboarding/scripts/add_asset.py "VTI" "Vanguard Total Stock Market ETF" "Stock" 0.07 0.16
-```
+4. **Data Synchronization:**
+   - Execute `backend/scripts/collect_historical_data.py` to fetch and store historical prices.
 
-If adding multiple assets, run the script for each one.
+## Guardrails
 
-### 3. Seed Database
-Run the seed script to register the new assets in the database.
-**Warning:** This script clears existing assets before re-seeding by default.
+- **Naming Convention:** Use uppercase for tickers (e.g., `SPY`, `BTC-USD`).
+- **Currency:** Ensure the asset price is compatible with the app's base calculation logic (mostly USD or JPY based on the ticker suffix).
+- **Redundancy Check:** Before adding, check if the `asset_code` already exists in the database using `backend/scripts/db_inspector.py`.
 
-```bash
-python backend/app/seed_assets.py
-```
+## Commands
 
-### 4. Collect Historical Data
-Run the historical data collection script. This will fetch up to 20 years of price data for all assets in the database.
-
-```bash
-python backend/scripts/collect_historical_data.py
-```
-
-### 5. Verify Installation
-Run the database inspector or check via the API to ensure the assets are correctly registered and have historical data.
-
-```bash
-# Verify assets count
-python backend/scripts/db_inspector.py --count-assets
-```
-
-## Resources
-
-### scripts/add_asset.py
-A Python utility to safely append new asset definitions to the seed file without manual `replace` operations.
-
-### references/asset_classes.md
-A guide to supported asset classes and common ticker symbols for quick reference.
+- `poetry run python app/seed_assets.py`: Runs the master data sync.
+- `poetry run python scripts/collect_historical_data.py`: Fetches time-series data.

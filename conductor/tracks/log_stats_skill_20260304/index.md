@@ -1,4 +1,4 @@
-# Track ui_enhancement_and_dashboard_20260303 Context
+# Track log_stats_skill_20260304 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)

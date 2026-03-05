@@ -1,0 +1,40 @@
+forward-logs-shared.ts:95 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+forward-logs-shared.ts:95 [HMR] connected
+forward-logs-shared.ts:95 Fetching API: http://localhost:8000/api/assets/SPY/historical-data
+intercept-console-error.ts:42 Fetch failed for http://localhost:8000/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at fetchApi (api.ts:22:28)
+error @ intercept-console-error.ts:42
+forward-logs-shared.ts:95 Fetching API: http://localhost:8000/api/assets/SPY/historical-data
+api.ts:40 Fetch failed for http://localhost:8000/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at fetchApi (api.ts:22:28)
+error @ intercept-console-error.ts:42
+fetchApi @ api.ts:40
+api.ts:19 Fetching API: http://localhost:8000/api/assets/SPY/historical-data
+api.ts:40 Fetch failed for http://localhost:8000/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at fetchApi (api.ts:22:28)
+error @ intercept-console-error.ts:42
+fetchApi @ api.ts:40
+await in fetchApi
+t2 @ AssetHistoricalChart.tsx:19
+fetchFn @ query.ts:474
+run @ retryer.ts:155
+(anonymous) @ retryer.ts:201
+Promise.then
+(anonymous) @ retryer.ts:197
+api.ts:19 Fetching API: http://localhost:8000/api/assets/SPY/historical-data
+api.ts:40 Fetch failed for http://localhost:8000/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at fetchApi (api.ts:22:28)
+error @ intercept-console-error.ts:42
+fetchApi @ api.ts:40
+await in fetchApi
+t2 @ AssetHistoricalChart.tsx:19
+fetchFn @ query.ts:474
+run @ retryer.ts:155
+(anonymous) @ retryer.ts:201
+Promise.then
+(anonymous) @ retryer.ts:197
+Promise.catch
+run @ retryer.ts:162
+(anonymous) @ retryer.ts:201
+Promise.then
+(anonymous) @ retryer.ts:197

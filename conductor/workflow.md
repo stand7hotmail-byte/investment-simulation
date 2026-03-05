@@ -134,6 +134,15 @@ All tasks follow a strict lifecycle:
 
 10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
 
+### Lesson Learned Protocol (Post-Review/Track)
+
+**Trigger:** This protocol is executed immediately after a track is marked as completed or a code review is finalized.
+
+1.  **Extract Knowledge:** Identify any "engineering pitfalls" or "best practices" discovered during the work. Focus on cross-environment compatibility (SQLite/Postgres), security patterns, and API consistency.
+2.  **Update GEMINI.md:** If new rules or memories are identified, propose an update to `GEMINI.md` to persist this knowledge for future sessions.
+3.  **Automation Analysis:** Propose new AI Agent Skills (`.skill` files) or MCP extensions if repetitive manual tasks or common errors were encountered.
+4.  **Engineering Report:** Present a concise summary of these points to the user as a "Final Engineering Report" before concluding the session or moving to the next track.
+
 ### Quality Gates
 
 Before marking any task complete, verify:
