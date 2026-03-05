@@ -212,6 +212,7 @@
 | **Git Hooks** | Husky | コミット前チェック |
 | **DB Inspection** | Custom Scripts | SQLiteデータのJSON抽出・検証 |
 | **AI Assistant** | Gemini CLI | コード生成補助 |
+| **Log Analysis** | log-stats Skill | CLI実行ログの統計解析・エラー監視 |
 
 ---
 
