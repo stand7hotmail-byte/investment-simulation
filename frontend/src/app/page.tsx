@@ -38,7 +38,7 @@ export default function Home() {
       {/* Hero Section */}
       <div className="flex flex-col items-center text-center space-y-4">
         <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
-          Invest with <span className="text-primary">Confidence</span>
+          Invest with <span className="text-primary">Confidence (v2)</span>
         </h1>
         <p className="text-slate-500 text-xl max-w-2xl">
           Advanced portfolio analysis and simulation tools for modern investors. 

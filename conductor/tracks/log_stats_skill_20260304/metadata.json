@@ -1,8 +1,0 @@
-{
-  "track_id": "log_stats_skill_20260304",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-04T12:00:00Z",
-  "updated_at": "2026-03-04T12:00:00Z",
-  "description": "ログ解析による統計表示スキルの作成"
-}
