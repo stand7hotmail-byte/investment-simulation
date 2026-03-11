@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_prod_auth_es256_20260311",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-03-11T21:32:00Z",
+  "updated_at": "2026-03-11T21:32:00Z",
+  "description": "Fix Production Authentication Error (ES256 Verification)"
+}

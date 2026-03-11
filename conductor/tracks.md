@@ -55,5 +55,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-*(No active tracks)*
+- [ ] **Track: Fix Production Authentication Error (ES256 Verification)**
+  *Link: [./tracks/fix_prod_auth_es256_20260311/](./tracks/fix_prod_auth_es256_20260311/)*
+
 
