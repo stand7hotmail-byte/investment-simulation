@@ -7,7 +7,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## ✅ Completed Tracks
 
 - [x] **Track: ES256 認証エラーの解決 (Fix ES256 Authentication Error)**
-  *Link: [./tracks/fix_es256_auth_20260311/](./tracks/fix_es256_auth_20260311/)*
+  *Link: [./archive/fix_es256_auth_20260311/](./archive/fix_es256_auth_20260311/)*
 
 - [x] **Track: ログ解析による統計表示スキルの作成**
   *Link: [./archive/log_stats_skill_20260304/](./archive/log_stats_skill_20260304/)*
