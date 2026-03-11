@@ -1,0 +1,178 @@
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/portfolios
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/portfolios: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/portfolios
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/portfolios: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/portfolios
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/portfolios: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulation-results: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+    at async u (12aa8ab1fa3e8e27.js:2:4656)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulate/efficient-frontier
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity
+9837a41a9468c321.js:2 API Error [401]: {"detail":"Authentication failed (Algorithm: ES256)"}
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/simulate/risk-parity: Error: Authentication failed (Algorithm: ES256)
+    at r (9837a41a9468c321.js:2:268)
+r @ 9837a41a9468c321.js:2

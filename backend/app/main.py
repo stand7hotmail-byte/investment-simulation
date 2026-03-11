@@ -32,10 +32,13 @@ app.add_middleware(
 security = HTTPBearer()
 
 # Supabase JWKS client for ES256 verification
-jwks_client = None
-if settings.supabase_url:
-    jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
-    jwks_client = jwt.PyJWKClient(jwks_url)
+def get_jwks_client():
+    if settings.supabase_url:
+        jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
+        return jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
+    return None
+
+jwks_client = get_jwks_client()
 
 # --- DEPENDENCIES ---
 def get_db():
@@ -49,18 +52,36 @@ async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> uuid.UUID:
     token = credentials.credentials
+    alg = "Unknown"
     try:
         header = jwt.get_unverified_header(token)
         alg = header.get("alg")
         
-        if alg == "ES256" and jwks_client:
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
-            payload = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=["ES256"],
-                options={"verify_aud": False}
-            )
+        if alg == "ES256":
+            # Ensure jwks_client is available
+            global jwks_client
+            if not jwks_client:
+                jwks_client = get_jwks_client()
+            
+            if not jwks_client:
+                raise HTTPException(status_code=500, detail="JWKS client not initialized (SUPABASE_URL missing)")
+            
+            try:
+                signing_key = jwks_client.get_signing_key_from_jwt(token)
+                payload = jwt.decode(
+                    token,
+                    signing_key.key,
+                    algorithms=["ES256"],
+                    options={
+                        "verify_aud": False,
+                        "verify_iss": False, # Supabase tokens might have varying issuers
+                    }
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=f"ES256 signature verification failed: {str(e)}"
+                )
         else:
             raw_secret = settings.supabase_jwt_secret
             secret = raw_secret.strip() if raw_secret else ""
@@ -72,14 +93,17 @@ async def get_current_user_id(
             )
         
         user_id = payload.get("sub")
-        if not user_id: raise HTTPException(status_code=401, detail="Token missing sub")
+        if not user_id: 
+            raise HTTPException(status_code=401, detail="Token missing sub")
         return uuid.UUID(user_id)
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed (Algorithm: {alg if 'alg' in locals() else 'Unknown'})"
+            detail=f"Authentication failed (Algorithm: {alg}): {str(e)}"
         )
 
 # --- ROUTES ---
