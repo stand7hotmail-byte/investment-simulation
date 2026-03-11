@@ -52,4 +52,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-*(No active tracks)*
+- [ ] **Track: ES256 認証エラーの解決 (Fix ES256 Authentication Error)**
+  *Link: [./tracks/fix_es256_auth_20260311/](./tracks/fix_es256_auth_20260311/)*
+
