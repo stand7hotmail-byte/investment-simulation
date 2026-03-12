@@ -53,9 +53,11 @@ async def get_current_user_id(
 ) -> uuid.UUID:
     token = credentials.credentials
     alg = "Unknown"
+    kid = "None"
     try:
         header = jwt.get_unverified_header(token)
         alg = header.get("alg")
+        kid = header.get("kid", "None")
         
         if alg == "ES256":
             # Ensure jwks_client is available
@@ -64,7 +66,10 @@ async def get_current_user_id(
                 jwks_client = get_jwks_client()
             
             if not jwks_client:
-                raise HTTPException(status_code=500, detail="JWKS client not initialized (SUPABASE_URL missing)")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail="JWKS client not initialized. Check SUPABASE_URL environment variable."
+                )
             
             try:
                 signing_key = jwks_client.get_signing_key_from_jwt(token)
@@ -74,17 +79,32 @@ async def get_current_user_id(
                     algorithms=["ES256"],
                     options={
                         "verify_aud": False,
-                        "verify_iss": False, # Supabase tokens might have varying issuers
+                        "verify_iss": False, 
                     }
+                )
+            except jwt.PyJWKClientError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=f"ES256 JWKS error (kid: {kid}): {str(e)}"
+                )
+            except jwt.InvalidTokenError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=f"ES256 invalid token: {str(e)}"
                 )
             except Exception as e:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"ES256 signature verification failed: {str(e)}"
+                    detail=f"ES256 verification failed (kid: {kid}): {str(e)}"
                 )
         else:
             raw_secret = settings.supabase_jwt_secret
             secret = raw_secret.strip() if raw_secret else ""
+            if not secret:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Supabase JWT secret not configured."
+                )
             payload = jwt.decode(
                 token,
                 secret,
@@ -94,16 +114,21 @@ async def get_current_user_id(
         
         user_id = payload.get("sub")
         if not user_id: 
-            raise HTTPException(status_code=401, detail="Token missing sub")
-        return uuid.UUID(user_id)
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing 'sub' claim")
+        
+        try:
+            return uuid.UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid user ID format: {user_id}")
+
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed (Algorithm: {alg}): {str(e)}"
+            detail=f"Authentication failed (Algorithm: {alg}, kid: {kid}): {str(e)}"
         )
 
 # --- ROUTES ---
