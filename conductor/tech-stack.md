@@ -146,8 +146,8 @@
 | **科学計算** | SciPy | 1.11+ | 最適化、統計関数 |
 | **データ収集** | yfinance | Latest | 過去の金融データ取得 |
 | **最適化** | cvxpy | 1.4+ | 凸最適化（効率的フロンティア） |
-| **Auth** | PyJWT | 2.11+ | JWT検証（ python-jose から移行） |
-| **HTTP Client** | httpx | 0.26+ | Supabase API呼び出し |
+| **Auth** | PyJWT | 2.11+ | JWT検証（ES256/HS256対応、JWKSキャッシュ実装） |
+| **HTTP Client** | httpx | 0.26+ | Supabase API/JWKS 呼び出し |
 | **Environment** | python-dotenv | 1.0+ | 環境変数管理 |
 
 ### Database
