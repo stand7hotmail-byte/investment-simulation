@@ -1,7 +1,7 @@
 "use client";
 
 import { useSimulationResults } from "@/hooks/useSimulationResults";
-import { format } from "date-fns";
+import { formatSafeDate } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -117,7 +117,7 @@ export default function SimulationHistoryPage() {
                       </div>
                     </TableCell>
                     <TableCell className="px-6 text-slate-400 text-sm">
-                      {format(new Date(result.created_at), "MMM d, yyyy · HH:mm")}
+                      {formatSafeDate(result.created_at, "MMM d, yyyy · HH:mm")}
                     </TableCell>
                     <TableCell className="text-right px-6 space-x-2">
                       <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-slate-600 hover:text-primary" onClick={() => handleLoad(result)}>

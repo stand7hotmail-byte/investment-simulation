@@ -15,8 +15,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from "@/components/ui/button";
 import { useMarketSummary, MarketSummaryItem } from "@/hooks/useMarketSummary";
 import { useSimulationResults } from "@/hooks/useSimulationResults";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { cn, formatSafeDate } from "@/lib/utils";
 
 export default function DashboardPage() {
   const { data: marketData, isLoading: marketLoading } = useMarketSummary();
@@ -118,7 +117,7 @@ export default function DashboardPage() {
                           {result.simulation_type === "risk_parity" ? "Risk Parity" : "Simulation"}
                         </div>
                         <div className="text-xs text-slate-400">
-                          {format(new Date(result.created_at), "MMM d, yyyy")}
+                          {formatSafeDate(result.created_at, "MMM d, yyyy")}
                         </div>
                       </div>
                       <Button variant="ghost" size="icon-sm" asChild>
