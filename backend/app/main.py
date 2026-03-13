@@ -32,7 +32,8 @@ app.add_middleware(
 security = HTTPBearer()
 
 # Supabase JWKS client for ES256 verification
-def get_jwks_client():
+def get_jwks_client() -> Optional[jwt.PyJWKClient]:
+    """Initializes and returns the Supabase JWKS client for ES256 verification."""
     if settings.supabase_url:
         jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
         return jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
@@ -51,6 +52,19 @@ def get_db():
 async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> uuid.UUID:
+    """
+    Authenticates the user using a Supabase JWT.
+    Supports both ES256 (via JWKS) and HS256 (via secret) algorithms.
+    
+    Args:
+        credentials: The HTTP Bearer credentials.
+        
+    Returns:
+        The authenticated user's UUID.
+        
+    Raises:
+        HTTPException: If authentication fails or the token is invalid.
+    """
     token = credentials.credentials
     alg = "Unknown"
     kid = "None"
