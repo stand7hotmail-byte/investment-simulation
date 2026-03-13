@@ -27,3 +27,6 @@ JWKS クライアントを導入し、検証ロジックを修正します。
 - [x] Task: 最終統合テスト
     - 既存の認証（HS256等）が壊れていないことを含め、全バックエンドテストを実行する。
 - [x] Task: Conductor - User Manual Verification 'Phase 3: 検証と最終確認' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions b5cd98e
