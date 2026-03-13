@@ -7,7 +7,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ## ✅ Completed Tracks
 
 - [x] **Track: Fix Production Authentication Error (ES256 Verification)**
-  *Link: [./tracks/fix_prod_auth_es256_20260311/](./tracks/fix_prod_auth_es256_20260311/)*
+  *Link: [./archive/fix_prod_auth_es256_20260311/](./archive/fix_prod_auth_es256_20260311/)*
 
 - [x] **Track: ES256 認証エラーの解決 (Fix ES256 Authentication Error)**
   *Link: [./archive/fix_es256_auth_20260311/](./archive/fix_es256_auth_20260311/)*
