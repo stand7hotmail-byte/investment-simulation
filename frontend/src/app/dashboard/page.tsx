@@ -170,7 +170,7 @@ function MarketItemCard({ item }: { item: MarketSummaryItem }) {
       
       {/* Mini Sparkline using SVG */}
       <div className="h-10 w-24">
-        {item.sparkline && item.sparkline.length > 1 && (
+        {item.sparkline && item.sparkline.length > 0 && (
           <Sparkline data={item.sparkline} color={isPositive ? "rgb(16 185 129)" : "rgb(225 29 72)"} />
         )}
       </div>
@@ -179,6 +179,10 @@ function MarketItemCard({ item }: { item: MarketSummaryItem }) {
 }
 
 function Sparkline({ data, color }: { data: number[], color: string }) {
+  if (!data || data.length < 2) {
+    return <div className="w-full h-full bg-slate-100/50 rounded animate-pulse" />;
+  }
+
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
