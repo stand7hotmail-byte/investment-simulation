@@ -160,6 +160,8 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       ...frontier
     ];
 
+    if (candidates.length === 0) return;
+
     const nearest = candidates.reduce((prev, curr) => {
       return (Math.abs(curr.volatility - clickedX) < Math.abs(prev.volatility - clickedX)) ? curr : prev;
     });
