@@ -5,9 +5,9 @@
 ## Phase 1: Frontend Runtime Error Fixes
 フロントエンドの各コンポーネントにおける JS クラッシュのリスクを解消します。
 
-- [ ] Task: Dashboard の日付フォーマット処理の堅牢化
-    - [ ] `DashboardPage` のテストを作成し、不正な `created_at` でクラッシュすることを確認 (Red Phase)
-    - [ ] `new Date()` へのガードと `isValid` チェックを追加 (Green Phase)
+- [x] Task: Dashboard の日付フォーマット処理の堅牢化 ef4c61f
+    - [x] `DashboardPage` のテストを作成し、不正な `created_at` でクラッシュすることを確認 (Red Phase)
+    - [x] `new Date()` へのガードと `isValid` チェックを追加 (Green Phase)
 - [ ] Task: Efficient Frontier チャートの計算ガード追加
     - [ ] `EfficientFrontierChart` で候補データが空の場合の `reduce` クラッシュを再現するテストを作成 (Red Phase)
     - [ ] 配列の長さチェックまたは初期値の導入により修正 (Green Phase)
