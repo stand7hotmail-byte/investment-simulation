@@ -2,7 +2,7 @@
 
 本番環境で特定された潜在的なランタイムエラーを修正し、アプリケーションの堅牢性を向上させます。
 
-## Phase 1: Frontend Runtime Error Fixes
+## Phase 1: Frontend Runtime Error Fixes [checkpoint: 40256e3]
 フロントエンドの各コンポーネントにおける JS クラッシュのリスクを解消します。
 
 - [x] Task: Dashboard の日付フォーマット処理の堅牢化 ef4c61f
