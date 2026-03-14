@@ -22,7 +22,7 @@
 ## Phase 2: Backend Calculation Stability
 資産データ不足時の計算の不安定さを解消します。
 
-- [ ] Task: `simulation.py` の共分散行列計算のガード実装
+- [x] Task: `simulation.py` の共分散行列計算のガード実装 410c96c
     - [ ] 資産間の過去データの重なりが極端に短い場合に警告/エラーが出るテストを作成 (Red Phase)
     - [ ] `np.cov` 実行前のデータ長チェックと、自由度不足時の安全なフォールバックを実装 (Green Phase)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Calculation Stability' (Protocol in workflow.md)
