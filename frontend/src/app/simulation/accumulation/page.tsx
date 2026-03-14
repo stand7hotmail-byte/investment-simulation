@@ -62,7 +62,7 @@ export default function AccumulationPage() {
     }
   };
 
-  const chartData = results ? [
+  const chartData = (results?.history && results.history.length > 0) ? [
     {
       x: results.history.map(h => h.year),
       y: results.history.map(h => h.value),
