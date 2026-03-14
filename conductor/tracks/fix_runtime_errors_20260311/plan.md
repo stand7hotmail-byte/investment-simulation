@@ -17,7 +17,7 @@
 - [x] Task: Sparkline コンポーネントの描画ガード 527689c
     - [x] データが空または要素が1つの場合のテストを作成 (Red Phase)
     - [x] `Math.min/max` の安全な呼び出しと SVG パスのガードを実装 (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Frontend Runtime Error Fixes' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Frontend Runtime Error Fixes' (Protocol in workflow.md) 745d6e2
 
 ## Phase 2: Backend Calculation Stability
 資産データ不足時の計算の不安定さを解消します。
