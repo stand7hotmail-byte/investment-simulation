@@ -8,9 +8,9 @@
 - [x] Task: Dashboard の日付フォーマット処理の堅牢化 ef4c61f
     - [x] `DashboardPage` のテストを作成し、不正な `created_at` でクラッシュすることを確認 (Red Phase)
     - [x] `new Date()` へのガードと `isValid` チェックを追加 (Green Phase)
-- [ ] Task: Efficient Frontier チャートの計算ガード追加
-    - [ ] `EfficientFrontierChart` で候補データが空の場合の `reduce` クラッシュを再現するテストを作成 (Red Phase)
-    - [ ] 配列の長さチェックまたは初期値の導入により修正 (Green Phase)
+- [x] Task: Efficient Frontier チャートの計算ガード追加 5ed6a9f
+    - [x] `EfficientFrontierChart` で候補データが空の場合の `reduce` クラッシュを再現するテストを作成 (Red Phase)
+    - [x] 配列の長さチェックまたは初期値の導入により修正 (Green Phase)
 - [ ] Task: Accumulation Sim の結果マッピングの安全化
     - [ ] `AccumulationPage` で `results.history` が欠落しているケースのテストを作成 (Red Phase)
     - [ ] オプショナルチェイニングとフォールバック値の導入 (Green Phase)
