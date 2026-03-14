@@ -14,9 +14,9 @@
 - [x] Task: Accumulation Sim の結果マッピングの安全化 1c628d9
     - [x] `AccumulationPage` で `results.history` が欠落しているケースのテストを作成 (Red Phase)
     - [x] オプショナルチェイニングとフォールバック値の導入 (Green Phase)
-- [ ] Task: Sparkline コンポーネントの描画ガード
-    - [ ] データが空または要素が1つの場合のテストを作成 (Red Phase)
-    - [ ] `Math.min/max` の安全な呼び出しと SVG パスのガードを実装 (Green Phase)
+- [x] Task: Sparkline コンポーネントの描画ガード 527689c
+    - [x] データが空または要素が1つの場合のテストを作成 (Red Phase)
+    - [x] `Math.min/max` の安全な呼び出しと SVG パスのガードを実装 (Green Phase)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Frontend Runtime Error Fixes' (Protocol in workflow.md)
 
 ## Phase 2: Backend Calculation Stability
