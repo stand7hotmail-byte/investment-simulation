@@ -19,7 +19,7 @@
     - [x] `Math.min/max` の安全な呼び出しと SVG パスのガードを実装 (Green Phase)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Frontend Runtime Error Fixes' (Protocol in workflow.md) 745d6e2
 
-## Phase 2: Backend Calculation Stability
+## Phase 2: Backend Calculation Stability [checkpoint: ec4016a]
 資産データ不足時の計算の不安定さを解消します。
 
 - [x] Task: `simulation.py` の共分散行列計算のガード実装 410c96c
