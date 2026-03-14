@@ -76,12 +76,30 @@ def calculate_stats_from_historical_data(historical_prices_data: List[List[Dict[
         if not p: raise ValueError("Historical prices data cannot be empty for an asset.")
     all_asset_returns = [get_asset_returns(p) for p in historical_prices_data]
     min_len = min(len(r) for r in all_asset_returns)
+    
+    if min_len < 1:
+        raise ValueError("Insufficient historical data to calculate returns. At least 2 price points are required.")
+
     aligned_returns = np.array([r[-min_len:] for r in all_asset_returns]).T
     annualization_factor = 252 if min_len > 200 else 52
     annual_returns = np.mean(aligned_returns, axis=0) * annualization_factor
+    
+    # Handle cases with very few data points to avoid NaN in cov/corr
+    if min_len < 2:
+        # Fallback: Zero covariance, identity correlation, and zero volatility
+        n_assets = len(historical_prices_data)
+        covariance_matrix = np.eye(n_assets) * 1e-8
+        correlation_matrix = np.eye(n_assets)
+        annual_volatilities = np.zeros(n_assets)
+        return annual_returns, annual_volatilities, correlation_matrix
+
     # Add small epsilon to diagonal for numerical stability (ensure positive-definite)
     covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor + np.eye(len(historical_prices_data)) * 1e-8
     correlation_matrix = np.corrcoef(aligned_returns, rowvar=False)
+    # Ensure correlation matrix doesn't have NaNs (can happen if volatility is 0)
+    correlation_matrix = np.nan_to_num(correlation_matrix, nan=0.0, posinf=0.0, neginf=0.0)
+    np.fill_diagonal(correlation_matrix, 1.0)
+
     annual_volatilities = np.std(aligned_returns, axis=0) * np.sqrt(annualization_factor)
     return annual_returns, annual_volatilities, correlation_matrix
 
