@@ -109,7 +109,7 @@ export default function SimulationHistoryPage() {
                     </TableCell>
                     <TableCell className="px-6">
                       <div className="flex flex-wrap gap-1">
-                        {result.parameters.assets?.map((asset: string) => (
+                        {result.parameters?.assets?.map((asset: string) => (
                           <span key={asset} className="text-xs font-medium text-slate-500">
                             {asset}
                           </span>
