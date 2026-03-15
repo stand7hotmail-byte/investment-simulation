@@ -33,6 +33,6 @@
 - [x] Task: 全テストの実行とカバレッジ確認 af23d3b
     - [ ] `npm test` および `pytest` を実行し、全件パスを確認
     - [ ] 新規修正箇所のカバレッジが 80% 以上であることを確認
-- [ ] Task: 不要な非Null表明（!）の削除
-    - [ ] 修正箇所の周辺で不要になった `!` を削除し、型安全なコードに整理
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Validation and Cleanup' (Protocol in workflow.md)
+- [x] Task: 不要な非Null表明（!）の削除 5719b72
+    - [x] 修正箇所の周辺で不要になった `!` を削除し、型安全なコードに整理
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Validation and Cleanup' (Protocol in workflow.md) f4fb61c
