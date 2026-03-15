@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## ✅ Completed Tracks
 
+- [x] **Track: Fix Production Runtime Errors and Improve Stability (Frontend/Backend)**
+  *Link: [./archive/fix_runtime_errors_20260311/](./archive/fix_runtime_errors_20260311/)*
+
 - [x] **Track: Fix Production Authentication Error (ES256 Verification)**
   *Link: [./archive/fix_prod_auth_es256_20260311/](./archive/fix_prod_auth_es256_20260311/)*
 
@@ -58,7 +61,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-- [x] **Track: Fix Production Runtime Errors and Improve Stability (Frontend/Backend)**
-  *Link: [./tracks/fix_runtime_errors_20260311/](./tracks/fix_runtime_errors_20260311/)*
-
-
+(No active tracks)
