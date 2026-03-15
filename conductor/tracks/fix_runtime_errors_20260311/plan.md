@@ -27,7 +27,7 @@
     - [ ] `np.cov` 実行前のデータ長チェックと、自由度不足時の安全なフォールバックを実装 (Green Phase)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Calculation Stability' (Protocol in workflow.md) 8fa0a05
 
-## Phase 3: Final Validation and Cleanup
+## Phase 3: Final Validation and Cleanup [checkpoint: 3d13a32]
 全体の整合性とカバレッジを確認します。
 
 - [x] Task: 全テストの実行とカバレッジ確認 af23d3b
