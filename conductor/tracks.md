@@ -6,6 +6,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## ✅ Completed Tracks
 
+- [x] **Track: Fix Production Auth Performance and JWKS Timeout Issues**
+  *Link: [./tracks/fix_production_auth_performance_20260315/](./tracks/fix_production_auth_performance_20260315/)*
+
 - [x] **Track: Fix Production Runtime Errors and Improve Stability (Frontend/Backend)**
   *Link: [./archive/fix_runtime_errors_20260311/](./archive/fix_runtime_errors_20260311/)*
 
@@ -60,11 +63,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 ## 🚀 Active Tracks
-
-- [~] **Track: Fix Production Auth Performance and JWKS Timeout Issues**
-  *Link: [./tracks/fix_production_auth_performance_20260315/](./tracks/fix_production_auth_performance_20260315/)*
-
----
 
 - [ ] **Track: Fix Production Signup and Authentication Errors**
   *Link: [./tracks/fix_prod_errors_20260316/](./tracks/fix_prod_errors_20260316/)*
