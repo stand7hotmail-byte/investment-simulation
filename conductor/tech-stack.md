@@ -146,7 +146,7 @@
 | **科学計算** | SciPy | 1.11+ | 最適化、統計関数 |
 | **データ収集** | yfinance | Latest | 過去の金融データ取得 |
 | **最適化** | cvxpy | 1.4+ | 凸最適化（効率的フロンティア） |
-| **Auth** | PyJWT | 2.11+ | JWT検証（ES256/HS256対応、JWKSキャッシュ実装） |
+| **Auth** | PyJWT | 2.11+ | JWT検証（ES256対応、Lifespanプリフェッチ、FailsafeJWKClient実装、キャッシュ寿命延長） |
 | **HTTP Client** | httpx | 0.26+ | Supabase API/JWKS 呼び出し |
 | **Environment** | python-dotenv | 1.0+ | 環境変数管理 |
 
@@ -165,7 +165,7 @@
 | カテゴリ | 技術 | 用途 |
 |---------|------|------|
 | **Provider** | Supabase Auth | ユーザー認証・JWT発行 |
-| **Strategy** | JWT (RS256/ES256) | トークンベース認証 |
+| **Strategy** | JWT (ES256) | トークンベース認証（Failsafe/プリフェッチ対応） |
 | **Storage** | httpOnly Cookie (Optional) | XSS対策 |
 
 ### Deployment
@@ -178,12 +178,12 @@
 | **Monitoring** | Railway Dashboard | 標準 | ログ・メトリクス確認 |
 | **DNS** | Cloudflare | Free | CDN + SSL |
 
-### Production Environment Details (2026-03-02 Update)
+### Production Environment Details (2026-03-16 Update)
 
 | サービス | 役割 | 本番URL / 接続先 | 備考 |
 |---------|------|-----------------|------|
 | **Vercel** | Frontend | [https://investment-sim-frontend.vercel.app/](https://investment-sim-frontend.vercel.app/) | Next.js (Production Build) |
-| **Railway** | Backend | [https://postgresql-production-ba08.up.railway.app](https://postgresql-production-ba08.up.railway.app) | FastAPI (Auto-deploy from main) |
+| **Railway** | Backend | [https://postgresql-production-ba08.up.railway.app](https://postgresql-production-ba08.up.railway.app) | FastAPI (Auto-deploy from main, JWKS Prefetching enabled) |
 | **Railway** | Database | `postgresql-production-ba08.up.railway.app:5432` | PostgreSQL 15 |
 | **Supabase** | Auth | `https://zsftocgledceyzxklauw.supabase.co` | JWT (ES256/HS256) |
 
