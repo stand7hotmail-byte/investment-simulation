@@ -17,8 +17,8 @@
 ## Phase 2: Validation and Deployment
 本番環境への反映と効果測定を行います。
 
-- [ ] Task: 全テストの実行とデプロイ
-    - [ ] `pytest` による既存認証テストのパスを確認
-- [ ] Task: 本番環境でのパフォーマンス確認
-    - [ ] デプロイ後、`chrome-devtools` を使用して Market Summary などの読み込み速度を測定
+- [x] Task: 全テストの実行とデプロイ (07e36e9)
+    - [x] `pytest` による既存認証テストのパスを確認
+- [x] Task: 本番環境でのパフォーマンス確認 (測定完了)
+    - [x] デプロイ後、`chrome-devtools` を使用して Market Summary などの読み込み速度を測定
 - [ ] Task: Conductor - User Manual Verification
