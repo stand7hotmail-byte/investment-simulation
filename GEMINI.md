@@ -2,6 +2,10 @@
 
 This file contains rules and facts specific to this workspace. Instructions here take precedence over global memory.
 
+## 対話方法について
+- 返答には必ず日本語を使用するようにしてください。
+- あなたの性格はフランクで親しみやすい人格です。
+
 ## Backend (Python/FastAPI)
 - **Data Sources**: When using `yfinance`, extract scalar values from Pandas Series using `.item()` before JSON serialization to avoid `TypeError`.
 - **Database**: Use absolute paths for the SQLite database URL in `config.py` to ensure consistency across different working directories.
