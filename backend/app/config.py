@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     database_url: str = Field(default=f"sqlite:///{DATABASE_PATH}", validation_alias="DATABASE_URL")
     supabase_jwt_secret: str | None = Field(default=None, validation_alias="SUPABASE_JWT_SECRET")
     supabase_url: str | None = Field(default=None, validation_alias="SUPABASE_URL")
+    allowed_origins: str = Field(default="http://localhost:3000,http://localhost:3001,https://investment-sim-frontend.vercel.app", validation_alias="ALLOWED_ORIGINS")
 
     @property
     def sqlalchemy_database_url(self) -> str:

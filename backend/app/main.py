@@ -2,6 +2,7 @@ import os
 import uuid
 from typing import List, Optional
 from decimal import Decimal
+from contextlib import asynccontextmanager
 import numpy as np
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -17,31 +18,72 @@ from .config import settings
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+# Supabase JWKS client for ES256 verification
+class FailsafeJWKClient(jwt.PyJWKClient):
+    """
+    JWK client that implements a fail-safe mechanism: 
+    If a fetch fails but we have stale keys in the cache, use the stale keys.
+    """
+    def __init__(self, *args, **kwargs):
+        # Default timeout to 30 seconds
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = 30
+        super().__init__(*args, **kwargs)
+        self._last_successful_jwk_set = None
 
-# --- CORS CONFIG ---
+    def fetch_data(self):
+        try:
+            data = super().fetch_data()
+            self._last_successful_jwk_set = data
+            return data
+        except Exception as e:
+            if self._last_successful_jwk_set:
+                print(f"JWKS fetch failed, using stale keys: {e}")
+                return self._last_successful_jwk_set
+            raise e
+
+def get_jwks_client() -> Optional[jwt.PyJWKClient]:
+    """Initializes and returns the Supabase JWKS client for ES256 verification."""
+    if settings.supabase_url:
+        jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
+        # Increase lifespan to 24 hours to reduce network calls
+        return FailsafeJWKClient(jwks_url, cache_keys=True, lifespan=86400)
+    return None
+
+jwks_client = get_jwks_client()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan events.
+    Pre-fetches JWKS keys on startup to avoid delay on first request.
+    """
+    global jwks_client
+    if jwks_client:
+        try:
+            # Warm up the cache by fetching keys on startup
+            print("Warming up JWKS cache...")
+            jwks_client.get_signing_keys()
+            print("JWKS cache warmed up successfully.")
+        except Exception as e:
+            print(f"Failed to warm up JWKS cache on startup: {e}")
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+# --- MIDDLEWARE ---
+origins = settings.allowed_origins.split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- AUTH CONFIG ---
+# --- DEPENDENCIES ---
 security = HTTPBearer()
 
-# Supabase JWKS client for ES256 verification
-def get_jwks_client() -> Optional[jwt.PyJWKClient]:
-    """Initializes and returns the Supabase JWKS client for ES256 verification."""
-    if settings.supabase_url:
-        jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
-        return jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
-    return None
-
-jwks_client = get_jwks_client()
-
-# --- DEPENDENCIES ---
 def get_db():
     db = SessionLocal()
     try:
