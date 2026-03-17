@@ -65,12 +65,10 @@ async def lifespan(app: FastAPI):
     global jwks_client
     if jwks_client:
         try:
-            # Warm up the cache by fetching keys on startup
-            print("Warming up JWKS cache...")
+            # Warm up the cache on startup
             jwks_client.get_signing_keys()
-            print("JWKS cache warmed up successfully.")
-        except Exception as e:
-            print(f"Failed to warm up JWKS cache on startup: {e}")
+        except Exception:
+            pass # Non-fatal
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -87,7 +85,8 @@ app.add_middleware(
 )
 
 # --- DEPENDENCIES ---
-security = HTTPBearer(auto_error=False)
+security = HTTPBearer() # Default for required auth
+optional_security = HTTPBearer(auto_error=False) # For optional auth
 
 def get_db():
     db = SessionLocal()
@@ -97,53 +96,44 @@ def get_db():
         db.close()
 
 async def get_optional_user_id(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security)
 ) -> Optional[uuid.UUID]:
     """
     Authenticates the user using a Supabase JWT.
-    Supports both ES256 (via JWKS) and HS256 (via secret) algorithms.
     Returns None if authentication fails or is missing.
     """
-    if not credentials:
+    if not credentials or not credentials.credentials:
         return None
         
     token = credentials.credentials
-    if not token or token == "null" or token == "undefined":
+    if token in ("null", "undefined", ""):
         return None
 
-    alg = "Unknown"
-    kid = "None"
     try:
+        # Basic check if it looks like a JWT
+        if token.count('.') != 2:
+            return None
+
         header = jwt.get_unverified_header(token)
         alg = header.get("alg")
         kid = header.get("kid", "None")
         
         if alg == "ES256":
-            # Ensure jwks_client is available
             global jwks_client
             if not jwks_client:
                 jwks_client = get_jwks_client()
-            
             if not jwks_client:
                 return None
             
-            try:
-                signing_key = jwks_client.get_signing_key_from_jwt(token)
-                payload = jwt.decode(
-                    token,
-                    signing_key.key,
-                    algorithms=["ES256"],
-                    options={
-                        "verify_aud": False,
-                        "verify_iss": False, 
-                    }
-                )
-            except Exception as e:
-                print(f"ES256 verification failed (kid: {kid}): {str(e)}")
-                return None
+            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            payload = jwt.decode(
+                token,
+                signing_key.key,
+                algorithms=["ES256"],
+                options={"verify_aud": False, "verify_iss": False}
+            )
         else:
-            raw_secret = settings.supabase_jwt_secret
-            secret = raw_secret.strip() if raw_secret else ""
+            secret = (settings.supabase_jwt_secret or "").strip()
             if not secret:
                 return None
             payload = jwt.decode(
@@ -154,16 +144,9 @@ async def get_optional_user_id(
             )
         
         user_id = payload.get("sub")
-        if not user_id: 
-            return None
-        
-        try:
-            return uuid.UUID(user_id)
-        except ValueError:
-            return None
+        return uuid.UUID(user_id) if user_id else None
 
-    except Exception as e:
-        # Silent fail for optional auth
+    except Exception:
         return None
 
 async def get_current_user_id(
