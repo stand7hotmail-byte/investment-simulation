@@ -202,6 +202,7 @@ def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
 
 @app.post("/api/simulate/efficient-frontier", response_model=schemas.EfficientFrontierResponse)
 def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: Session = Depends(get_db)):
+    print(f"Received Efficient Frontier request data: {request.model_dump_json()}") # Log the request data
     if len(request.assets) < 2:
         raise HTTPException(status_code=400, detail="At least 2 assets are required for efficient frontier calculation")
     assets_data = []
