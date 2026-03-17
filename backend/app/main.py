@@ -25,9 +25,13 @@ class FailsafeJWKClient(jwt.PyJWKClient):
     If a fetch fails but we have stale keys in the cache, use the stale keys.
     """
     def __init__(self, *args, **kwargs):
-        # Default timeout to 30 seconds
+        # Default timeout to 30 seconds if not specified
         if "timeout" not in kwargs:
-            kwargs["timeout"] = 30
+            # Note: PyJWT 2.11+ uses request_options for timeout
+            if "request_options" not in kwargs:
+                kwargs["request_options"] = {"timeout": 30}
+            elif "timeout" not in kwargs["request_options"]:
+                kwargs["request_options"]["timeout"] = 30
         super().__init__(*args, **kwargs)
         self._last_successful_jwk_set = None
 
