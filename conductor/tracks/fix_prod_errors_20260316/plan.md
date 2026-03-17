@@ -11,9 +11,9 @@
 - [x] Task: JWKS 取得の堅牢化 (afac1a4)
     - [x] `PyJWKClient` の `request_options` に `timeout=30` を追加 (07e36e9済)
     - [x] `PyJWKClient` のラッパーをさらに改善し、例外ハンドリングを強化 (afac1a4)
-- [ ] Task: バックエンドの動作検証 (TDD)
-    - [ ] 認証なしで `risk-parity` などのエンドポイントが 200 を返すことを確認するテストを追加
-    - [ ] [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Auth Policy & JWKS Robustness' (Protocol in workflow.md)
+- [x] Task: バックエンドの動作検証 (TDD) (3311af1)
+    - [x] 認証なしで `risk-parity` などのエンドポイントが 200 を返すことを確認するテストを追加 (3311af1)
+    - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Auth Policy & JWKS Robustness' (Protocol in workflow.md) (3311af1)
 
 ## Phase 2: Frontend Signup Validation & Feedback
 フロントエンドのサインアップ画面のユーザー体験を改善します。
