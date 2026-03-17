@@ -5,9 +5,9 @@
 ## Phase 1: Backend Auth Policy & JWKS Robustness
 バックエンドの認証ポリシーを緩和し、ネットワークエラーに対する耐性を強化します。
 
-- [ ] Task: 認証依存関係のオプション化
-    - [ ] `get_current_user_id` をラップし、認証ヘッダーがない場合に `None` を返す `get_optional_user_id` を実装
-    - [ ] `/api/simulate/risk-parity` などのエンドポイントを `get_optional_user_id` に切り替え
+- [x] Task: 認証依存関係のオプション化 (571c3d8)
+    - [x] `get_current_user_id` をラップし、認証ヘッダーがない場合に `None` を返す `get_optional_user_id` を実装
+    - [x] `/api/simulate/risk-parity` などのエンドポイントを `get_optional_user_id` に切り替え
 - [ ] Task: JWKS 取得の堅牢化
     - [ ] `PyJWKClient` の `request_options` に `timeout=30` を追加
     - [ ] `PyJWKClient` のラッパーを作成し、`get_signing_key_from_jwt` 実行時の例外をキャッチして適切にハンドリング（既存のキャッシュがあればそれを利用する仕組みの確認）
