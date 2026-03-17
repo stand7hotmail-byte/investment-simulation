@@ -29,6 +29,20 @@ def calculate_risk_parity_weights(
 
 def calculate_efficient_frontier(expected_returns: np.ndarray, covariance_matrix: np.ndarray, asset_codes: List[str], n_points: int = 50) -> Dict[str, Any]:
     n_assets = len(expected_returns)
+    if n_assets == 1:
+        # Handle single asset case: return the asset's own return and volatility
+        return {
+            "frontier": [{
+                "expected_return": float(expected_returns[0]),
+                "volatility": float(np.sqrt(covariance_matrix[0, 0])),
+                "weights": {asset_codes[0]: 1.0}
+            }],
+            "max_sharpe": {
+                "expected_return": float(expected_returns[0]),
+                "volatility": float(np.sqrt(covariance_matrix[0, 0])),
+                "weights": {asset_codes[0]: 1.0}
+            }
+        }
     weights = cp.Variable(n_assets)
     constraints = [cp.sum(weights) == 1, weights >= 0]
     portfolio_return = expected_returns @ weights
