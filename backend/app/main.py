@@ -25,13 +25,8 @@ class FailsafeJWKClient(jwt.PyJWKClient):
     If a fetch fails but we have stale keys in the cache, use the stale keys.
     """
     def __init__(self, *args, **kwargs):
-        # Default timeout to 30 seconds if not specified
-        if "timeout" not in kwargs:
-            # Note: PyJWT 2.11+ uses request_options for timeout
-            if "request_options" not in kwargs:
-                kwargs["request_options"] = {"timeout": 30}
-            elif "timeout" not in kwargs["request_options"]:
-                kwargs["request_options"]["timeout"] = 30
+        # Remove request_options if present to avoid TypeError on older PyJWT versions
+        kwargs.pop("request_options", None)
         super().__init__(*args, **kwargs)
         self._last_successful_jwk_set = None
 
@@ -42,7 +37,7 @@ class FailsafeJWKClient(jwt.PyJWKClient):
             return data
         except Exception as e:
             if self._last_successful_jwk_set:
-                print(f"JWKS fetch failed, using stale keys: {e}")
+                # JWKS fetch failed, but we have a stale cache
                 return self._last_successful_jwk_set
             raise e
 
@@ -50,7 +45,7 @@ def get_jwks_client() -> Optional[jwt.PyJWKClient]:
     """Initializes and returns the Supabase JWKS client for ES256 verification."""
     if settings.supabase_url:
         jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
-        # Increase lifespan to 24 hours to reduce network calls
+        # Use simple args for maximum compatibility across PyJWT versions
         return FailsafeJWKClient(jwks_url, cache_keys=True, lifespan=86400)
     return None
 
@@ -165,7 +160,7 @@ async def get_current_user_id(
 
 @app.get("/")
 def read_root():
-    return {"status": "ok", "ver": "pyjwt-v1.4-auth-refactored"}
+    return {"status": "ok", "ver": "pyjwt-v1.5-stability-fix"}
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
