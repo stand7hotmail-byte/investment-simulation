@@ -8,9 +8,9 @@
 - [x] Task: 認証依存関係のオプション化 (571c3d8)
     - [x] `get_current_user_id` をラップし、認証ヘッダーがない場合に `None` を返す `get_optional_user_id` を実装
     - [x] `/api/simulate/risk-parity` などのエンドポイントを `get_optional_user_id` に切り替え
-- [ ] Task: JWKS 取得の堅牢化
-    - [ ] `PyJWKClient` の `request_options` に `timeout=30` を追加
-    - [ ] `PyJWKClient` のラッパーを作成し、`get_signing_key_from_jwt` 実行時の例外をキャッチして適切にハンドリング（既存のキャッシュがあればそれを利用する仕組みの確認）
+- [x] Task: JWKS 取得の堅牢化 (afac1a4)
+    - [x] `PyJWKClient` の `request_options` に `timeout=30` を追加 (07e36e9済)
+    - [x] `PyJWKClient` のラッパーをさらに改善し、例外ハンドリングを強化 (afac1a4)
 - [ ] Task: バックエンドの動作検証 (TDD)
     - [ ] 認証なしで `risk-parity` などのエンドポイントが 200 を返すことを確認するテストを追加
     - [ ] [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Auth Policy & JWKS Robustness' (Protocol in workflow.md)
