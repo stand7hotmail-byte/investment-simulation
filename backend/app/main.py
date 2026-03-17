@@ -188,6 +188,26 @@ async def get_current_user_id(
             detail=f"Authentication failed (Algorithm: {alg}, kid: {kid}): {str(e)}"
         )
 
+async def get_optional_user_id(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))
+) -> Optional[uuid.UUID]:
+    """
+    Optional authentication. Returns the user UUID if a valid token is provided, 
+    otherwise returns None.
+    """
+    if credentials is None:
+        return None
+    
+    try:
+        # Re-use the existing logic but wrapped to return None on error 
+        # or handle it specifically for optional access
+        return await get_current_user_id(credentials)
+    except HTTPException:
+        # If token is provided but invalid, we still treat it as unauthenticated 
+        # for endpoints that allow guest access, or we could raise error.
+        # Here we choose to return None to allow guest access even with invalid token.
+        return None
+
 # --- ROUTES ---
 
 @app.get("/")
@@ -246,7 +266,7 @@ def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: S
     return simulation.calculate_efficient_frontier(returns, cov_matrix, request.assets, request.n_points)
 
 @app.post("/api/simulate/risk-parity", response_model=schemas.RiskParityResponse)
-def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
     if len(request.assets) < 2:
         raise HTTPException(status_code=400, detail="At least 2 assets are required for risk parity calculation")
     parameters = request.model_dump()
@@ -267,7 +287,9 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
         "volatility": vol,
         "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
     }
-    crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
+    # Only save to DB if user is authenticated
+    if user_id:
+        crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
     return result
 
 @app.post("/api/simulate/custom-portfolio", response_model=schemas.PortfolioPointResponse)
