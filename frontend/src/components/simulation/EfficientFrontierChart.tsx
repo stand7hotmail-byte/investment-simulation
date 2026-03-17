@@ -141,13 +141,36 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
   const handleNativeClick = useCallback((eventData: any) => {
     if (!eventData || !eventData.points || eventData.points.length === 0) return;
     
-    const clickedX = eventData.points[0].x;
-    const { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint } = dataRef.current; // Added comparisonPortfolioPoints
+    const clickedPoint = eventData.points[0];
+    const clickedX = clickedPoint.x;
+    const curveNumber = clickedPoint.curveNumber;
+
+    const { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint } = dataRef.current;
     
+    // Check if an individual asset trace was clicked
+    const individualAssetTraceIndex = data.findIndex(trace => trace.name === "Individual Assets");
+
+    if (curveNumber === individualAssetTraceIndex) {
+      const pointIndex = clickedPoint.pointNumber;
+      const assetCode = clickedPoint.text;
+      const clickedAsset = allAssets?.find(a => a.asset_code === assetCode);
+      
+      if (clickedAsset && clickedAsset.expected_return != null && clickedAsset.volatility != null) {
+        setSelectedPoint({
+          expected_return: clickedAsset.expected_return,
+          volatility: clickedAsset.volatility,
+          weights: { [assetCode]: 1.0 }
+        });
+        setRevision(prev => prev + 1);
+        return;
+      }
+    }
+
+    // Fallback to nearest point logic for other traces
     const candidates = [
       ...(maxSharpe ? [maxSharpe] : []),
       ...(riskParity ? [riskParity] : []),
-      ...(customPortfolioPoint ? [{ // Include custom portfolio point as a candidate for selection
+      ...(customPortfolioPoint ? [{
         expected_return: customPortfolioPoint.expected_return,
         volatility: customPortfolioPoint.volatility,
         weights: customPortfolioPoint.weights
@@ -168,7 +191,7 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
 
     setSelectedPoint(nearest);
     setRevision(prev => prev + 1);
-  }, []);
+  }, [data, allAssets]);
 
   return (
     <Card className="w-full shadow-sm">
