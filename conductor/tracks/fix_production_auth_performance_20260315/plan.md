@@ -22,3 +22,7 @@
 - [x] Task: 本番環境でのパフォーマンス確認 (測定完了)
     - [x] デプロイ後、`chrome-devtools` を使用して Market Summary などの読み込み速度を測定
 - [x] Task: Conductor - User Manual Verification (b20e06e)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (d2c63cb)
+
