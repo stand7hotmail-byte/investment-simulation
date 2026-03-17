@@ -315,7 +315,9 @@ def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(g
     return crud.create_portfolio(db=db, portfolio=portfolio, user_id=user_id)
 
 @app.get("/api/portfolios", response_model=List[schemas.Portfolio])
-def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    if not user_id:
+        return []
     return crud.get_portfolios(db, user_id=user_id, skip=skip, limit=limit)
 
 @app.get("/api/portfolios/{portfolio_id}", response_model=schemas.Portfolio)
@@ -376,7 +378,9 @@ def create_simulation_result_endpoint(simulation_result: schemas.SimulationResul
         raise HTTPException(status_code=500, detail=f"Database error during save: {str(e)}")
 
 @app.get("/api/simulation-results", response_model=List[schemas.SimulationResult])
-def read_simulation_results_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+def read_simulation_results_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    if not user_id:
+        return []
     return crud.get_simulation_results(db, user_id=user_id, skip=skip, limit=limit)
 
 @app.delete("/api/simulation-results/{result_id}", status_code=204)
