@@ -87,7 +87,7 @@ app.add_middleware(
 )
 
 # --- DEPENDENCIES ---
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 def get_db():
     db = SessionLocal()
@@ -96,23 +96,21 @@ def get_db():
     finally:
         db.close()
 
-async def get_current_user_id(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-) -> uuid.UUID:
+async def get_optional_user_id(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+) -> Optional[uuid.UUID]:
     """
     Authenticates the user using a Supabase JWT.
     Supports both ES256 (via JWKS) and HS256 (via secret) algorithms.
-    
-    Args:
-        credentials: The HTTP Bearer credentials.
-        
-    Returns:
-        The authenticated user's UUID.
-        
-    Raises:
-        HTTPException: If authentication fails or the token is invalid.
+    Returns None if authentication fails or is missing.
     """
+    if not credentials:
+        return None
+        
     token = credentials.credentials
+    if not token or token == "null" or token == "undefined":
+        return None
+
     alg = "Unknown"
     kid = "None"
     try:
@@ -127,10 +125,7 @@ async def get_current_user_id(
                 jwks_client = get_jwks_client()
             
             if not jwks_client:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                    detail="JWKS client not initialized. Check SUPABASE_URL environment variable."
-                )
+                return None
             
             try:
                 signing_key = jwks_client.get_signing_key_from_jwt(token)
@@ -143,29 +138,14 @@ async def get_current_user_id(
                         "verify_iss": False, 
                     }
                 )
-            except jwt.PyJWKClientError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"ES256 JWKS error (kid: {kid}): {str(e)}"
-                )
-            except jwt.InvalidTokenError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"ES256 invalid token: {str(e)}"
-                )
             except Exception as e:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"ES256 verification failed (kid: {kid}): {str(e)}"
-                )
+                print(f"ES256 verification failed (kid: {kid}): {str(e)}")
+                return None
         else:
             raw_secret = settings.supabase_jwt_secret
             secret = raw_secret.strip() if raw_secret else ""
             if not secret:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Supabase JWT secret not configured."
-                )
+                return None
             payload = jwt.decode(
                 token,
                 secret,
@@ -175,48 +155,34 @@ async def get_current_user_id(
         
         user_id = payload.get("sub")
         if not user_id: 
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing 'sub' claim")
+            return None
         
         try:
             return uuid.UUID(user_id)
         except ValueError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid user ID format: {user_id}")
+            return None
 
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
-    except HTTPException:
-        raise
     except Exception as e:
+        # Silent fail for optional auth
+        return None
+
+async def get_current_user_id(
+    user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)
+) -> uuid.UUID:
+    """Required version of authentication."""
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed (Algorithm: {alg}, kid: {kid}): {str(e)}"
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-
-async def get_optional_user_id(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False))
-) -> Optional[uuid.UUID]:
-    """
-    Optional authentication. Returns the user UUID if a valid token is provided, 
-    otherwise returns None.
-    """
-    if credentials is None:
-        return None
-    
-    try:
-        # Re-use the existing logic but wrapped to return None on error 
-        # or handle it specifically for optional access
-        return await get_current_user_id(credentials)
-    except HTTPException:
-        # If token is provided but invalid, we still treat it as unauthenticated 
-        # for endpoints that allow guest access, or we could raise error.
-        # Here we choose to return None to allow guest access even with invalid token.
-        return None
+    return user_id
 
 # --- ROUTES ---
 
 @app.get("/")
 def read_root():
-    return {"status": "ok", "ver": "pyjwt-v1.3-es256-verified"}
+    return {"status": "ok", "ver": "pyjwt-v1.4-auth-refactored"}
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
