@@ -29,12 +29,14 @@ def seed_assets():
         for asset_info in precomputed_data:
             existing_asset = db.query(models.AssetData).filter(models.AssetData.asset_code == asset_info["asset_code"]).first()
             if existing_asset:
+                print(f"Updating {asset_info['asset_code']}: Ret={asset_info['expected_return']:.4f}, Vol={asset_info['volatility']:.4f}")
                 existing_asset.name = asset_info["name"]
                 existing_asset.asset_class = asset_info["asset_class"]
                 existing_asset.expected_return = asset_info["expected_return"]
                 existing_asset.volatility = asset_info["volatility"]
                 existing_asset.correlation_matrix = asset_info["correlation_matrix"]
             else:
+                print(f"Adding new asset {asset_info['asset_code']}")
                 db_asset = models.AssetData(**asset_info)
                 db.add(db_asset)
         
