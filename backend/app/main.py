@@ -166,6 +166,11 @@ def read_root():
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
     return crud.get_assets(db, skip=skip, limit=limit)
 
+@app.get("/api/debug/asset-stats")
+def debug_asset_stats(db: Session = Depends(get_db)):
+    assets = db.query(models.AssetData).all()
+    return {a.asset_code: {"ret": float(a.expected_return), "vol": float(a.volatility)} for a in assets}
+
 @app.get("/api/asset-classes", response_model=schemas.AssetClassesResponse)
 def get_asset_classes_endpoint(db: Session = Depends(get_db)):
     asset_classes = crud.get_asset_classes(db)

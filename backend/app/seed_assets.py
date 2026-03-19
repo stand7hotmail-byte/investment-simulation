@@ -15,15 +15,26 @@ def seed_assets():
     db = SessionLocal()
     try:
         # 1. Load Precomputed Data
-        precomputed_path = os.path.join(os.path.dirname(__file__), 'precomputed_assets.json')
+        # Using a more robust path resolution to ensure it finds the file in the same directory as this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        precomputed_path = os.path.join(current_dir, 'precomputed_assets.json')
+        
         precomputed_data = []
         if os.path.exists(precomputed_path):
             with open(precomputed_path, 'r', encoding='utf-8') as f:
                 precomputed_data = json.load(f)
-            print(f"Found precomputed data for {len(precomputed_data)} assets.")
+            print(f"Found precomputed data for {len(precomputed_data)} assets at {precomputed_path}.")
         else:
-            print("Precomputed data file not found! Please run precompute_asset_stats.py first.")
-            return
+            print(f"Precomputed data file NOT FOUND at {precomputed_path}! Looking in relative paths...")
+            # Fallback for some module execution scenarios
+            precomputed_path = 'app/precomputed_assets.json'
+            if os.path.exists(precomputed_path):
+                with open(precomputed_path, 'r', encoding='utf-8') as f:
+                    precomputed_data = json.load(f)
+                print(f"Found precomputed data at {precomputed_path}.")
+            else:
+                print("Could not find precomputed data file in any location.")
+                return
 
         # 2. Upsert Asset Data (Stats & Correlations)
         for asset_info in precomputed_data:
