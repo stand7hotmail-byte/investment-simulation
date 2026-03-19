@@ -15,8 +15,12 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   
+  const isPasswordValid = password.length >= 6
+  
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isPasswordValid) return
+    
     setLoading(true)
     
     const { error } = await supabase.auth.signUp({
@@ -28,9 +32,18 @@ export default function SignUpPage() {
     })
     
     if (error) {
-      toast.error(error.message)
+      // エラーメッセージの日本語化
+      let errorMessage = error.message
+      if (error.message.includes('User already registered')) {
+        errorMessage = 'このメールアドレスは既に登録されています。'
+      } else if (error.message.includes('Password should be at least 6 characters')) {
+        errorMessage = 'パスワードは6文字以上である必要があります。'
+      } else if (error.message.includes('Signup disabled')) {
+        errorMessage = '現在、新規登録は制限されています。'
+      }
+      toast.error(errorMessage)
     } else {
-      toast.success('Check your email for the confirmation link!')
+      toast.success('確認メールを送信しました。メールをご確認ください。')
       router.push('/login')
     }
     
@@ -41,9 +54,9 @@ export default function SignUpPage() {
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md shadow-lg border-slate-200">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">アカウント作成</CardTitle>
           <p className="text-sm text-slate-500 text-center">
-            Enter your email below to create your account
+            メールアドレスを入力してアカウントを作成してください
           </p>
         </CardHeader>
         <CardContent>
@@ -51,7 +64,7 @@ export default function SignUpPage() {
             <div className="space-y-2">
               <Input
                 type="email"
-                placeholder="Email address"
+                placeholder="メールアドレス"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -61,23 +74,32 @@ export default function SignUpPage() {
             <div className="space-y-2">
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="パスワード（6文字以上）"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="h-11"
               />
+              {password && !isPasswordValid && (
+                <p className="text-xs text-red-500">
+                  パスワードは6文字以上である必要があります。
+                </p>
+              )}
             </div>
-            <Button type="submit" disabled={loading} className="w-full h-11 text-lg font-medium">
-              {loading ? 'Creating account...' : 'Sign up'}
+            <Button 
+              type="submit" 
+              disabled={loading || (password.length > 0 && !isPasswordValid)} 
+              className="w-full h-11 text-lg font-medium"
+            >
+              {loading ? '作成中...' : 'アカウント登録'}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-slate-500 text-center">
-            Already have an account?{' '}
+            すでにアカウントをお持ちですか？{' '}
             <Link href="/login" className="text-blue-600 hover:underline font-medium">
-              Login
+              ログイン
             </Link>
           </div>
         </CardFooter>

@@ -9,7 +9,7 @@ import os
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from app.main import app, get_db, get_current_user_id
+from app.main import app, get_db, get_current_user_id, get_optional_user_id
 from app.database import Base
 from app import models
 
@@ -38,6 +38,7 @@ def fixed_user_id():
 def test_client(session_override, fixed_user_id): # Inject fixtures here
     app.dependency_overrides[get_db] = lambda: session_override # Use lambda to provide the fixture value
     app.dependency_overrides[get_current_user_id] = lambda: fixed_user_id # Use lambda to provide the fixture value
+    app.dependency_overrides[get_optional_user_id] = lambda: fixed_user_id
     client = TestClient(app)
     yield client
     app.dependency_overrides = {} # Clean up overrides

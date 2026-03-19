@@ -25,9 +25,16 @@ export default function LoginPage() {
     })
     
     if (error) {
-      toast.error(error.message)
+      // エラーメッセージの日本語化
+      let errorMessage = error.message
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'メールアドレスまたはパスワードが正しくありません。'
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'メールアドレスが確認されていません。確認メールをご確認ください。'
+      }
+      toast.error(errorMessage)
     } else {
-      toast.success('Successfully logged in!')
+      toast.success('ログインしました。')
       router.push('/dashboard')
       router.refresh()
     }
@@ -39,9 +46,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md shadow-lg border-slate-200">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">ログイン</CardTitle>
           <p className="text-sm text-slate-500 text-center">
-            Enter your email and password to access your account
+            メールアドレスとパスワードを入力してログインしてください
           </p>
         </CardHeader>
         <CardContent>
@@ -49,7 +56,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Input
                 type="email"
-                placeholder="Email address"
+                placeholder="メールアドレス"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -59,7 +66,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -67,15 +74,15 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" disabled={loading} className="w-full h-11 text-lg font-medium">
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'ログイン中...' : 'ログイン'}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-slate-500 text-center">
-            Don't have an account?{' '}
+            アカウントをお持ちではありませんか？{' '}
             <Link href="/signup" className="text-blue-600 hover:underline font-medium">
-              Sign up
+              新規登録
             </Link>
           </div>
         </CardFooter>

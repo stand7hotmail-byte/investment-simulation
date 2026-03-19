@@ -18,21 +18,21 @@
 ## Phase 2: Frontend Signup Validation & Feedback
 フロントエンドのサインアップ画面のユーザー体験を改善します。
 
-- [ ] Task: サインアップフォームのバリデーション実装
-    - [ ] パスワードが 6文字未満の場合にエラーメッセージを表示し、ボタンを無効化するロジックを追加
-- [ ] Task: Supabase エラーメッセージの日本語化
-    - [ ] Supabase から返されるエラー（例: `User already registered`, `Password should be at least 6 characters`）を日本語に翻訳して表示するマッピングを実装
-- [ ] Task: フロントエンドの動作確認
-    - [ ] 4文字のパスワードでエラーが出ることを確認
-    - [ ] 正しいパスワードでサインアップが完了し、トーストメッセージが表示されることを確認
-    - [ ] [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Signup Validation & Feedback' (Protocol in workflow.md)
+- [x] Task: サインアップフォーム mercバリデーション実装
+    - [x] パスワードが 6文字未満の場合にエラーメッセージを表示し、ボタンを無効化するロジックを追加
+- [x] Task: Supabase エラーメッセージの日本語化
+    - [x] Supabase から返されるエラー（例: `User already registered`, `Password should be at least 6 characters`）を日本語に翻訳して表示するマッピングを実装
+- [x] Task: フロントエンドの動作確認
+    - [x] 4文字のパスワードでエラーが出ることを確認
+    - [x] 正しいパスワードでサインアップが完了し、トーストメッセージが表示されることを確認
+    - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Signup Validation & Feedback' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification and Deployment
 全体の動作を確認し、本番環境へのデプロイを準備します。
 
-- [ ] Task: 全テストスイートの実行
-    - [ ] `pytest` (Backend) と `vitest` (Frontend) を実行
-- [ ] Task: 本番環境での最終確認
-    - [ ] デプロイ後、未ログイン状態でシミュレーションが動作することを確認
-    - [ ] ログイン状態で認証エラーが発生しなくなったことを確認
-- [ ] Task: Conductor - User Manual Verification
+- [x] Task: 全テストスイートの実行
+    - [x] `pytest` (Backend) と `vitest` (Frontend) を実行
+- [x] Task: 本番環境での最終確認
+    - [x] デプロイ後、未ログイン状態でシミュレーションが動作することを確認
+    - [x] ログイン状態で認証エラーが発生しなくなったことを確認
+- [x] Task: Conductor - User Manual Verification
