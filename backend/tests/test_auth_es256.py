@@ -31,7 +31,7 @@ async def test_auth_es256_unauthorized_due_to_unknown_key():
     credentials = MagicMock()
     credentials.credentials = token
     
-    with patch("app.main.jwks_client") as mock_jwks:
+    with patch("app.dependencies._jwks_client") as mock_jwks:
         mock_jwks.get_signing_key_from_jwt.side_effect = Exception("Key not found")
         
         # get_optional_user_id should return None on failure
@@ -60,7 +60,7 @@ async def test_auth_es256_jwks_fetch_failure():
     credentials = MagicMock()
     credentials.credentials = token
     
-    with patch("app.main.jwks_client") as mock_jwks:
+    with patch("app.dependencies._jwks_client") as mock_jwks:
         # Simulate network error when fetching JWKS
         mock_jwks.get_signing_key_from_jwt.side_effect = jwt.PyJWKClientError("Network error")
         
@@ -97,7 +97,7 @@ async def test_auth_es256_success():
     credentials = MagicMock()
     credentials.credentials = token
     
-    with patch("app.main.jwks_client") as mock_jwks:
+    with patch("app.dependencies._jwks_client") as mock_jwks:
         mock_signing_key = MagicMock()
         mock_signing_key.key = public_pem
         mock_jwks.get_signing_key_from_jwt.return_value = mock_signing_key
