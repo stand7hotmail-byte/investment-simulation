@@ -5,15 +5,15 @@
 ## Phase 1: Backend Core Refactoring
 バックエンドの計算ロジックとエンドポイント構造を整理し、堅牢性を高めます。
 
-- [ ] Task: `simulation.py` のモジュール化と数学的安定性の強化
-    - [ ] Write Tests: シミュレーション計算（幾何平均、年換算、キャップ処理）の境界値テストを記述
-    - [ ] Implement: `simulation.py` を整理し、責務ごとに内部関数を分割。計算ロジックの再利用性を高める。
-- [ ] Task: `seed_assets.py` のデータ・コード分離
-    - [ ] Write Tests: 事前計算データのバリデーション（型、期待される範囲）テストを記述
-    - [ ] Implement: `PRECOMPUTED_DATA` を別ファイル（例: `data/precomputed_assets.py` または JSON）に切り出し、スクリプト本体をクリーンにする。
-- [ ] Task: `main.py` のエンドポイント整理と共通依存関係の標準化
-    - [ ] Write Tests: 各エンドポイントのレスポンス形式と共通エラーハンドリングのテストを記述
-    - [ ] Implement: 共通の `Depends` や例外処理をデコレータやミドルウェアに整理し、`main.py` の見通しを良くする。
+- [x] Task: `simulation.py` のモジュール化と数学的安定性の強化 [4264348]
+    - [x] Write Tests: シミュレーション計算（幾何平均、年換算、キャップ処理）の境界値テストを記述
+    - [x] Implement: `simulation.py` を整理し、責務ごとに内部関数を分割。計算ロジックの再利用性を高める。
+- [x] Task: `seed_assets.py` のデータ・コード分離 [4264348]
+    - [x] Write Tests: 事前計算データのバリデーション（型、期待される範囲）テストを記述
+    - [x] Implement: `PRECOMPUTED_DATA` を別ファイル（例: `data/precomputed_assets.py` または JSON）に切り出し、スクリプト本体をクリーンにする。
+- [x] Task: `main.py` のエンドポイント整理と共通依存関係の標準化 [4264348]
+    - [x] Write Tests: 各エンドポイントのレスポンス形式と共通エラーハンドリングのテストを記述
+    - [x] Implement: 共通の `Depends` や例外処理をデコレータやミドルウェアに整理し、`main.py` の見通しを良くする。
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Core Refactoring' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Infrastructure & Hook Standardization
