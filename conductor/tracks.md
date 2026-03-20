@@ -67,6 +67,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-(No active tracks)
+- [ ] **Track: Comprehensive System Refactoring & Stability Improvement**
+  *Link: [./tracks/refactoring_and_stability_20260319/](./tracks/refactoring_and_stability_20260319/)*
 
 
