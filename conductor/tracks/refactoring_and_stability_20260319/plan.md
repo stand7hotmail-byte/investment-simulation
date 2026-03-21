@@ -19,12 +19,12 @@
 ## Phase 2: Frontend Infrastructure & Hook Standardization
 フロントエンドの共通基盤とデータフェッチロジックを標準化します。
 
-- [ ] Task: カスタムフックのパターン統一とエラーハンドリング一元化
-    - [ ] Write Tests: `useEfficientFrontier` 等のフックが、バックエンドのエラーを正しく統一形式で捕捉するテストを記述
-    - [ ] Implement: `hooks/` 以下の React Query フックをベースクラスや共通パターンに合わせ、冗長なコードを削除。
-- [ ] Task: 型定義の整理と API 同期の強化
-    - [ ] Write Tests: `types/simulation.ts` がバックエンドの Pydantic スキーマと一致していることを確認する静的チェック
-    - [ ] Implement: 重複した型定義を削除し、共通の `types/` ディレクトリに集約。
+- [x] Task: カスタムフックのパターン統一とエラーハンドリング一元化 [9996675]
+    - [x] Write Tests: `useEfficientFrontier` 等のフックが、バックエンドのエラーを正しく統一形式で捕捉するテストを記述
+    - [x] Implement: `hooks/` 以下の React Query フックをベースクラスや共通パターンに合わせ、冗長なコードを削除。
+- [x] Task: 型定義の整理と API 同期の強化 [9996675]
+    - [x] Write Tests: `types/simulation.ts` がバックエンドの Pydantic スキーマと一致していることを確認する静的チェック
+    - [x] Implement: 重複した型定義を削除し、共通の `types/` ディレクトリに集約。
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Hook Standardization' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Component Modularization & State Consistency
