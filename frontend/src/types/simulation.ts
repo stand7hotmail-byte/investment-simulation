@@ -25,11 +25,47 @@ export interface RiskParityResponse {
   weights: Record<string, number>;
 }
 
+export interface ExtraInvestment {
+  year: number;
+  amount: number;
+}
+
+export interface MonteCarloRequest {
+  portfolio_id: string;
+  initial_investment: number;
+  monthly_contribution: number;
+  years: number;
+  n_simulations?: number;
+  extra_investments?: ExtraInvestment[];
+  target_amount?: number;
+}
+
+export interface MonteCarloHistoryPoint {
+  year: number;
+  p10: number;
+  p50: number;
+  p90: number;
+}
+
+export interface MonteCarloResponse {
+  percentiles: Record<string, number>;
+  元本割れ確率: number;
+  目標到達確率: number | null;
+  history: MonteCarloHistoryPoint[];
+  confidence_interval_95?: {
+    lower_bound: number;
+    upper_bound: number;
+  };
+}
+
 export interface BasicAccumulationRequest {
   portfolio_id: string;
   initial_investment: number;
   monthly_contribution: number;
   years: number;
+  expected_return?: number;
+  volatility?: number;
+  n_scenarios?: number;
 }
 
 export interface BasicAccumulationHistory {
@@ -73,6 +109,18 @@ export interface PortfolioPointsRequest {
 
 export interface AssetClassesResponse {
   asset_classes: string[];
+}
+
+export interface MarketSummaryItem {
+  asset_code: string;
+  name: string;
+  current_price: number;
+  change_percentage: number;
+  sparkline: number[] | null;
+}
+
+export interface MarketSummaryResponse {
+  items: MarketSummaryItem[];
 }
 
 export interface SimulationResultBase {

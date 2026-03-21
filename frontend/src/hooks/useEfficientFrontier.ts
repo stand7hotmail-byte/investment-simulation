@@ -1,18 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchApi } from "@/lib/api";
 import { EfficientFrontierResponse, EfficientFrontierRequest } from "@/types/simulation";
+import { useSimulationQuery } from "./useSimulationQuery";
 
 export function useEfficientFrontier(request: EfficientFrontierRequest, enabled: boolean = false) {
-  return useQuery({
-    queryKey: ["efficient-frontier", request.assets],
-    queryFn: () => {
-      console.log("Efficient Frontier Request body:", JSON.stringify(request)); // Log request body
-      return fetchApi<EfficientFrontierResponse>("/api/simulate/efficient-frontier", {
-        method: "POST",
-        body: JSON.stringify(request),
-      });
-    },
-    enabled: enabled && request.assets.length >= 2,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  return useSimulationQuery<EfficientFrontierResponse>(
+    "/api/simulate/efficient-frontier",
+    ["efficient-frontier", request.assets],
+    request,
+    enabled,
+    { minAssets: 2 }
+  );
 }
