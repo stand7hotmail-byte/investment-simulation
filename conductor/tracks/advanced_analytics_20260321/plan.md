@@ -5,15 +5,15 @@
 ## Phase 1: Backend Data & Logic (Stress Test & Rebalancing)
 分析に必要なデータ取得ロジックと計算エンジンをバックエンドに実装します。
 
-- [ ] Task: ストレステスト用計算エンジンの実装
-    - [ ] Write Tests: 指定期間（リーマンショック等）のデータ切り出しと、ポートフォリオ騰落率計算のユニットテストを記述。
-    - [ ] Implement: `simulation.py` に指定期間のヒストリカルデータからパフォーマンスを算出する関数を追加。
-- [ ] Task: リバランス計算ロジックの実装
-    - [ ] Write Tests: 目標比率と現在比率の差分計算のユニットテストを記述。
-    - [ ] Implement: 2つのポートフォリオ構成（Asset Allocation）を比較し、差分を返す共通ユーティリティを実装。
-- [ ] Task: 新しい分析用 API エンドポイントの作成
-    - [ ] Write Tests: `/api/portfolios/{id}/analytics/stress-test` などのエンドポイントテストを記述。
-    - [ ] Implement: `main.py` に分析結果を返す新しい GET エンドポイントを追加。
+- [x] Task: ストレステスト用計算エンジンの実装 [baf6ada]
+    - [x] Write Tests: 指定期間（リーマンショック等）のデータ切り出しと、ポートフォリオ騰落率計算のユニットテストを記述。
+    - [x] Implement: `simulation.py` に指定期間のヒストリカルデータからパフォーマンスを算出する関数を追加。
+- [x] Task: リバランス計算ロジックの実装 [baf6ada]
+    - [x] Write Tests: 目標比率と現在比率の差分計算のユニットテストを記述。
+    - [x] Implement: 2つのポートフォリオ構成（Asset Allocation）を比較し、差分を返す共通ユーティリティを実装。
+- [x] Task: 新しい分析用 API エンドポイントの作成 [baf6ada]
+    - [x] Write Tests: `/api/portfolios/{id}/analytics/stress-test` などのエンドポイントテストを記述。
+    - [x] Implement: `main.py` に分析結果を返す新しい GET エンドポイントを追加。
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Data & Logic' (Protocol in workflow.md)
 
 ## Phase 2: Dynamic Dividend Data Support
