@@ -30,12 +30,12 @@
 ## Phase 3: Frontend Component Modularization & State Consistency
 UIコンポーネントの分割と状態管理の一貫性を確保します。
 
-- [ ] Task: 肥大化したシミュレーション画面の分割
-    - [ ] Write Tests: 分割後のサブコンポーネントが単体で正しくレンダリングされるテストを記述
-    - [ ] Implement: `EfficientFrontier` ページ等の巨大なコンポーネントを、グラフ、入力フォーム、結果サマリーなどの小さなコンポーネントに分割。
-- [ ] Task: Zustand ストアの `hasHydrated` フラグ利用の統一
-    - [ ] Write Tests: ストア読み込み完了前にサイドエフェクトが発生しないことを検証するテストを記述
-    - [ ] Implement: 全ての Persist ストアで `hasHydrated` パターンを徹底し、ハイドレーションエラーを防止。
+- [x] Task: 肥大化したシミュレーション画面の分割 [10306da]
+    - [x] Write Tests: 分割後のサブコンポーネントが単体で正しくレンダリングされるテストを記述
+    - [x] Implement: `EfficientFrontier` ページ等の巨大なコンポーネントを、グラフ、入力フォーム、結果サマリーなどの小さなコンポーネントに分割。
+- [x] Task: Zustand ストアの `hasHydrated` フラグ利用の統一 [10306da]
+    - [x] Write Tests: ストア読み込み完了前にサイドエフェクトが発生しないことを検証するテストを記述
+    - [x] Implement: 全ての Persist ストアで `hasHydrated` パターンを徹底し、ハイドレーションエラーを防止。
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Component Modularization & State Consistency' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification & Lesson Learned
