@@ -272,3 +272,87 @@ def prepare_simulation_inputs(assets: List[Any]) -> Tuple[np.ndarray, List[float
                 correlation_matrix_array[i, j] = corr
                 
     return returns_array, volatilities_list, correlation_matrix_array
+
+def calculate_stress_test_performance(
+    historical_prices_data: List[List[Dict[str, Any]]],
+    weights: List[float],
+    start_date: str,
+    end_date: str
+) -> Dict[str, Any]:
+    """
+    Calculates the performance of a portfolio during a specific historical period.
+    Returns cumulative returns and max drawdown.
+    """
+    weights = np.array(weights)
+    # Find all common dates within the range
+    all_dates = sorted(list(set(p['date'] for sublist in historical_prices_data for p in sublist if start_date <= p['date'] <= end_date)))
+    
+    if not all_dates:
+        return {"history": [], "max_drawdown": 0.0}
+
+    # Align prices
+    aligned_prices = []
+    for prices in historical_prices_data:
+        price_map = {p['date']: float(p['price']) for p in prices}
+        # Forward fill missing prices
+        last_known_price = 0.0
+        # Find first non-zero price to start with if necessary
+        for d in sorted(price_map.keys()):
+            if price_map[d] > 0:
+                last_known_price = price_map[d]
+                break
+                
+        asset_prices = []
+        for d in all_dates:
+            price = price_map.get(d, last_known_price)
+            asset_prices.append(price)
+            if price > 0:
+                last_known_price = price
+        aligned_prices.append(asset_prices)
+    
+    aligned_prices = np.array(aligned_prices) # (n_assets, n_dates)
+    
+    # Normalize to 1.0 at start
+    initial_prices = aligned_prices[:, 0][:, np.newaxis]
+    initial_prices[initial_prices == 0] = 1e-8 
+    normalized_prices = aligned_prices / initial_prices
+    
+    # Portfolio value over time
+    portfolio_history = weights @ normalized_prices # (n_dates,)
+    cumulative_returns = portfolio_history - 1.0
+    
+    # Max Drawdown
+    running_max = np.maximum.accumulate(portfolio_history)
+    drawdowns = (portfolio_history - running_max) / running_max
+    # Fill NaNs in drawdowns (can happen if running_max is 0)
+    drawdowns = np.nan_to_num(drawdowns, nan=0.0)
+    max_drawdown = np.abs(np.min(drawdowns)) if len(drawdowns) > 0 else 0.0
+    
+    history = []
+    for i, d in enumerate(all_dates):
+        history.append({
+            "date": d,
+            "cumulative_return": float(cumulative_returns[i])
+        })
+        
+    return {
+        "history": history,
+        "max_drawdown": float(max_drawdown)
+    }
+
+def calculate_rebalancing_diff(
+    current_allocations: Dict[str, float],
+    target_allocations: Dict[str, float]
+) -> Dict[str, float]:
+    """
+    Calculates the difference between current and target allocations.
+    Positive means buy, negative means sell.
+    """
+    all_codes = set(current_allocations.keys()) | set(target_allocations.keys())
+    diffs = {}
+    for code in all_codes:
+        current = current_allocations.get(code, 0.0)
+        target = target_allocations.get(code, 0.0)
+        diffs[code] = target - current
+    return diffs
+

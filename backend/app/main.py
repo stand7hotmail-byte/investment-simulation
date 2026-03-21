@@ -34,11 +34,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # --- MIDDLEWARE ---
-origins = settings.allowed_origins.split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origins=["*"], # Temporarily allowed for debugging
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -273,3 +271,60 @@ def delete_simulation_result_endpoint(result_id: uuid.UUID, db: Session = Depend
     if not crud.delete_simulation_result(db, result_id, user_id):
         raise HTTPException(status_code=404, detail="Result not found")
     return None
+
+# --- ANALYTICS ENDPOINTS ---
+
+@app.get("/api/portfolios/{portfolio_id}/analytics/stress-test", response_model=schemas.PortfolioStressTestResponse)
+def get_portfolio_stress_test(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    # Verify portfolio ownership (if logged in) or existence
+    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id).first()
+    if not db_portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    if user_id and db_portfolio.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view this portfolio")
+
+    if not db_portfolio.allocations:
+        raise HTTPException(status_code=400, detail="Portfolio has no allocations")
+
+    assets_data = []
+    weights = []
+    for alloc in db_portfolio.allocations:
+        asset = crud.get_asset_by_code(db, alloc.asset_code)
+        if asset:
+            assets_data.append(asset)
+            weights.append(float(alloc.weight))
+    
+    if not assets_data:
+        raise HTTPException(status_code=400, detail="Portfolio has no valid assets")
+
+    hist_data_list = [a.historical_prices for a in assets_data]
+    
+    # Define periods
+    scenarios = {
+        "lehman_shock": ("2008-09-01", "2009-03-31", "Lehman Shock"),
+        "covid_crash": ("2020-02-01", "2020-04-30", "Covid Crash"),
+        "dotcom_bubble": ("2000-03-01", "2002-10-31", "Dot-com Bubble")
+    }
+    
+    results = {}
+    for key, (start, end, name) in scenarios.items():
+        perf = simulation.calculate_stress_test_performance(hist_data_list, weights, start, end)
+        results[key] = {
+            "name": name,
+            "max_drawdown": perf["max_drawdown"],
+            "history": perf["history"]
+        }
+        
+    return results
+
+@app.post("/api/portfolios/{portfolio_id}/analytics/rebalance", response_model=schemas.RebalanceResponse)
+def post_portfolio_rebalance(portfolio_id: uuid.UUID, request: schemas.RebalanceRequest, db: Session = Depends(get_db)):
+    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id).first()
+    if not db_portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    current_allocations = {a.asset_code: float(a.weight) for a in db_portfolio.allocations}
+    diff = simulation.calculate_rebalancing_diff(current_allocations, request.target_weights)
+    
+    return {"diff": diff}

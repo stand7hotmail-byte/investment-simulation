@@ -164,3 +164,25 @@ class MarketSummaryItem(BaseModel):
 
 class MarketSummaryResponse(BaseModel):
     items: List[MarketSummaryItem]
+
+# --- ANALYTICS SCHEMAS ---
+
+class StressTestPoint(BaseModel):
+    date: str
+    cumulative_return: float
+
+class StressTestScenario(BaseModel):
+    name: str
+    max_drawdown: float
+    history: List[StressTestPoint]
+
+class PortfolioStressTestResponse(BaseModel):
+    lehman_shock: StressTestScenario
+    covid_crash: StressTestScenario
+    dotcom_bubble: StressTestScenario
+
+class RebalanceRequest(BaseModel):
+    target_weights: dict[str, float]
+
+class RebalanceResponse(BaseModel):
+    diff: dict[str, float]
