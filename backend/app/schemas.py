@@ -191,3 +191,19 @@ class RebalanceRequest(BaseModel):
 
 class RebalanceResponse(BaseModel):
     diff: dict[str, float]
+
+# --- AFFILIATE SCHEMAS ---
+
+class AffiliateBrokerBase(BaseModel):
+    name: str
+    region: str
+    description: List[str]
+    cta_text: str
+    affiliate_url: str
+    logo_url: str | None = None
+    priority: int = 0
+
+class AffiliateBrokerRead(AffiliateBrokerBase):
+    id: int
+    is_active: bool
+    model_config = ConfigDict(from_attributes=True)

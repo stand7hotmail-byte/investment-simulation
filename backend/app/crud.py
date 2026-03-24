@@ -201,3 +201,12 @@ def get_market_summary(db: Session, asset_codes: List[str]) -> List[schemas.Mark
             sparkline=sparkline
         ))
     return items
+
+# --- AFFILIATE CRUD ---
+
+def get_active_affiliates_by_region(db: Session, region: str):
+    return db.query(models.AffiliateBroker)\
+             .filter(models.AffiliateBroker.region == region, 
+                     models.AffiliateBroker.is_active == True)\
+             .order_by(models.AffiliateBroker.priority.desc())\
+             .all()
