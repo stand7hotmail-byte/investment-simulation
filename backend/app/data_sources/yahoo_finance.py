@@ -49,6 +49,32 @@ def fetch_historical_data(ticker: str, start_date: str = None, end_date: str = N
     except Exception as e:
         print(f"Error fetching data for {ticker}: {e}")
         return []
+
+def fetch_dividend_data(ticker: str) -> list[dict]:
+    """
+    Fetches historical dividend data for a given ticker from Yahoo Finance.
+    
+    Returns:
+        list[dict]: A list of dictionaries, each containing 'date' and 'amount'.
+                    Example: [{"date": "YYYY-MM-DD", "amount": 0.5}, ...]
+    """
+    try:
+        t = yf.Ticker(ticker)
+        dividends = t.dividends
+        if dividends.empty:
+            return []
+            
+        dividend_list = []
+        for index, value in dividends.items():
+            dividend_list.append({
+                "date": index.strftime("%Y-%m-%d"),
+                "amount": float(value)
+            })
+        return dividend_list
+    except Exception as e:
+        print(f"Error fetching dividends for {ticker}: {e}")
+        return []
+
 def convert_to_json_format(data_df) -> list[dict]:
     """
     Converts a pandas DataFrame of historical data into the desired JSONB format.

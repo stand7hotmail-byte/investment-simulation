@@ -151,15 +151,28 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
     if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
     if not db_portfolio.allocations or len(db_portfolio.allocations) < 2:
         raise HTTPException(status_code=400, detail="At least 2 assets required")
+    
     assets_data, weights = [], []
+    portfolio_div_yield = 0.0
+    
     for alloc in db_portfolio.allocations:
         asset = crud.get_asset_by_code(db, alloc.asset_code)
         if asset:
             assets_data.append(asset)
-            weights.append(float(alloc.weight))
+            w = float(alloc.weight)
+            weights.append(w)
+            
+            # Weighted average dividend yield
+            if asset.dividend_yield:
+                portfolio_div_yield += float(asset.dividend_yield) * w
+    
+    # Use manual override if provided
+    final_div_yield = request.dividend_yield if request.dividend_yield is not None else portfolio_div_yield
+    
     returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
     port_return, port_vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+    
     return simulation.run_monte_carlo_simulation(
         initial_investment=request.initial_investment,
         monthly_contribution=request.monthly_contribution,
@@ -168,7 +181,9 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
         years=request.years,
         n_simulations=request.n_simulations,
         extra_investments=request.extra_investments,
-        target_amount=request.target_amount
+        target_amount=request.target_amount,
+        dividend_yield=final_div_yield,
+        reinvest_dividends=request.reinvest_dividends
     )
 
 @app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
@@ -198,8 +213,10 @@ def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: S
 # --- PORTFOLIO ENDPOINTS ---
 
 @app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=201)
-def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
-    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=user_id)
+def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    # Use a fixed test user ID if not authenticated, to keep logic simple for now
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    return crud.create_portfolio(db=db, portfolio=portfolio, user_id=effective_user_id)
 
 @app.get("/api/portfolios", response_model=List[schemas.Portfolio])
 def read_portfolios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):

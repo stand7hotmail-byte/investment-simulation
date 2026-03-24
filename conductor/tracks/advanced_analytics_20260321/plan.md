@@ -19,35 +19,35 @@
 ## Phase 2: Dynamic Dividend Data Support
 `yfinance` から配当データを取得し、シミュレーションに組み込む基盤を作ります。
 
-- [ ] Task: 配当データ取得ロジックの追加
-    - [ ] Write Tests: `yfinance` から配当履歴（Dividends）を正しく取得・パースできるかのテストを記述。
-    - [ ] Implement: `yahoo_finance.py` に配当情報取得関数を追加。
-- [ ] Task: 資産マスタへの配当データ保存
-    - [ ] Write Tests: `AssetData` テーブルに配当利回り（Yield）などのフィールドを追加するマイグレーションテスト。
-    - [ ] Implement: Alembic で DB スキーマを更新し、`seed_assets.py` で配当データも同期するように修正。
-- [ ] Task: 配当込みシミュレーションエンジンの強化
-    - [ ] Write Tests: 配当の再投資を考慮した積立シミュレーションの計算テストを記述。
-    - [ ] Implement: モンテカルロシミュレーションに配当利回りを加味するオプションを追加。
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Dynamic Dividend Data Support' (Protocol in workflow.md)
+- [x] Task: 配当データ取得ロジックの追加
+    - [x] Write Tests: `yfinance` から配当履歴（Dividends）を正しく取得・パースできるかのテストを記述。
+    - [x] Implement: `yahoo_finance.py` に配当情報取得関数を追加。
+- [x] Task: 資産マスタへの配当データ保存
+    - [x] Write Tests: `AssetData` テーブルに配当利回り（Yield）などのフィールドを追加するマイグレーションテスト。
+    - [x] Implement: Alembic で DB スキーマを更新し、`seed_assets.py` で配当データも同期するように修正。
+- [x] Task: 配当込みシミュレーションエンジンの強化
+    - [x] Write Tests: 配当の再投資を考慮した積立シミュレーションの計算テストを記述。
+    - [x] Implement: モンテカルロシミュレーションに配当利回りを加味するオプションを追加。
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Dynamic Dividend Data Support' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Analytics UI & Visualization
 収集・計算した分析データをフロントエンドで可視化します。
 
-- [ ] Task: ポートフォリオ詳細画面への「Analyticsタブ」の追加
-    - [ ] Write Tests: タブの切り替えと、各セクションの初期レンダリングテストを記述。
-    - [ ] Implement: `frontend/src/app/portfolios/[id]/` ページを拡張し、タブUIを導入。
-- [ ] Task: リバランスおよびストレステストの可視化
-    - [ ] Write Tests: ドローダウンチャートが正しく描画されるかのコンポーネントテスト。
-    - [ ] Implement: `RebalancingView` および `StressTestChart` コンポーネントを新規作成。
-- [ ] Task: 配当シミュレーションの可視化
-    - [ ] Write Tests: キャピタルとインカムの積み上げグラフの表示テスト。
-    - [ ] Implement: `IncomeSimulationChart` を実装し、将来の分配金推移を可視化。
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Analytics UI & Visualization' (Protocol in workflow.md)
+- [x] Task: ポートフォリオ詳細画面への「Analyticsタブ」の追加
+    - [x] Write Tests: タブの切り替えと、各セクションの初期レンダリングテストを記述。
+    - [x] Implement: `frontend/src/app/portfolios/[id]/` ページを拡張し、タブUIを導入。
+- [x] Task: リバランスおよびストレステストの可視化
+    - [x] Write Tests: ドローダウンチャートが正しく描画されるかのコンポーネントテスト。
+    - [x] Implement: `RebalancingView` および `StressTestChart` コンポーネントを新規作成。
+- [x] Task: 配当シミュレーションの可視化
+    - [x] Write Tests: キャピタルとインカムの積み上げグラフの表示テスト。
+    - [x] Implement: `IncomeSimulationChart` を実装し、将来の分配金推移を可視化。
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Analytics UI & Visualization' (Protocol in workflow.md)
 
 ## Phase 4: Final Integration & Deployment
 システム全体の動作確認とドキュメント更新を行います。
 
-- [ ] Task: 全テストスイートの実行とカバレッジ確認
-    - [ ] Execute: 全てのバックエンド・フロントエンドテストを実行。
-- [ ] Task: Conductor - User Manual Verification
-- [ ] Task: プロジェクトドキュメントの同期（Product Definition, Tech Stack）
+- [x] Task: 全テストスイートの実行とカバレッジ確認
+    - [x] Execute: 全てのバックエンド・フロントエンドテストを実行。
+- [x] Task: Conductor - User Manual Verification
+- [x] Task: プロジェクトドキュメントの同期（Product Definition, Tech Stack）

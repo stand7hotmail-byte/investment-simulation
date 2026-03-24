@@ -76,12 +76,16 @@ class MonteCarloRequest(BaseModel):
     n_simulations: int = 10000
     extra_investments: List[ExtraInvestment] | None = None
     target_amount: float | None = None
+    dividend_yield: float | None = None # Manual override for dividend yield
+    reinvest_dividends: bool = True
 
 class MonteCarloHistory(BaseModel):
     year: int
     p10: float
     p50: float
     p90: float
+    p50_dividend: float | None = None
+    p50_cumulative_dividend: float | None = None
 
 class MonteCarloResponse(BaseModel):
     percentiles: dict[str, float]
@@ -89,6 +93,7 @@ class MonteCarloResponse(BaseModel):
     目標到達確率: float | None = None
     history: List[MonteCarloHistory]
     confidence_interval_95: dict[str, float] | None = None # New: 95%信頼区間 (下限と上限)
+    total_dividends_p50: float | None = None
 
 class BasicAccumulationRequest(BaseModel):
     portfolio_id: uuid.UUID

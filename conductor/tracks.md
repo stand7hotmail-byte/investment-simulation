@@ -70,7 +70,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
-- [ ] **Track: Advanced Portfolio Analytics (Rebalancing, Stress Test, Income)**
+- [~] **Track: Advanced Portfolio Analytics (Rebalancing, Stress Test, Income)**
   *Link: [./tracks/advanced_analytics_20260321/](./tracks/advanced_analytics_20260321/)*
 
 

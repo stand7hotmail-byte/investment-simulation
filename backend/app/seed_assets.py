@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal
 from app import models
-from app.data_sources.yahoo_finance import fetch_historical_data
+from app.data_sources.yahoo_finance import fetch_historical_data, fetch_dividend_data
 from app.data.precomputed_assets import PRECOMPUTED_DATA
 
 def seed_assets():
@@ -37,35 +37,60 @@ def seed_assets():
         db.commit()
         print("Master data sync completed.")
 
-        # 2. Optional Historical Data Sync (Lightweight background task)
-        # Fetch last 5 years for visualization purposes.
+        # 2. Optional Historical & Dividend Data Sync (Lightweight background task)
+        # Fetch last 25 years to cover historical stress tests (Lehman, Dot-com) and dividends.
         assets = db.query(models.AssetData).all()
         for asset in assets:
-            # Skip if we already have a decent amount of history
-            if asset.historical_prices and len(asset.historical_prices) > 252:
+            # Check if we need to sync history or dividends
+            needs_history = not asset.historical_prices or len(asset.historical_prices) < 6000
+            needs_dividends = not asset.dividend_history
+
+            if not needs_history and not needs_dividends:
                 continue
 
-            print(f"Fetching history for {asset.asset_code} (for charts)...")
-            end_date = datetime.now(UTC)
-            start_date = end_date - timedelta(days=365 * 5)
-            
-            try:
-                historical_data = fetch_historical_data(
-                    asset.asset_code,
-                    start_date=start_date.strftime("%Y-%m-%d"),
-                    end_date=end_date.strftime("%Y-%m-%d")
-                )
-                
-                if historical_data:
-                    historical_data.sort(key=lambda x: x['date'])
-                    asset.historical_prices = historical_data
-                    db.add(asset)
-                    db.commit()
-                    print(f"Updated {asset.asset_code} history.")
-            except Exception as ex:
-                print(f"Skipping history for {asset.asset_code} due to error: {ex}")
-            
-            # Politeness delay
+            print(f"Syncing data for {asset.asset_code}...")
+
+            # Sync History if needed
+            if needs_history:
+                print(f"  Fetching long-term history (for stress tests)...")
+                end_date = datetime.now(UTC)
+                start_date = end_date - timedelta(days=365 * 25)
+                try:
+                    historical_data = fetch_historical_data(
+                        asset.asset_code,
+                        start_date=start_date.strftime("%Y-%m-%d"),
+                        end_date=end_date.strftime("%Y-%m-%d")
+                    )
+                    if historical_data:
+                        historical_data.sort(key=lambda x: x['date'])
+                        asset.historical_prices = historical_data
+                        print(f"  Updated history.")
+                except Exception as ex:
+                    print(f"  Skipping history due to error: {ex}")
+
+            # Sync Dividends if needed
+            if needs_dividends:
+                print(f"  Fetching dividend history...")
+                try:
+                    div_data = fetch_dividend_data(asset.asset_code)
+                    if div_data:
+                        asset.dividend_history = div_data
+
+                        # Calculate a rough dividend yield based on last 12 months
+                        one_year_ago = (datetime.now(UTC) - timedelta(days=365)).strftime("%Y-%m-%d")
+                        recent_divs = sum(d['amount'] for d in div_data if d['date'] >= one_year_ago)
+
+                        # Get current price
+                        if asset.historical_prices:
+                            current_price = float(asset.historical_prices[-1]['price'])
+                            if current_price > 0:
+                                asset.dividend_yield = recent_divs / current_price
+                                print(f"  Updated dividends & yield ({asset.dividend_yield:.2%})")
+                except Exception as ex:
+                    print(f"  Skipping dividends due to error: {ex}")
+
+            db.add(asset)
+            db.commit()
             time.sleep(0.5)
 
         print("Asset seeding process complete.")

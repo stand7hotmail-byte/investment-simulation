@@ -1,7 +1,7 @@
 # 完全技術スタック仕様書
 ## 投資シミュレーション&データ可視化Webアプリケーション
 
-**最終更新:** 2026年3月4日  
+**最終更新:** 2026年3月23日  
 **想定規模:** 100-1,000ユーザー  
 **開発体制:** 個人開発  
 **予算:** Railway Starter ($5/月) + その他無料枠
@@ -33,12 +33,13 @@
 1. **ポートフォリオ管理**
    - 個人の保有資産登録・編集
    - 目標ポートフォリオ設定
-   - リバランス提案
+   - **リバランス提案:** 目標比率と現在比率の差分計算と売買助言の生成
 
 2. **金融計算・シミュレーション**
    - 効率的フロンティア算出（平均分散最適化）
    - モンテカルロシミュレーション（幾何ブラウン運動を用いた離散時間シミュレーション、10,000回以上の試行）
-   - バックテスト（過去データでの検証）
+   - **配当込みシミュレーション:** 配当利回りを考慮したキャピタル/インカム分離予測
+   - **ストレステスト:** リーマンショック、コロナショック等の歴史的暴落シナリオの再現
    - リスクパリティ戦略算出
 
 3. **データ可視化**
@@ -144,7 +145,7 @@
 | **数値計算** | NumPy | 1.26+ | 行列演算、基礎計算 |
 | **データ処理** | Pandas | 2.1+ | データフレーム操作 |
 | **科学計算** | SciPy | 1.11+ | 最適化、統計関数 |
-| **データ収集** | yfinance | Latest | 過去の金融データ取得 |
+| **データ収集** | yfinance | Latest | 過去の金融データ（価格・配当履歴）取得 |
 | **最適化** | cvxpy | 1.4+ | 凸最適化（効率的フロンティア） |
 | **Auth** | PyJWT | 2.11+ | JWT検証（ES256対応、Lifespanプリフェッチ、FailsafeJWKClient実装、キャッシュ寿命延長） |
 | **HTTP Client** | httpx | 0.26+ | Supabase API/JWKS 呼び出し |
@@ -452,7 +453,7 @@ INSERT INTO asset_data (asset_code, name, asset_class, expected_return, volatili
 | `/auth/login` | POST | ログイン（Supabaseへ委譲） |
 | `/auth/logout` | POST | ログアウト |
 
-#### ポートフォリオ管理
+#### ポートフォリオ管理・分析
 
 | エンドポイント | メソッド | 説明 |
 |--------------|---------|------|
@@ -461,6 +462,8 @@ INSERT INTO asset_data (asset_code, name, asset_class, expected_return, volatili
 | `/api/portfolios/{id}` | GET | ポートフォリオ詳細取得 |
 | `/api/portfolios/{id}` | PUT | ポートフォリオ更新 |
 | `/api/portfolios/{id}` | DELETE | ポートフォリオ削除 |
+| `/api/portfolios/{id}/analytics/stress-test` | GET | 歴史的シナリオに基づくストレステスト |
+| `/api/portfolios/{id}/analytics/rebalance` | POST | 目標比率との比較によるリバランス計算 |
 
 #### 資産配分
 
@@ -1200,7 +1203,7 @@ const MonteCarloChart = dynamic(
 
 ---
 
-**Document Version:** 1.1  
-**Last Updated:** 2026-03-04  
-**Status:** Dashboard and Clean UI implemented. Backend enhanced with PyJWT and market-summary endpoints.
+**Document Version:** 1.2  
+**Last Updated:** 2026-03-23  
+**Status:** Advanced Analytics (Stress Test, Rebalancing, Dividend Projection) implemented across backend and frontend.
 **Author:** Investment Simulator Development Team.co

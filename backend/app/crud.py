@@ -3,6 +3,7 @@ from sqlalchemy import cast, String
 from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 import json
+import numpy as np
 from . import models, schemas
 from typing import List, Optional
 from decimal import Decimal
@@ -179,13 +180,23 @@ def get_market_summary(db: Session, asset_codes: List[str]) -> List[schemas.Mark
         else:
             change_pct = ((current_price - previous_price) / previous_price) * 100
         
+        # Ensure change_pct is not NaN (can happen with invalid data)
+        if np.isnan(change_pct) or np.isinf(change_pct):
+            change_pct = 0.0
+            
         # Get last 30 points for sparkline (for mini-charts)
-        sparkline = [float(p['price']) for p in prices[-30:]]
+        sparkline = []
+        for p in prices[-30:]:
+            val = float(p['price'])
+            if not np.isnan(val) and not np.isinf(val):
+                sparkline.append(val)
+            else:
+                sparkline.append(0.0)
         
         items.append(schemas.MarketSummaryItem(
             asset_code=asset.asset_code,
             name=asset.name,
-            current_price=current_price,
+            current_price=current_price if not (np.isnan(current_price) or np.isinf(current_price)) else 0.0,
             change_percentage=change_pct,
             sparkline=sparkline
         ))

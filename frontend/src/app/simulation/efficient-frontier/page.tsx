@@ -123,13 +123,13 @@ export default function EfficientFrontierPage() {
             hasResults={hasResults}
             isSimulating={isSimulating}
             isSimulatingCustom={isSimulatingCustom}
-            efData={efData}
+            efData={efData || null}
             maxSharpePoint={maxSharpePoint}
             riskParityPoint={riskParityPoint}
             customPortfolioPoint={customPortfolioPoint}
             comparisonPortfolioPoints={comparisonPortfolioPoints}
             selectedAssets={selectedAssets}
-            simulationId={simulationId}
+            simulationId={simulationId?.toString() || ""}
           />
         </div>
       </div>

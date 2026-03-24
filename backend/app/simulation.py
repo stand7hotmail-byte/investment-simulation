@@ -27,24 +27,33 @@ def run_monte_carlo_simulation(
     extra_investments: Optional[List[Any]] = None,
     target_amount: Optional[float] = None,
     mu: float = None,
-    sigma: float = None
+    sigma: float = None,
+    dividend_yield: float = 0.0,
+    reinvest_dividends: bool = True
 ) -> Dict[str, Any]:
     """
-    Runs a Monte Carlo simulation using Geometric Brownian Motion.
+    Runs a Monte Carlo simulation using Geometric Brownian Motion,
+    accounting for dividend yield and optional reinvestment.
     """
     mu_val = expected_return if expected_return is not None else mu
     sigma_val = volatility if volatility is not None else sigma
     
-    # S_t = S_{t-1} * exp((mu - 0.5 * sigma^2) * dt + sigma * sqrt(dt) * Z)
+    # Calculate price-only drift (mu_total = mu_price + dividend_yield)
+    # Since our expected_return is usually total return from Adj Close:
+    price_mu = mu_val - dividend_yield
+    
     dt = 1.0
-    drift = (mu_val - 0.5 * sigma_val**2) * dt
+    drift = (price_mu - 0.5 * sigma_val**2) * dt
     diffusion = sigma_val * np.sqrt(dt)
     
-    # Generate log-returns (normal distribution)
+    # Generate log-returns (normal distribution) for price changes
     log_returns = np.random.normal(drift, diffusion, (years, n_simulations))
     multipliers = np.exp(log_returns)
     
     portfolio_values = np.zeros((years + 1, n_simulations))
+    cumulative_dividends = np.zeros((years + 1, n_simulations))
+    annual_dividends = np.zeros((years + 1, n_simulations))
+    
     portfolio_values[0] = initial_investment
     
     extra_map = {}
@@ -55,8 +64,19 @@ def run_monte_carlo_simulation(
             extra_map[y] = a
     
     for t in range(1, years + 1):
-        # Apply market returns and periodic contributions
+        # 1. Market Price Change
         portfolio_values[t] = portfolio_values[t-1] * multipliers[t-1]
+        
+        # 2. Calculate Dividend Income (based on current market value)
+        current_divs = portfolio_values[t] * dividend_yield
+        annual_dividends[t] = current_divs
+        cumulative_dividends[t] = cumulative_dividends[t-1] + current_divs
+        
+        # 3. Apply Reinvestment
+        if reinvest_dividends:
+            portfolio_values[t] += current_divs
+            
+        # 4. Apply Periodic contributions & extra investments
         portfolio_values[t] += monthly_contribution * 12
         if t in extra_map: 
             portfolio_values[t] += extra_map[t]
@@ -74,7 +94,9 @@ def run_monte_carlo_simulation(
             "year": t,
             "p10": float(np.percentile(portfolio_values[t], 10)),
             "p50": float(np.percentile(portfolio_values[t], 50)),
-            "p90": float(np.percentile(portfolio_values[t], 90))
+            "p90": float(np.percentile(portfolio_values[t], 90)),
+            "p50_dividend": float(np.percentile(annual_dividends[t], 50)),
+            "p50_cumulative_dividend": float(np.percentile(cumulative_dividends[t], 50))
         })
     
     confidence_interval_95 = {
@@ -87,7 +109,8 @@ def run_monte_carlo_simulation(
         "元本割れ確率": prob_loss, 
         "目標到達確率": prob_target, 
         "history": history, 
-        "confidence_interval_95": confidence_interval_95
+        "confidence_interval_95": confidence_interval_95,
+        "total_dividends_p50": float(np.percentile(cumulative_dividends[-1], 50))
     }
 
 monte_carlo_simulation = run_monte_carlo_simulation

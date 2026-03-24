@@ -42,8 +42,10 @@ class AssetData(Base):
     asset_class = Column(String)
     expected_return = Column(DECIMAL(8,6))
     volatility = Column(DECIMAL(8,6))
+    dividend_yield = Column(DECIMAL(8,6), nullable=True) # New: Recent dividend yield
     correlation_matrix = Column(JSON_TYPE) 
     historical_prices = Column(JSON_TYPE)
+    dividend_history = Column(JSON_TYPE, nullable=True) # New: Historical dividend payments
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)) 
 
 class SimulationResult(Base):
