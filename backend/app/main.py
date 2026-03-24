@@ -5,7 +5,7 @@ from decimal import Decimal
 from contextlib import asynccontextmanager
 import numpy as np
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
@@ -345,3 +345,35 @@ def post_portfolio_rebalance(portfolio_id: uuid.UUID, request: schemas.Rebalance
     diff = simulation.calculate_rebalancing_diff(current_allocations, request.target_weights)
     
     return {"diff": diff}
+
+# --- AFFILIATE ENDPOINTS ---
+
+@app.get("/api/affiliates/recommendations", response_model=List[schemas.AffiliateBrokerRead])
+def get_affiliate_recommendations(request: Request, db: Session = Depends(get_db)):
+    """
+    Returns a list of recommended affiliate brokers based on the user's detected region.
+    Supports Vercel and Cloudflare IP-based geo-location headers.
+    """
+    # Get client IP (support for X-Forwarded-For if behind a proxy)
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    if client_ip and "," in client_ip:
+        client_ip = client_ip.split(",")[0].strip()
+    
+    # Simple region logic based on country code
+    # Cloudflare uses cf-ipcountry, Vercel uses x-vercel-ip-country
+    country_code = request.headers.get("cf-ipcountry", 
+                   request.headers.get("x-vercel-ip-country", "UNKNOWN")).upper()
+    
+    region = "JP" if country_code == "JP" else "GLOBAL"
+    
+    # Local development fallback: allow overriding via query param if IP is localhost
+    # Only applies if no geo-location headers were found (country_code is UNKNOWN)
+    if country_code == "UNKNOWN" and client_ip in ("127.0.0.1", "localhost", "::1", "testclient"):
+        override_region = request.query_params.get("region")
+        if override_region:
+            region = override_region.upper()
+        else:
+            # Default to JP for local development if no override and no headers
+            region = "JP"
+            
+    return crud.get_active_affiliates_by_region(db, region=region)
