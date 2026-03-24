@@ -58,3 +58,16 @@ class SimulationResult(Base):
     parameters = Column(JSON_TYPE, nullable=False) 
     results = Column(JSON_TYPE, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+
+class AffiliateBroker(Base):
+    __tablename__ = "affiliate_brokers"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    region = Column(String, nullable=False) # "JP" or "GLOBAL"
+    description = Column(JSON_TYPE, nullable=False) # List of strings
+    cta_text = Column(String, default="口座開設はこちら")
+    affiliate_url = Column(String, nullable=False)
+    logo_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    priority = Column(Integer, default=0)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
