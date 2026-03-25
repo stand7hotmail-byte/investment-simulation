@@ -10,6 +10,7 @@ import { usePortfolioPointsSimulation } from "@/hooks/usePortfolioPointsSimulati
 import { useSaveSimulationResult } from "@/hooks/useSaveSimulationResult";
 import { SimulationControls } from "./components/SimulationControls";
 import { SimulationResults } from "./components/SimulationResults";
+import { AffiliateSection } from "@/components/simulation/AffiliateSection";
 
 export default function EfficientFrontierPage() {
   const {
@@ -132,6 +133,11 @@ export default function EfficientFrontierPage() {
             simulationId={simulationId?.toString() || ""}
           />
         </div>
+      </div>
+
+      {/* Affiliate Recommendations */}
+      <div className="max-w-6xl mx-auto py-12 px-4 border-t border-slate-200 mt-12">
+        <AffiliateSection />
       </div>
     </div>
   );

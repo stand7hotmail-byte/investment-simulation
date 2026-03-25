@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import { TrendingUp, Wallet, Calendar, Calculator, Info } from "lucide-react";
+import { AffiliateSection } from "@/components/simulation/AffiliateSection";
 
 const Plot = dynamic(() => import("react-plotly.js"), { 
   ssr: false,
@@ -255,6 +256,11 @@ export default function AccumulationPage() {
             </Card>
           )}
         </div>
+      </div>
+
+      {/* Affiliate Recommendations */}
+      <div className="max-w-6xl mx-auto py-12 px-4 border-t border-slate-200 mt-12">
+        <AffiliateSection />
       </div>
     </div>
   );
