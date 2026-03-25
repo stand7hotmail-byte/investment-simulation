@@ -6,18 +6,84 @@ from datetime import datetime, timedelta, UTC
 # Add the project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.database import SessionLocal
+from app.database import SessionLocal, engine
 from app import models
 from app.data_sources.yahoo_finance import fetch_historical_data, fetch_dividend_data
 from app.data.precomputed_assets import PRECOMPUTED_DATA
+
+def seed_affiliates(db):
+    """
+    Seeds the database with affiliate broker data.
+    """
+    affiliates = [
+        # JP Region
+        {
+            "name": "SBI証券",
+            "region": "JP",
+            "description": ["国内株式手数料0円", "Vポイント貯まる", "米国株・ETFも充実"],
+            "priority": 10,
+            "affiliate_url": "https://www.sbisec.co.jp/",
+            "cta_text": "口座開設はこちら"
+        },
+        {
+            "name": "楽天証券",
+            "region": "JP",
+            "description": ["楽天ポイントで投資可能", "使いやすいアプリ「iSPEED」", "新NISA対応も万全"],
+            "priority": 5,
+            "affiliate_url": "https://www.rakuten-sec.co.jp/",
+            "cta_text": "口座開設はこちら"
+        },
+        # GLOBAL Region
+        {
+            "name": "Interactive Brokers",
+            "region": "GLOBAL",
+            "description": ["Lowest margin rates", "Access to 150+ markets", "Powerful Trader Workstation"],
+            "priority": 10,
+            "affiliate_url": "https://www.interactivebrokers.com/",
+            "cta_text": "Open Account"
+        },
+        {
+            "name": "eToro",
+            "region": "GLOBAL",
+            "description": ["Social Copy Trading", "0% Commission on Stocks", "Easy-to-use Interface"],
+            "priority": 5,
+            "affiliate_url": "https://www.etoro.com/",
+            "cta_text": "Get Started"
+        }
+    ]
+
+    print(f"Seeding {len(affiliates)} affiliate brokers...")
+    for aff_data in affiliates:
+        existing_aff = db.query(models.AffiliateBroker).filter(
+            models.AffiliateBroker.name == aff_data["name"],
+            models.AffiliateBroker.region == aff_data["region"]
+        ).first()
+
+        if existing_aff:
+            print(f"Updating affiliate {aff_data['name']} ({aff_data['region']})")
+            for key, value in aff_data.items():
+                setattr(existing_aff, key, value)
+        else:
+            print(f"Adding new affiliate {aff_data['name']} ({aff_data['region']})")
+            db_aff = models.AffiliateBroker(**aff_data)
+            db.add(db_aff)
+    
+    db.commit()
+    print("Affiliate data sync completed.")
 
 def seed_assets():
     """
     Seeds the database with asset master data and historical prices.
     Prioritizes precomputed statistics for reliability.
     """
+    # Ensure tables exist
+    models.Base.metadata.create_all(bind=engine)
+    
     db = SessionLocal()
     try:
+        # 0. Affiliate Data Seeding
+        seed_affiliates(db)
+
         # 1. Master Data Seeding (Force Overwrite from precomputed data)
         print(f"Seeding master data for {len(PRECOMPUTED_DATA)} assets...")
         for asset_info in PRECOMPUTED_DATA:
