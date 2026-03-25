@@ -50,7 +50,16 @@ def read_root():
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
-    return crud.get_assets(db, skip=skip, limit=limit)
+    assets = crud.get_assets(db, skip=skip, limit=limit)
+    # Sanitize for JSON compatibility (handle NaN/Inf)
+    for asset in assets:
+        if asset.expected_return is not None and (np.isnan(float(asset.expected_return)) or np.isinf(float(asset.expected_return))):
+            asset.expected_return = Decimal("0.0")
+        if asset.volatility is not None and (np.isnan(float(asset.volatility)) or np.isinf(float(asset.volatility))):
+            asset.volatility = Decimal("0.0")
+        if asset.dividend_yield is not None and (np.isnan(float(asset.dividend_yield)) or np.isinf(float(asset.dividend_yield))):
+            asset.dividend_yield = Decimal("0.0")
+    return assets
 
 @app.get("/api/debug/asset-stats")
 def debug_asset_stats(db: Session = Depends(get_db)):
@@ -73,6 +82,13 @@ def read_asset(asset_code: str, db: Session = Depends(get_db)):
     db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
     if db_asset is None:
         raise HTTPException(status_code=404, detail="Asset not found")
+    # Sanitize for JSON compatibility
+    if db_asset.expected_return is not None and (np.isnan(float(db_asset.expected_return)) or np.isinf(float(db_asset.expected_return))):
+        db_asset.expected_return = Decimal("0.0")
+    if db_asset.volatility is not None and (np.isnan(float(db_asset.volatility)) or np.isinf(float(db_asset.volatility))):
+        db_asset.volatility = Decimal("0.0")
+    if db_asset.dividend_yield is not None and (np.isnan(float(db_asset.dividend_yield)) or np.isinf(float(db_asset.dividend_yield))):
+        db_asset.dividend_yield = Decimal("0.0")
     return db_asset
 
 @app.get("/api/assets/{asset_code}/historical-data", response_model=schemas.HistoricalDataResponse)
