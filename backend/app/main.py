@@ -46,7 +46,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "ok", "ver": "pyjwt-v1.6-refactored"}
+    return {"status": "ok", "ver": "affiliate-stability-v1.0"}
 
 @app.get("/api/assets", response_model=List[schemas.AssetData])
 def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):

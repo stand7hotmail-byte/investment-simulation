@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").trim();
 
 export async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const { data: { session } } = await supabase.auth.getSession();
@@ -16,7 +16,7 @@ export async function fetchApi<T>(path: string, options?: RequestInit): Promise<
   }
 
   const url = `${API_BASE_URL}${path}`;
-  console.log(`Fetching API: ${url}`);
+  console.log(`[API REQUEST] Fetching: ${url}`); // Enhanced logging
 
   try {
     const response = await fetch(url, {

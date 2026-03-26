@@ -105,6 +105,10 @@ def seed_assets():
 
         # 2. Optional Historical & Dividend Data Sync (Lightweight background task)
         # Fetch last 25 years to cover historical stress tests (Lehman, Dot-com) and dividends.
+        if os.getenv("SKIP_SLOW_SYNC") == "true":
+            print("Skipping slow historical data sync as per SKIP_SLOW_SYNC env var.")
+            return
+
         assets = db.query(models.AssetData).all()
         for asset in assets:
             # Check if we need to sync history or dividends
