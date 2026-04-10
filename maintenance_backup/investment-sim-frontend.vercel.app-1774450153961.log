@@ -1,0 +1,70 @@
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/asset-classes
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+    at async queryFn (6ca574b486830c3f.js:2:4600)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+    at async queryFn (6ca574b486830c3f.js:2:4600)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+    at async queryFn (6ca574b486830c3f.js:2:4600)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+    at async queryFn (6ca574b486830c3f.js:2:4600)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/market-summary: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/market-summary: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/market-summary: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/simulation-results
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/market-summary
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/market-summary: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2

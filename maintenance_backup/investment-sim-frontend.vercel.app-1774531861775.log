@@ -1,0 +1,43 @@
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+await in r
+i @ 9837a41a9468c321.js:2
+a @ b7e14a820a68e5c2.js:1
+v @ b7e14a820a68e5c2.js:1
+(anonymous) @ b7e14a820a68e5c2.js:1
+Promise.then
+(anonymous) @ b7e14a820a68e5c2.js:1
+9837a41a9468c321.js:2 Fetching API: https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data
+9837a41a9468c321.js:2 Fetch failed for https://postgresql-production-ba08.up.railway.app
+/api/assets/SPY/historical-data: TypeError: Failed to fetch
+    at r (9837a41a9468c321.js:2:57)
+r @ 9837a41a9468c321.js:2
+await in r
+i @ 9837a41a9468c321.js:2
+a @ b7e14a820a68e5c2.js:1
+v @ b7e14a820a68e5c2.js:1
+(anonymous) @ b7e14a820a68e5c2.js:1
+Promise.then
+(anonymous) @ b7e14a820a68e5c2.js:1
+Promise.catch
+v @ b7e14a820a68e5c2.js:1
+(anonymous) @ b7e14a820a68e5c2.js:1
+Promise.then
+(anonymous) @ b7e14a820a68e5c2.js:1

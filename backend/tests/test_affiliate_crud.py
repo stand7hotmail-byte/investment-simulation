@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from app import models, crud, schemas
 
 def test_get_active_affiliates_by_region(session_override: Session):
+    # Setup: Clear existing brokers to ensure clean state
+    session_override.query(models.AffiliateBroker).delete()
+    session_override.commit()
+
     # Setup: Create some affiliate brokers
     affiliates = [
         models.AffiliateBroker(

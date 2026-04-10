@@ -7,7 +7,8 @@ from app.main import get_current_user_id, get_optional_user_id
 # Sample payload for testing
 PAYLOAD = {
     "sub": "123e4567-e89b-12d3-a456-426614174000",
-    "iat": 1516239022
+    "iat": 1516239022,
+    "aud": "authenticated"
 }
 
 @pytest.fixture
@@ -92,12 +93,20 @@ async def test_auth_es256_success():
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
     
-    # Create a valid token
-    token = jwt.encode(PAYLOAD, private_pem, algorithm="ES256")
+    # Define expected issuer based on settings
+    test_url = "https://test.supabase.co"
+    expected_iss = f"{test_url}/auth/v1"
+    
+    # Create a valid token with matching issuer
+    payload = PAYLOAD.copy()
+    payload["iss"] = expected_iss
+    token = jwt.encode(payload, private_pem, algorithm="ES256")
+    
     credentials = MagicMock()
     credentials.credentials = token
     
-    with patch("app.dependencies._jwks_client") as mock_jwks:
+    with patch("app.dependencies._jwks_client") as mock_jwks, \
+         patch("app.dependencies.settings.supabase_url", test_url):
         mock_signing_key = MagicMock()
         mock_signing_key.key = public_pem
         mock_jwks.get_signing_key_from_jwt.return_value = mock_signing_key

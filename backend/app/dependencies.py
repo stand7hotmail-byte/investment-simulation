@@ -75,13 +75,32 @@ async def get_optional_user_id(
             if not client: return None
             signing_key = client.get_signing_key_from_jwt(token)
             key = signing_key.key
-            options = {"verify_aud": False, "verify_iss": False}
+            # Harden: Verify audience and issuer for ES256 (Supabase)
+            expected_iss = f"{settings.supabase_url.rstrip('/')}/auth/v1" if settings.supabase_url else None
+            options = {
+                "verify_aud": True, 
+                "verify_iss": True if expected_iss else False
+            }
+            payload = jwt.decode(
+                token, 
+                key, 
+                algorithms=[alg], 
+                audience="authenticated",
+                issuer=expected_iss,
+                options=options
+            )
         else:
             key = (settings.supabase_jwt_secret or "").strip()
             if not key: return None
-            options = {"verify_aud": False}
-            
-        payload = jwt.decode(token, key, algorithms=[alg], options=options)
+            # Harden: Verify audience for HS256
+            options = {"verify_aud": True}
+            payload = jwt.decode(
+                token, 
+                key, 
+                algorithms=[alg], 
+                audience="authenticated",
+                options=options
+            )
         user_id = payload.get("sub")
         return uuid.UUID(user_id) if user_id else None
     except Exception:

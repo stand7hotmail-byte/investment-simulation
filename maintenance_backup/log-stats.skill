@@ -1,0 +1,24 @@
+---
+name: log-stats
+description: Analyze Gemini CLI execution logs for usage statistics.
+---
+
+# Log Analysis & Statistics Skill
+
+This skill analyzes the `dev_server.log` file to provide quantitative insights into your development process.
+
+## Capabilities
+- **Skill Usage**: Counts how many times each skill was activated.
+- **Tool Usage**: Counts invocations of various MCP tools.
+- **Error Tracking**: Identifies tools that frequently return errors.
+
+## Instructions
+1. When asked for usage statistics or tool activity, run the analysis script.
+2. The script is located at: `backend/scripts/analyze_logs.py`
+3. Command to execute: `python backend/scripts/analyze_logs.py`
+4. If a different log file is specified, pass it as an argument: `python backend/scripts/analyze_logs.py <filename>`
+5. Present the resulting tables to the user.
+
+## Constraints
+- Analyzes only the **latest session** (since the last "Gemini CLI started" marker).
+- Assumes JSON-formatted logs.

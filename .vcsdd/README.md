@@ -1,0 +1,1 @@
+# VCSDD Workflow Reference`n`n1. **SDD (Spec-Driven Development)**: Create spec in `.vcsdd/specs/`.`n2. **TDD (Test-Driven Development)**: Write tests in `backend/tests` or `frontend/test`.`n3. **Adversary Review**: Perform adversarial review using `vcsdd-adversary`.`n4. **VDD (Verified-Driven Development)**: Harden the implementation using `vcsdd-harden`.

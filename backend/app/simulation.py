@@ -90,27 +90,28 @@ def run_monte_carlo_simulation(
     
     history = []
     for t in range(years + 1):
+        # Sanitize for JSON compatibility (NaN/Inf to 0.0)
         history.append({
             "year": t,
-            "p10": float(np.percentile(portfolio_values[t], 10)),
-            "p50": float(np.percentile(portfolio_values[t], 50)),
-            "p90": float(np.percentile(portfolio_values[t], 90)),
-            "p50_dividend": float(np.percentile(annual_dividends[t], 50)),
-            "p50_cumulative_dividend": float(np.percentile(cumulative_dividends[t], 50))
+            "p10": float(np.nan_to_num(np.percentile(portfolio_values[t], 10))),
+            "p50": float(np.nan_to_num(np.percentile(portfolio_values[t], 50))),
+            "p90": float(np.nan_to_num(np.percentile(portfolio_values[t], 90))),
+            "p50_dividend": float(np.nan_to_num(np.percentile(annual_dividends[t], 50))),
+            "p50_cumulative_dividend": float(np.nan_to_num(np.percentile(cumulative_dividends[t], 50)))
         })
     
     confidence_interval_95 = {
-        "lower_bound": float(np.percentile(final_values, 2.5)), 
-        "upper_bound": float(np.percentile(final_values, 97.5))
+        "lower_bound": float(np.nan_to_num(np.percentile(final_values, 2.5))), 
+        "upper_bound": float(np.nan_to_num(np.percentile(final_values, 97.5)))
     }
     
     return {
-        "percentiles": percentiles, 
-        "元本割れ確率": prob_loss, 
-        "目標到達確率": prob_target, 
+        "percentiles": {str(p): float(np.nan_to_num(np.percentile(final_values, p))) for p in [10, 25, 50, 75, 90]}, 
+        "元本割れ確率": float(np.nan_to_num(prob_loss)), 
+        "目標到達確率": float(np.nan_to_num(prob_target)) if prob_target is not None else None, 
         "history": history, 
         "confidence_interval_95": confidence_interval_95,
-        "total_dividends_p50": float(np.percentile(cumulative_dividends[-1], 50))
+        "total_dividends_p50": float(np.nan_to_num(np.percentile(cumulative_dividends[-1], 50)))
     }
 
 monte_carlo_simulation = run_monte_carlo_simulation
