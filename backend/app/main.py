@@ -51,9 +51,13 @@ async def catch_exceptions_middleware(request: Request, call_next):
         )
 
 # --- MIDDLEWARE ---
+print(f"DEBUG: Initializing CORS with ALLOWED_ORIGINS: {settings.allowed_origins}")
+origins = [o.strip() for o in settings.allowed_origins.split(",")] if settings.allowed_origins != "*" else ["*"]
+print(f"DEBUG: Parsed origins: {origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.allowed_origins == "*" else [origin.strip() for origin in settings.allowed_origins.split(",")],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
