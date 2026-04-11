@@ -50,6 +50,23 @@
       "path": ".vcsdd/history/vcsdd_status_report_v1.md",
       "status": "completed",
       "created_at": "2026-04-08T22:45:00Z"
+    },
+    {
+      "id": "SPEC-004",
+      "type": "specification",
+      "label": "Railway Deployment Fix",
+      "path": ".vcsdd/specs/spec_railway_fix.md",
+      "status": "green",
+      "created_at": "2026-04-11T09:15:00Z"
+    },
+    {
+      "id": "ADV-RAILWAY-001",
+      "type": "review",
+      "label": "Railway Deployment Fix Adversary Review",
+      "path": ".vcsdd/adversary/adv_railway_fix.md",
+      "links": ["SPEC-004"],
+      "status": "completed",
+      "result": "pass"
     }
   ],
   "links": [
@@ -82,8 +99,18 @@
       "source": "REPORT-V1",
       "target": "SPEC-003",
       "type": "summarizes"
+    },
+    {
+      "source": "SPEC-004",
+      "target": "backend/railway.toml",
+      "type": "governs"
+    },
+    {
+      "source": "ADV-RAILWAY-001",
+      "target": "SPEC-004",
+      "type": "critiques"
     }
   ],
   "status": "verified",
-  "last_updated": "2026-04-08T22:45:00Z"
+  "last_updated": "2026-04-11T09:30:00Z"
 }

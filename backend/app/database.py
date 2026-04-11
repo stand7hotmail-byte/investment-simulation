@@ -41,24 +41,37 @@ class GUID(TypeDecorator):
             return uuid.UUID(value)
         return value
 
-engine_args = {}
-if settings.sqlalchemy_database_url.startswith("sqlite"):
-    engine_args["connect_args"] = {"check_same_thread": False}
-else:
-    # Production PostgreSQL hardening
-    engine_args["pool_size"] = 10
-    engine_args["max_overflow"] = 20
-    engine_args["pool_timeout"] = 30
-    engine_args["pool_recycle"] = 1800
-    engine_args["pool_pre_ping"] = True
+_engine = None
+_SessionLocal = None
 
-try:
-    engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-except Exception as e:
-    print(f"Critical Error: Could not create database engine: {e}")
-    # Fallback or dummy session could be implemented here if needed
-    engine = None
-    SessionLocal = None
+def get_engine():
+    global _engine
+    if _engine is None:
+        engine_args = {}
+        if settings.sqlalchemy_database_url.startswith("sqlite"):
+            engine_args["connect_args"] = {"check_same_thread": False}
+        else:
+            # Production PostgreSQL hardening
+            engine_args["pool_size"] = 10
+            engine_args["max_overflow"] = 20
+            engine_args["pool_timeout"] = 30
+            engine_args["pool_recycle"] = 1800
+            engine_args["pool_pre_ping"] = True
+        
+        try:
+            _engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
+        except Exception as e:
+            print(f"Critical Error: Could not create database engine: {e}")
+            raise e
+    return _engine
+
+def get_session_local():
+    global _SessionLocal
+    if _SessionLocal is None:
+        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+    return _SessionLocal
+
+engine = get_engine()
+SessionLocal = get_session_local()
 
 Base = declarative_base()
