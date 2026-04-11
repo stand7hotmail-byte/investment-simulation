@@ -1,0 +1,11 @@
+frontend/
+docs/
+conductor/
+maintenance_backup/
+.git/
+.vcsdd/
+.gemini/
+*.png
+*.pdf
+*.db
+.coverage
