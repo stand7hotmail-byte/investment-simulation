@@ -3,7 +3,7 @@ builder = "NIXPACKS"
 buildCommand = "pip install -r backend/requirements.txt"
 
 [deploy]
-startCommand = "cd backend && export PYTHONPATH=$PYTHONPATH:. && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "cd backend && export PYTHONPATH=$PYTHONPATH:. && (alembic upgrade head || echo 'Migration failed') && (python -m app.seed_assets || echo 'Seeding failed') && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckTimeout = 300
