@@ -52,6 +52,13 @@ else:
     engine_args["pool_recycle"] = 1800
     engine_args["pool_pre_ping"] = True
 
-engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+try:
+    engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+except Exception as e:
+    print(f"Critical Error: Could not create database engine: {e}")
+    # Fallback or dummy session could be implemented here if needed
+    engine = None
+    SessionLocal = None
+
 Base = declarative_base()

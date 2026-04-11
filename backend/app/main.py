@@ -20,10 +20,14 @@ async def lifespan(app: FastAPI):
     FastAPI lifespan events.
     Ensures database tables exist and pre-fetches JWKS keys on startup.
     """
-    try:
-        models.Base.metadata.create_all(bind=engine)
-    except Exception as e:
-        print(f"Warning: Database table creation failed on startup: {e}")
+    # Create database tables within lifespan to handle potential connection errors gracefully
+    if engine is not None:
+        try:
+            models.Base.metadata.create_all(bind=engine)
+        except Exception as e:
+            print(f"Warning: Database table creation failed on startup: {e}")
+    else:
+        print("Warning: Skipping table creation because database engine is not initialized.")
 
     client = get_jwks_client()
     if client:
