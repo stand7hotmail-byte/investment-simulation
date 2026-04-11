@@ -101,13 +101,21 @@ def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
     db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
     if db_asset is None:
         raise HTTPException(status_code=404, detail="Asset not found")
+    
+    # Early exit if no data to avoid heavy processing
     if not db_asset.historical_prices:
         return schemas.HistoricalDataResponse(asset_code=asset_code, historical_prices=[])
+
+    # Limit historical data to last 10 years (approx 2520 trading days) to ensure fast response
+    # This prevents 502 Bad Gateway due to heavy processing/serialization
+    limit_days = 252 * 10 
+    prices = db_asset.historical_prices[-limit_days:] if len(db_asset.historical_prices) > limit_days else db_asset.historical_prices
+
     return schemas.HistoricalDataResponse(
         asset_code=asset_code,
         historical_prices=[
             schemas.HistoricalPricePoint(date=point['date'], price=Decimal(str(point['price'])))
-            for point in db_asset.historical_prices
+            for point in prices
         ]
     )
 
