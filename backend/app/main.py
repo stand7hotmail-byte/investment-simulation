@@ -20,6 +20,9 @@ async def lifespan(app: FastAPI):
     FastAPI lifespan events.
     Ensures database tables exist and pre-fetches JWKS keys on startup.
     """
+    print(f"DEBUG: DATABASE_URL is set: {bool(settings.database_url)}")
+    print(f"DEBUG: SQLALCHEMY_DATABASE_URL startswith: {settings.sqlalchemy_database_url[:15]}...")
+    
     # Create database tables within lifespan to handle potential connection errors gracefully
     if engine is not None:
         try:
