@@ -37,7 +37,23 @@ async def lifespan(app: FastAPI):
             pass
     yield
 
+import traceback
+
 app = FastAPI(lifespan=lifespan)
+
+@app.middleware("http")
+async def catch_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        print(f"Unhandled Exception: {e}")
+        print(traceback.format_exc())
+        return JSONResponse(
+            status_code=500,
+            content={"detail": str(e), "traceback": traceback.format_exc()},
+        )
+
+from fastapi.responses import JSONResponse
 
 # --- MIDDLEWARE ---
 app.add_middleware(
