@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 from datetime import datetime, UTC
-from backend.app.database import Base, GUID
+from .database import Base, GUID
 
 # Cross-DB compatible JSON type: JSONB for Postgres, JSON for others (SQLite)
 JSON_TYPE = JSON().with_variant(JSONB, "postgresql")

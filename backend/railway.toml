@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "export PYTHONPATH=$PYTHONPATH:. && (alembic -c backend/alembic.ini upgrade head || echo 'Migration failed') && export SKIP_SLOW_SYNC=true && (python -m backend.app.seed_assets || echo 'Seeding failed') && uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "cd backend && (alembic upgrade head || echo 'Migration failed') && export SKIP_SLOW_SYNC=true && (python -m app.seed_assets || echo 'Seeding failed') && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckTimeout = 300
