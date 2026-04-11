@@ -44,6 +44,13 @@ class GUID(TypeDecorator):
 engine_args = {}
 if settings.sqlalchemy_database_url.startswith("sqlite"):
     engine_args["connect_args"] = {"check_same_thread": False}
+else:
+    # Production PostgreSQL hardening
+    engine_args["pool_size"] = 10
+    engine_args["max_overflow"] = 20
+    engine_args["pool_timeout"] = 30
+    engine_args["pool_recycle"] = 1800
+    engine_args["pool_pre_ping"] = True
 
 engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
