@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 import json
 import numpy as np
-from . import models, schemas
+from backend.app import models, schemas
 from typing import List, Optional
 from decimal import Decimal
 

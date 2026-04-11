@@ -9,10 +9,10 @@ from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas, simulation
-from .database import engine
-from .config import settings
-from .dependencies import get_db, get_optional_user_id, get_current_user_id, get_jwks_client
+from backend.app import crud, models, schemas, simulation
+from backend.app.database import engine
+from backend.app.config import settings
+from backend.app.dependencies import get_db, get_optional_user_id, get_current_user_id, get_jwks_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
