@@ -47,6 +47,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/api/test-static")
+def test_static():
+    return {"status": "ok", "message": "Static response without DB"}
+
 # --- ROUTES ---
 
 @app.get("/")
