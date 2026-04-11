@@ -14,15 +14,20 @@ from .database import engine
 from .config import settings
 from .dependencies import get_db, get_optional_user_id, get_current_user_id, get_jwks_client
 
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     FastAPI lifespan events.
-    Pre-fetches JWKS keys on startup to avoid delay on first request.
+    Ensures database tables exist and pre-fetches JWKS keys on startup.
     """
+    # Create database tables within lifespan to handle potential connection errors gracefully
+    try:
+        models.Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Warning: Database table creation failed on startup: {e}")
+        # We don't raise the error here to allow the server to start, 
+        # but subsequent API calls will fail if DB is truly unreachable.
+
     client = get_jwks_client()
     if client:
         try:
