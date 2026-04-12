@@ -2,8 +2,10 @@
 builder = "NIXPACKS"
 
 [deploy]
-# Back to normal mode now that the DB inconsistency is resolved.
-startCommand = "SKIP_SLOW_SYNC=true alembic upgrade head && python -m app.seed_assets && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+# 1. 起動前にデータベースの足りない列やテーブルを自動修復
+# 2. 最新の状態としてAlembicに記録を刻む (stamp)
+# 3. データ投入して起動
+startCommand = "SKIP_SLOW_SYNC=true python scripts/repair_db.py && alembic stamp d6eecacb1b7f && python -m app.seed_assets && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckTimeout = 300
