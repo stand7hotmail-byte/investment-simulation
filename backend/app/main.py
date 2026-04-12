@@ -51,25 +51,18 @@ async def catch_exceptions_middleware(request: Request, call_next):
         )
 
 # --- MIDDLEWARE ---
-print(f"DEBUG: Initializing CORS with ALLOWED_ORIGINS: {settings.allowed_origins}")
-raw_origins = [o.strip() for o in settings.allowed_origins.split(",")]
-origins = ["*"] if "*" in raw_origins else raw_origins
-
-# Standard CORS security rule: allow_credentials cannot be True when allow_origins is ["*"]
-allow_creds = True
-if origins == ["*"]:
-    print("DEBUG: ALLOWED_ORIGINS is '*', setting allow_credentials to False for compatibility.")
-    allow_creds = False
-
-print(f"DEBUG: Final CORS config - Origins: {origins}, Credentials: {allow_creds}")
+# Using allow_origin_regex to safely permit localhost, Vercel, and Railway domains 
+# while still allowing credentials (which '*' does not support).
+print(f"DEBUG: Setting up robust CORS middleware...")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=allow_creds,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+print("DEBUG: CORS configured to allow localhost, Vercel, and Railway subdomains with credentials.")
 
 # --- ROUTES ---
 
