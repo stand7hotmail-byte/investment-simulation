@@ -40,11 +40,12 @@ class GUID(TypeDecorator):
         if not isinstance(value, uuid.UUID):
             return uuid.UUID(value)
         return value
-from .config import settings
+
 from .log_utils import logger
 
-class GUID(TypeDecorator):
-...
+_engine = None
+_SessionLocal = None
+
 def get_engine():
     global _engine
     if _engine is None:
