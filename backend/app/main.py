@@ -15,6 +15,7 @@ from . import crud, models, schemas, simulation
 from .database import engine
 from .config import settings
 from .dependencies import get_db, get_optional_user_id, get_current_user_id, get_jwks_client
+from .log_utils import logger
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,7 +27,7 @@ async def lifespan(app: FastAPI):
         try:
             models.Base.metadata.create_all(bind=engine)
         except Exception as e:
-            print(f"Warning: Database table creation failed on startup: {e}")
+            logger.warning(f"Database table creation failed on startup: {e}")
 
     client = get_jwks_client()
     if client:
@@ -43,26 +44,40 @@ async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        print(f"Unhandled Exception: {e}")
-        print(traceback.format_exc())
+        logger.exception(f"Unhandled Exception: {e}")
+        # Sanitize output for clients while logging details internally
         return JSONResponse(
             status_code=500,
-            content={"detail": str(e), "traceback": traceback.format_exc()},
+            content={"detail": "Internal Server Error", "request_id": str(uuid.uuid4())},
         )
 
 # --- MIDDLEWARE ---
 # Using allow_origin_regex to safely permit localhost, Vercel, and Railway domains 
 # while still allowing credentials (which '*' does not support).
-print(f"DEBUG: Setting up robust CORS middleware...")
+logger.info("Setting up robust CORS middleware...")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-print("DEBUG: CORS configured to allow localhost, Vercel, and Railway subdomains with credentials.")
+# Hardening: Check for environment-based allowed origins first
+allowed_origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if allowed_origins_env:
+    origins = [o.strip() for o in allowed_origins_env.split(",")]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    logger.info(f"CORS configured with fixed origins: {origins}")
+else:
+    # Fallback to safe regex for development and production subdomains
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    logger.info("CORS configured with fallback regex for subdomains.")
 
 # --- ROUTES ---
 

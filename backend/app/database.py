@@ -40,10 +40,11 @@ class GUID(TypeDecorator):
         if not isinstance(value, uuid.UUID):
             return uuid.UUID(value)
         return value
+from .config import settings
+from .log_utils import logger
 
-_engine = None
-_SessionLocal = None
-
+class GUID(TypeDecorator):
+...
 def get_engine():
     global _engine
     if _engine is None:
@@ -57,13 +58,15 @@ def get_engine():
             engine_args["pool_timeout"] = 30
             engine_args["pool_recycle"] = 1800
             engine_args["pool_pre_ping"] = True
-        
+
         try:
             _engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
+            logger.info("Database engine initialized successfully.")
         except Exception as e:
-            print(f"Critical Error: Could not create database engine: {e}")
-            raise e
+            logger.error(f"Critical Error: Could not create database engine with URL {settings.sqlalchemy_database_url}: {e}")
+            raise RuntimeError(f"Database initialization failed: {e}")
     return _engine
+
 
 def get_session_local():
     global _SessionLocal

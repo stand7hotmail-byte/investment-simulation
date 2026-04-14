@@ -1,8 +1,12 @@
 import numpy as np
 import cvxpy as cp
+import logging
 from typing import List, Dict, Any, Optional, Tuple
 from scipy.optimize import minimize
 from scipy.stats import gmean
+
+# Standard constant for numerical stability across all financial calculations
+EPSILON = 1e-9
 
 def annualize_returns(
     geometric_mean_daily_multiplier: np.ndarray, 
@@ -82,11 +86,6 @@ def run_monte_carlo_simulation(
             portfolio_values[t] += extra_map[t]
             
     final_values = portfolio_values[-1]
-    percentiles = {str(p): float(np.percentile(final_values, p)) for p in [10, 25, 50, 75, 90]}
-    
-    total_invested = initial_investment + (monthly_contribution * 12 * years) + sum(extra_map.values())
-    prob_loss = float(np.mean(final_values < total_invested))
-    prob_target = float(np.mean(final_values >= target_amount)) if target_amount else None
     
     history = []
     for t in range(years + 1):
@@ -99,6 +98,10 @@ def run_monte_carlo_simulation(
             "p50_dividend": float(np.nan_to_num(np.percentile(annual_dividends[t], 50))),
             "p50_cumulative_dividend": float(np.nan_to_num(np.percentile(cumulative_dividends[t], 50)))
         })
+    
+    total_invested = initial_investment + (monthly_contribution * 12 * years) + sum(extra_map.values())
+    prob_loss = float(np.mean(final_values < total_invested))
+    prob_target = float(np.mean(final_values >= target_amount)) if target_amount else None
     
     confidence_interval_95 = {
         "lower_bound": float(np.nan_to_num(np.percentile(final_values, 2.5))), 
@@ -128,7 +131,7 @@ def calculate_risk_parity_weights(
         bounds = [(0, 1.0) for _ in range(n)]
         
     asset_volatilities = np.sqrt(np.diag(covariance_matrix))
-    inverse_volatilities = 1.0 / (asset_volatilities + 1e-9)
+    inverse_volatilities = 1.0 / (asset_volatilities + EPSILON)
     init_weights = inverse_volatilities / np.sum(inverse_volatilities)
     
     constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1.0}]
@@ -136,10 +139,10 @@ def calculate_risk_parity_weights(
     def objective(w):
         if np.any(w < 0): return np.inf
         portfolio_variance = w.T @ covariance_matrix @ w
-        if portfolio_variance < 1e-10: return np.inf
+        if portfolio_variance < EPSILON: return np.inf
         marginal_risk_contribution = (covariance_matrix @ w) / np.sqrt(portfolio_variance)
         risk_contributions = w * marginal_risk_contribution
-        if np.any(risk_contributions <= 1e-10): return np.inf
+        if np.any(risk_contributions <= EPSILON): return np.inf
         log_risk_contributions = np.log(risk_contributions)
         return np.var(log_risk_contributions)
         
@@ -241,7 +244,7 @@ def calculate_stats_from_historical_data(
     annual_returns = annualize_returns(geometric_mean_daily_multiplier, factor=annualization_factor)
     
     # Numerical stability: add small epsilon to diagonal
-    covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor + np.eye(len(historical_prices_data)) * 1e-8
+    covariance_matrix = np.cov(aligned_returns, rowvar=False) * annualization_factor + np.eye(len(historical_prices_data)) * EPSILON
     correlation_matrix = np.corrcoef(aligned_returns, rowvar=False)
     
     # Clean up correlation matrix
@@ -338,7 +341,7 @@ def calculate_stress_test_performance(
     
     # Normalize to 1.0 at start
     initial_prices = aligned_prices[:, 0][:, np.newaxis]
-    initial_prices[initial_prices == 0] = 1e-8 
+    initial_prices[initial_prices == 0] = EPSILON
     normalized_prices = aligned_prices / initial_prices
     
     # Portfolio value over time
