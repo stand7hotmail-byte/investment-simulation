@@ -49,6 +49,7 @@ def get_jwks_client() -> Optional[jwt.PyJWKClient]:
 # --- DEPENDENCIES ---
 
 def get_db():
+    SessionLocal = get_session_local()
     db = SessionLocal()
     try:
         yield db

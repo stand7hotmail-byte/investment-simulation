@@ -10,9 +10,8 @@ from fastapi import Depends, FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-
 from . import crud, models, schemas, simulation
-from .database import engine
+from .database import get_engine, get_session_local
 from .config import settings
 from .dependencies import get_db, get_optional_user_id, get_current_user_id, get_jwks_client
 from .log_utils import logger
@@ -23,6 +22,7 @@ async def lifespan(app: FastAPI):
     FastAPI lifespan events.
     Ensures database tables exist and pre-fetches JWKS keys on startup.
     """
+    engine = get_engine()
     if engine is not None:
         try:
             models.Base.metadata.create_all(bind=engine)
@@ -30,6 +30,8 @@ async def lifespan(app: FastAPI):
             logger.warning(f"Database table creation failed on startup: {e}")
 
     client = get_jwks_client()
+# ...
+
     if client:
         try:
             client.get_signing_keys()

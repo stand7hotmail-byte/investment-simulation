@@ -77,10 +77,12 @@ def get_session_local():
             _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         else:
             logger.error("SessionLocal could not be created because engine is None.")
-            return None
+            # Do not return None here to avoid type errors downstream, let the error propagate later
+            return sessionmaker(autocommit=False, autoflush=False, bind=None)
     return _SessionLocal
 
-engine = get_engine()
-SessionLocal = get_session_local()
+# SPEC-006: Do NOT initialize engine at the module level!
+# engine = get_engine()
+# SessionLocal = get_session_local()
 
 Base = declarative_base()
