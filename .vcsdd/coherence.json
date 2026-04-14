@@ -100,6 +100,14 @@
       "status": "completed",
       "created_at": "2026-04-14T10:30:00Z"
     }
+    {
+      "id": "SPEC-006",
+      "type": "specification",
+      "label": "Railway Startup Fix & CORS Robustness",
+      "path": ".vcsdd/specs/spec_railway_startup_fix.md",
+      "status": "draft",
+      "created_at": "2026-04-14T11:00:00Z"
+    }
   ],
   "links": [
     {

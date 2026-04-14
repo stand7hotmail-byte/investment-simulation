@@ -56,7 +56,13 @@ async def catch_exceptions_middleware(request: Request, call_next):
 # while still allowing credentials (which '*' does not support).
 logger.info("Setting up robust CORS middleware...")
 
-# Hardening: Check for environment-based allowed origins first
+# Hardening: Combine fixed production origins with fallback regex
+default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://investment-sim-frontend.vercel.app"
+]
+
 allowed_origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
 if allowed_origins_env:
     origins = [o.strip() for o in allowed_origins_env.split(",")]
@@ -67,17 +73,18 @@ if allowed_origins_env:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    logger.info(f"CORS configured with fixed origins: {origins}")
+    logger.info(f"CORS configured with environment-based origins: {origins}")
 else:
-    # Fallback to safe regex for development and production subdomains
+    # Use explicit defaults AND regex for subdomains to ensure maximum reliability
     app.add_middleware(
         CORSMiddleware,
+        allow_origins=default_origins,
         allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    logger.info("CORS configured with fallback regex for subdomains.")
+    logger.info(f"CORS configured with default origins and fallback regex: {default_origins}")
 
 # --- ROUTES ---
 

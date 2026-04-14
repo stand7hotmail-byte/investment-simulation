@@ -63,15 +63,21 @@ def get_engine():
             _engine = create_engine(settings.sqlalchemy_database_url, **engine_args)
             logger.info("Database engine initialized successfully.")
         except Exception as e:
-            logger.error(f"Critical Error: Could not create database engine with URL {settings.sqlalchemy_database_url}: {e}")
-            raise RuntimeError(f"Database initialization failed: {e}")
+            logger.critical(f"Critical Error: Could not create database engine with URL {settings.sqlalchemy_database_url}: {e}")
+            # Do not raise here to allow application to start (SPEC-006: Graceful Fallback)
+            return None
     return _engine
 
 
 def get_session_local():
     global _SessionLocal
     if _SessionLocal is None:
-        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+        engine = get_engine()
+        if engine:
+            _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        else:
+            logger.error("SessionLocal could not be created because engine is None.")
+            return None
     return _SessionLocal
 
 engine = get_engine()

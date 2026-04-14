@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "SKIP_SLOW_SYNC=true python scripts/repair_db.py && alembic stamp d6eecacb1b7f && python -m app.seed_assets && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "SKIP_SLOW_SYNC=true python scripts/repair_db.py ; alembic stamp d6eecacb1b7f ; python -m app.seed_assets ; uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckTimeout = 300
