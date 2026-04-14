@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from .database import SessionLocal
+from .database import get_session_local
 from .config import settings
 
 # --- AUTHENTICATION HELPERS ---

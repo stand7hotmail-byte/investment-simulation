@@ -77,8 +77,14 @@ def seed_assets():
     Prioritizes precomputed statistics for reliability.
     """
     # Ensure tables exist
+    engine = get_engine()
+    if engine is None:
+        print("Error: Database engine could not be initialized.")
+        return
+
     models.Base.metadata.create_all(bind=engine)
     
+    SessionLocal = get_session_local()
     db = SessionLocal()
     try:
         # 0. Affiliate Data Seeding
