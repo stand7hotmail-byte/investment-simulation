@@ -42,7 +42,8 @@ def get_jwks_client() -> Optional[jwt.PyJWKClient]:
         return _jwks_client
     if settings.supabase_url:
         jwks_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/jwks"
-        _jwks_client = FailsafeJWKClient(jwks_url, cache_keys=True, lifespan=86400)
+        # Harden: Reduce lifespan to 1 hour (3600s) to handle key rotation
+        _jwks_client = FailsafeJWKClient(jwks_url, cache_keys=True, lifespan=3600)
         return _jwks_client
     return None
 

@@ -41,7 +41,7 @@
       "path": ".vcsdd/adversary/adv_initial_security_review.md",
       "links": ["SPEC-002", "SPEC-003"],
       "status": "completed",
-      "result": "pass_with_hardening"
+      "result": "pass"
     },
     {
       "id": "REPORT-V1",
@@ -99,17 +99,39 @@
       "path": ".vcsdd/history/vcsdd_status_report_v3.md",
       "status": "completed",
       "created_at": "2026-04-14T10:30:00Z"
-    }
+    },
     {
       "id": "SPEC-006",
       "type": "specification",
       "label": "Railway Startup Fix & CORS Robustness",
       "path": ".vcsdd/specs/spec_railway_startup_fix.md",
-      "status": "draft",
+      "status": "green",
       "created_at": "2026-04-14T11:00:00Z"
+    },
+    {
+      "id": "ADV-REFINE-001",
+      "type": "review",
+      "label": "Code Refinement Adversary Review",
+      "path": ".vcsdd/adversary/adv_code_refinement_review.md",
+      "links": ["SPEC-005", "SPEC-006"],
+      "status": "completed",
+      "result": "fail"
+    },
+    {
+      "id": "SPEC-007",
+      "type": "specification",
+      "label": "Vulnerability Eradication & Concurrency Safety",
+      "path": ".vcsdd/specs/spec_vulnerability_eradication.md",
+      "status": "draft",
+      "created_at": "2026-04-14T12:00:00Z"
     }
   ],
   "links": [
+    {
+      "source": "SPEC-007",
+      "target": "ADV-REFINE-001",
+      "type": "addresses"
+    },
     {
       "source": "REPORT-V3",
       "target": "SPEC-005",
@@ -169,8 +191,18 @@
       "source": "ADV-RAILWAY-001",
       "target": "SPEC-004",
       "type": "critiques"
+    },
+    {
+      "source": "ADV-REFINE-001",
+      "target": "SPEC-005",
+      "type": "critiques"
+    },
+    {
+      "source": "ADV-REFINE-001",
+      "target": "SPEC-006",
+      "type": "critiques"
     }
   ],
   "status": "verified",
-  "last_updated": "2026-04-14T10:05:00Z"
+  "last_updated": "2026-04-14T11:30:00Z"
 }

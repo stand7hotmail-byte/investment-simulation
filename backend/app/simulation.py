@@ -131,7 +131,10 @@ def calculate_risk_parity_weights(
         bounds = [(0, 1.0) for _ in range(n)]
         
     asset_volatilities = np.sqrt(np.diag(covariance_matrix))
-    inverse_volatilities = 1.0 / (asset_volatilities + EPSILON)
+    # Harden: Prevent division by zero if an asset has 0 volatility
+    # Use a small floor (EPSILON) to ensure stability
+    safe_vols = np.maximum(asset_volatilities, EPSILON)
+    inverse_volatilities = 1.0 / safe_vols
     init_weights = inverse_volatilities / np.sum(inverse_volatilities)
     
     constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1.0}]

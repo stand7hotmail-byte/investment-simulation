@@ -78,15 +78,17 @@ if allowed_origins_env:
     logger.info(f"CORS configured with environment-based origins: {origins}")
 else:
     # Use explicit defaults AND regex for subdomains to ensure maximum reliability
+    # Harden: Narrow the regex to ONLY include the specific project subdomains on Vercel
     app.add_middleware(
         CORSMiddleware,
         allow_origins=default_origins,
-        allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
+        allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|investment-sim-frontend.*\.vercel\.app|.*\.up\.railway\.app)(:\d+)?",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    logger.info(f"CORS configured with default origins and fallback regex: {default_origins}")
+    logger.info("CORS configured with default origins and tightened fallback regex.")
+
 
 # --- ROUTES ---
 
