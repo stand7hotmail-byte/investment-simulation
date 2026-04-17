@@ -115,22 +115,96 @@
       "path": ".vcsdd/adversary/adv_code_refinement_review.md",
       "links": ["SPEC-005", "SPEC-006"],
       "status": "completed",
-      "result": "fail"
+      "result": "pass"
     },
     {
       "id": "SPEC-007",
       "type": "specification",
       "label": "Vulnerability Eradication & Concurrency Safety",
       "path": ".vcsdd/specs/spec_vulnerability_eradication.md",
-      "status": "draft",
+      "status": "green",
       "created_at": "2026-04-14T12:00:00Z"
+    },
+    {
+      "id": "SPEC-008",
+      "type": "specification",
+      "label": "Missing Endpoints Restoration & Stability",
+      "path": ".vcsdd/specs/spec_missing_endpoints_restoration.md",
+      "status": "green",
+      "created_at": "2026-04-17T01:50:00Z"
+    },
+    {
+      "id": "TEST-NEW-001",
+      "type": "test",
+      "label": "New Endpoints Integration Tests",
+      "path": "backend/tests/test_new_endpoints.py",
+      "status": "green",
+      "created_at": "2026-04-17T01:50:00Z"
+    },
+    {
+      "id": "IMPL-MAIN-008",
+      "type": "implementation",
+      "label": "Main API Routes Extension",
+      "path": "backend/app/main.py",
+      "status": "green",
+      "created_at": "2026-04-17T01:50:00Z"
+    },
+    {
+      "id": "IMPL-UTILS-008",
+      "type": "implementation",
+      "label": "Restored Log Utilities",
+      "path": "backend/app/log_utils.py",
+      "status": "green",
+      "created_at": "2026-04-17T01:50:00Z"
+    },
+    {
+      "id": "ADV-SPEC-008",
+      "type": "review",
+      "label": "Endpoints Restoration Adversary Review",
+      "path": ".vcsdd/adversary/adv_spec_008_review.md",
+      "links": ["SPEC-008", "TEST-NEW-001"],
+      "status": "completed",
+      "result": "pass"
+    },
+    {
+      "id": "REPORT-V4",
+
+      "type": "review",
+      "label": "Missing Endpoints Adversary Review",
+      "path": ".vcsdd/adversary/adv_spec_008_review.md",
+      "links": ["SPEC-008", "TEST-NEW-001"],
+      "status": "completed",
+      "result": "fail"
+    },
+    {
+      "id": "REPORT-V4",
+      "type": "report",
+      "label": "VCSDD Final Security & Stability Report (v4.0)",
+      "path": ".vcsdd/history/vcsdd_status_report_v4.md",
+      "status": "completed",
+      "created_at": "2026-04-14T13:00:00Z"
     }
   ],
   "links": [
     {
+      "source": "ADV-SPEC-008-001",
+      "target": "SPEC-008",
+      "type": "critiques"
+    },
+    {
+      "source": "ADV-SPEC-008-001",
+      "target": "TEST-NEW-001",
+      "type": "critiques"
+    },
+    {
       "source": "SPEC-007",
       "target": "ADV-REFINE-001",
       "type": "addresses"
+    },
+    {
+      "source": "REPORT-V4",
+      "target": "SPEC-007",
+      "type": "summarizes"
     },
     {
       "source": "REPORT-V3",
@@ -201,8 +275,23 @@
       "source": "ADV-REFINE-001",
       "target": "SPEC-006",
       "type": "critiques"
+    },
+    {
+      "source": "SPEC-008",
+      "target": "TEST-NEW-001",
+      "type": "verifies"
+    },
+    {
+      "source": "SPEC-008",
+      "target": "IMPL-MAIN-008",
+      "type": "governs"
+    },
+    {
+      "source": "SPEC-008",
+      "target": "IMPL-UTILS-008",
+      "type": "governs"
     }
   ],
-  "status": "verified",
-  "last_updated": "2026-04-14T11:30:00Z"
+  "status": "unverified",
+  "last_updated": "2026-04-17T02:00:00Z"
 }

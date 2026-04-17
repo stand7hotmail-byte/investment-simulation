@@ -177,6 +177,9 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
         raise HTTPException(status_code=400, detail="At least 2 assets are required")
     parameters = request.model_dump()
     cached = crud.get_simulation_result(db, "risk_parity", parameters)
+    # Cache lookup is now user-specific for security
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    cached = crud.get_simulation_result(db, effective_user_id, "risk_parity", parameters)
     if cached: return cached.results
     assets_data = []
     for code in request.assets:
@@ -193,14 +196,20 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
         "volatility": vol,
         "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
     }
-    if user_id:
-        crud.create_simulation_result(db, user_id, "risk_parity", parameters, result)
+    # Always cache result for the user
+    crud.create_simulation_result(db, effective_user_id, "risk_parity", parameters, result)
     return result
 
 @app.post("/api/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
-def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db)):
-    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == request.portfolio_id).first()
-    if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
+def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    # Ownership Check: Ensure user owns the portfolio
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    db_portfolio = db.query(models.Portfolio).filter(
+        models.Portfolio.id == request.portfolio_id,
+        models.Portfolio.user_id == effective_user_id
+    ).first()
+    if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found or unauthorized")
+    
     if not db_portfolio.allocations or len(db_portfolio.allocations) < 2:
         raise HTTPException(status_code=400, detail="At least 2 assets required")
 
@@ -235,11 +244,18 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
     )
 
 @app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
-def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db)):
+def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
     exp_ret, vol = request.expected_return, request.volatility
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+
     if exp_ret is None or vol is None:
-        db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == request.portfolio_id).first()
-        if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
+        # Ownership Check
+        db_portfolio = db.query(models.Portfolio).filter(
+            models.Portfolio.id == request.portfolio_id,
+            models.Portfolio.user_id == effective_user_id
+        ).first()
+        if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found or unauthorized")
+        
         assets_data, weights = [], []
         for alloc in db_portfolio.allocations:
             asset = crud.get_asset_by_code(db, alloc.asset_code)
@@ -257,6 +273,78 @@ def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: S
         volatility=vol,
         years=request.years
     )
+
+@app.post("/api/simulate/custom-portfolio", response_model=schemas.PortfolioPointResponse)
+def simulate_custom_portfolio(request: schemas.CustomPortfolioRequest, db: Session = Depends(get_db)):
+    if not request.assets:
+        raise HTTPException(status_code=400, detail="At least 1 asset is required")
+    
+    # Calculate total weight ONLY for requested assets
+    total_weight = sum(request.weights.get(code, 0.0) for code in request.assets)
+    if total_weight <= 0:
+        raise HTTPException(status_code=400, detail="Total weight for requested assets must be positive")
+        
+    # Standardize weights map to ONLY include requested assets and sum to 1.0
+    sanitized_weights = {}
+    for code in request.assets:
+        w = request.weights.get(code, 0.0)
+        sanitized_weights[code] = w / total_weight
+             
+    assets_data = []
+    weights = []
+    for code in request.assets:
+        asset = crud.get_asset_by_code(db, code)
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {code} not found")
+        assets_data.append(asset)
+        weights.append(sanitized_weights[code])
+        
+    returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+    cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+    
+    ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+    
+    return {
+        "expected_return": ret,
+        "volatility": vol,
+        "weights": sanitized_weights
+    }
+
+# --- SIMULATION RESULTS ENDPOINTS ---
+
+@app.get("/api/simulation-results", response_model=List[schemas.SimulationResult])
+def read_simulation_results(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    if not user_id:
+        return []
+    return crud.get_simulation_results(db, user_id=user_id, skip=skip, limit=limit)
+
+@app.post("/api/simulation-results", response_model=schemas.SimulationResult, status_code=201)
+def create_simulation_result(result: schemas.SimulationResultCreate, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    
+    # Ownership Check for linked portfolio
+    if result.portfolio_id:
+        db_portfolio = db.query(models.Portfolio).filter(
+            models.Portfolio.id == result.portfolio_id,
+            models.Portfolio.user_id == effective_user_id
+        ).first()
+        if not db_portfolio:
+            raise HTTPException(status_code=404, detail="Linked portfolio not found or unauthorized")
+
+    return crud.create_simulation_result(
+        db=db, 
+        user_id=effective_user_id, 
+        simulation_type=result.simulation_type, 
+        parameters=result.parameters, 
+        results=result.results,
+        portfolio_id=result.portfolio_id
+    )
+
+@app.delete("/api/simulation-results/{result_id}")
+def delete_simulation_result(result_id: uuid.UUID, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    if not crud.delete_simulation_result(db, result_id=result_id, user_id=user_id):
+        raise HTTPException(status_code=404, detail="Simulation result not found")
+    return {"message": "Simulation result deleted successfully"}
 
 # --- PORTFOLIO ENDPOINTS ---
 

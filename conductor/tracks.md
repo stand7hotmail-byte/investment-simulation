@@ -70,6 +70,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## 🚀 Active Tracks
 
+- [~] **Track: Restore Missing Endpoints & Fix Stability Issues**
+  *Link: [./tracks/fix_endpoints_stability_20260417/](./tracks/fix_endpoints_stability_20260417/)*
+
 - [~] **Track: Advanced Portfolio Analytics (Rebalancing, Stress Test, Income)**
   *Link: [./tracks/advanced_analytics_20260321/](./tracks/advanced_analytics_20260321/)*
 

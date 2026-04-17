@@ -127,9 +127,10 @@ def create_simulation_result(db: Session, user_id: uuid.UUID, simulation_type: s
     db.refresh(db_result)
     return db_result
 
-def get_simulation_result(db: Session, simulation_type: str, parameters: dict) -> Optional[models.SimulationResult]:
+def get_simulation_result(db: Session, user_id: uuid.UUID, simulation_type: str, parameters: dict) -> Optional[models.SimulationResult]:
     param_str = json.dumps(parameters, sort_keys=True)
     return db.query(models.SimulationResult).filter(
+        models.SimulationResult.user_id == user_id,
         models.SimulationResult.simulation_type == simulation_type,
         cast(models.SimulationResult.parameters, String) == param_str
     ).order_by(models.SimulationResult.created_at.desc()).first()

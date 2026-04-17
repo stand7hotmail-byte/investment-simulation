@@ -1,17 +1,20 @@
 import os
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 import sys
 
 # プロジェクトルートをパスに追加
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.config import settings
+from app.database import get_engine
 
 def reset_alembic():
-    url = settings.sqlalchemy_database_url
     print(f"Connecting to database to reset alembic_version...")
     
+    engine = get_engine()
+    if engine is None:
+        print("Error: Could not initialize database engine.")
+        return
+
     try:
-        engine = create_engine(url)
         with engine.connect() as conn:
             # alembic_version テーブルを削除して不整合を解消
             conn.execute(text("DROP TABLE IF EXISTS alembic_version"))

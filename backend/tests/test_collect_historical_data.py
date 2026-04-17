@@ -4,15 +4,15 @@ import asyncio
 import os
 
 from app.models import AssetData
-from app.database import Base, engine, SessionLocal
+from app.database import Base, get_engine, get_session_local
 from scripts.collect_historical_data import collect_historical_data
 
 class TestCollectHistoricalData(unittest.TestCase):
 
     def setUp(self):
         # Set up a test database in-memory
-        self.engine = engine
-        self.SessionLocal = SessionLocal
+        self.engine = get_engine()
+        self.SessionLocal = get_session_local()
         Base.metadata.create_all(bind=self.engine)
         self.db = self.SessionLocal()
 
@@ -32,11 +32,11 @@ class TestCollectHistoricalData(unittest.TestCase):
         self.db.close()
         Base.metadata.drop_all(bind=self.engine)
 
-    @patch('scripts.collect_historical_data.SessionLocal')
+    @patch('scripts.collect_historical_data.get_session_local')
     @patch('scripts.collect_historical_data.fetch_historical_data')
-    def test_collect_historical_data_script(self, mock_fetch_historical_data, mock_session_local):
-        # Mock SessionLocal to return our test db session
-        mock_session_local.return_value = self.db
+    def test_collect_historical_data_script(self, mock_fetch_historical_data, mock_get_session_local):
+        # Mock get_session_local to return a callable that returns our test db session
+        mock_get_session_local.return_value = MagicMock(return_value=self.db)
         
         # Mock fetch_historical_data to return some sample data
         mock_fetch_historical_data.return_value = [

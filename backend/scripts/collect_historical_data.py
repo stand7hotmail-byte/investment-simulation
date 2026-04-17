@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, UTC
 # Add parent directory to path to allow importing modules from backend.app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.database import SessionLocal
+from app.database import get_session_local
 from app.models import AssetData
 from app.data_sources.yahoo_finance import fetch_historical_data
 
@@ -15,6 +15,7 @@ async def collect_historical_data():
     Collects historical price data for all assets in the AssetData table
     and updates their historical_prices column.
     """
+    SessionLocal = get_session_local()
     db = SessionLocal()
     try:
         assets = db.query(AssetData).all()

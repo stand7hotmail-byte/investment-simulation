@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, UTC
 # Add the project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.database import SessionLocal, engine
+from app.database import get_engine, get_session_local
 from app import models
 from app.data_sources.yahoo_finance import fetch_historical_data, fetch_dividend_data
 from app.data.precomputed_assets import PRECOMPUTED_DATA
