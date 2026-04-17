@@ -177,6 +177,14 @@
       "result": "fail"
     },
     {
+      "id": "SPEC-009",
+      "type": "specification",
+      "label": "Connectivity & Auth Robustness",
+      "path": ".vcsdd/specs/spec_connectivity_robustness.md",
+      "status": "red",
+      "created_at": "2026-04-17T02:30:00Z"
+    },
+    {
       "id": "REPORT-V4",
       "type": "report",
       "label": "VCSDD Final Security & Stability Report (v4.0)",
@@ -186,6 +194,11 @@
     }
   ],
   "links": [
+    {
+      "source": "SPEC-009",
+      "target": "frontend/src/lib/supabase.ts",
+      "type": "governs"
+    },
     {
       "source": "ADV-SPEC-008-001",
       "target": "SPEC-008",
