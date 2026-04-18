@@ -11,6 +11,11 @@ if (typeof window !== 'undefined') {
   console.log('[Supabase Config] URL:', mask(supabaseUrl))
   console.log('[Supabase Config] Key Length:', supabaseAnonKey.length)
 
+  // Connectivity probe
+  fetch(supabaseUrl, { method: 'HEAD', mode: 'no-cors' })
+    .then(() => console.log('[Supabase Probe] Basic connectivity: OK'))
+    .catch((err) => console.warn('[Supabase Probe] Basic connectivity: FAILED. Check AdBlocker or Network Firewall.', err))
+
   if (!rawUrl || supabaseUrl.includes('placeholder')) {
     console.warn('[Supabase] Warning: NEXT_PUBLIC_SUPABASE_URL is not set or using placeholder.')
   }
