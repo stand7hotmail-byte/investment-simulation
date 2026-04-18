@@ -203,6 +203,19 @@ class AffiliateBrokerBase(BaseModel):
     logo_url: str | None = None
     priority: int = 0
 
+class AffiliateBrokerCreate(AffiliateBrokerBase):
+    pass
+
+class AffiliateBrokerUpdate(BaseModel):
+    name: str | None = None
+    region: str | None = None
+    description: List[str] | None = None
+    cta_text: str | None = None
+    affiliate_url: str | None = None
+    logo_url: str | None = None
+    priority: int | None = None
+    is_active: bool | None = None
+
 class AffiliateBrokerRead(AffiliateBrokerBase):
     id: int
     is_active: bool

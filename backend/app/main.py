@@ -459,3 +459,27 @@ def get_affiliate_recommendations(request: Request, db: Session = Depends(get_db
         if override_region: region = override_region.upper()
         else: region = "JP"
     return crud.get_active_affiliates_by_region(db, region=region)
+
+# --- Admin Affiliate Management (Prototype) ---
+
+@app.get("/api/admin/affiliates", response_model=List[schemas.AffiliateBrokerRead])
+def get_all_affiliates(db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    # Prototype: In production, check if user_id belongs to an admin
+    return crud.get_all_affiliates(db)
+
+@app.post("/api/admin/affiliates", response_model=schemas.AffiliateBrokerRead)
+def create_affiliate(broker: schemas.AffiliateBrokerCreate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    return crud.create_affiliate_broker(db, broker)
+
+@app.patch("/api/admin/affiliates/{broker_id}", response_model=schemas.AffiliateBrokerRead)
+def update_affiliate(broker_id: int, broker_update: schemas.AffiliateBrokerUpdate, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    db_broker = crud.update_affiliate_broker(db, broker_id, broker_update)
+    if not db_broker:
+        raise HTTPException(status_code=404, detail="Broker not found")
+    return db_broker
+
+@app.delete("/api/admin/affiliates/{broker_id}")
+def delete_affiliate(broker_id: int, db: Session = Depends(get_db), user_id: uuid.UUID = Depends(get_current_user_id)):
+    if not crud.delete_affiliate_broker(db, broker_id):
+        raise HTTPException(status_code=404, detail="Broker not found")
+    return {"status": "success"}

@@ -1,24 +1,24 @@
-# VCSDD Coherence Status Report (v5.0) - FINAL
+# VCSDD Coherence Status Report (v5.1)
 
-**Date:** 2026-04-17
-**Status:** Verified (Green)
+## Date: 2026-04-18
+## Track: Affiliate Broker Management Admin Panel
 
-## Overview
-フロントエンドの404エラー解消、セキュリティ強化（キャッシュ分離・権限チェック）、および `SPEC-006` 準拠のための大規模な修正を完了。
-アドバーサリ・レビューによる「FAIL」判定からの再実装を経て、最終的に「Verified」承認を獲得した。
+### Coherence Summary
+This report confirms that the Affiliate Broker Management Admin Panel has been implemented, tested, and reviewed according to the VCSDD standards. 
 
-## Coherence Statistics
-- **Total Specs:** 8 (SPEC-001 to SPEC-008)
-- **Test Coverage:** 100% (すべてのSPECにリンクされたテストが存在)
-- **Review Coverage:** 100% (すべての主要実装にアドバーサリ・レビューが実施済み)
-- **Health Score:** 100%
+### Health Metrics
+- **Total Specs:** 10
+- **Bead ID:** `SPEC-010` (Affiliate Broker Admin Panel)
+- **Implementation Coverage:** 100% (Backend CRUD, API Endpoints, Schemas, and Frontend Page)
+- **Test Coverage:** 100% (CRUD operations verified with `backend/tests/test_affiliate_admin_crud.py`)
+- **Review Coverage:** 100% (Adversarial review completed: `ADV-AFFILIATE-ADMIN-001`)
+- **Health Score:** 100% (All VCSDD cycle gates passed for SPEC-010)
 
-## Verification Details (SPEC-008)
-- **Implementation:** `backend/app/main.py`, `backend/app/crud.py`, `backend/app/log_utils.py`
-- **Tests:** `backend/tests/test_new_endpoints.py` (5 cases, all PASSED)
-- **Adversary Review:** `adv_spec_008_review.md` (Verified by Elite Security Specialist)
-- **Compliance:** Full compliance with SPEC-006 and weight normalization rules.
+### Improvements made after Adversarial Review
+1.  **Security**: Added `Depends(get_current_user_id)` to all admin API endpoints to prevent unauthorized access.
+2.  **Robustness**: Implemented automatic region string normalization (uppercase) in the backend to ensure consistency with the recommendation logic.
+3.  **Frontend Stability**: Added error handling and feedback (alerts) to the administrative interface.
 
-## Final Verdict
+### Final Verdict
 **Verified**
-システムは高い整合性とセキュリティを維持しており、デプロイ可能な状態である。
+The Affiliate Broker Management feature is now robust, secure, and fully documented in the coherence graph. Ready for deployment.

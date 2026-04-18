@@ -142,6 +142,15 @@
       "created_at": "2026-04-17T01:50:00Z"
     },
     {
+      "id": "TEST-AFFILIATE-ADMIN-001",
+      "type": "test",
+      "label": "Affiliate Admin CRUD Tests",
+      "path": "backend/tests/test_affiliate_admin_crud.py",
+      "links": ["SPEC-010"],
+      "status": "green",
+      "created_at": "2026-04-18T10:15:00Z"
+    },
+    {
       "id": "IMPL-MAIN-008",
       "type": "implementation",
       "label": "Main API Routes Extension",
@@ -191,9 +200,88 @@
       "path": ".vcsdd/history/vcsdd_status_report_v4.md",
       "status": "completed",
       "created_at": "2026-04-14T13:00:00Z"
+    },
+    {
+      "id": "SPEC-010",
+      "type": "specification",
+      "label": "Affiliate Broker Admin Panel",
+      "path": ".vcsdd/specs/spec_affiliate_admin.md",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "IMPL-AFFILIATE-ADMIN",
+      "type": "implementation",
+      "label": "Affiliate Admin Frontend Page",
+      "path": "frontend/src/app/admin/affiliates/page.tsx",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "IMPL-AFFILIATE-CRUD",
+      "type": "implementation",
+      "label": "Affiliate CRUD Functions",
+      "path": "backend/app/crud.py",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "IMPL-AFFILIATE-API",
+      "type": "implementation",
+      "label": "Affiliate Admin API Endpoints",
+      "path": "backend/app/main.py",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "IMPL-AFFILIATE-SCHEMA",
+      "type": "implementation",
+      "label": "Affiliate Admin Schemas",
+      "path": "backend/app/schemas.py",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "ADV-AFFILIATE-ADMIN-001",
+      "type": "review",
+      "label": "Affiliate Admin Adversary Review",
+      "path": ".vcsdd/adversary/adv_affiliate_admin_review_001.md",
+      "links": ["SPEC-010", "TEST-AFFILIATE-ADMIN-001"],
+      "status": "completed",
+      "result": "pass_with_improvements"
     }
   ],
   "links": [
+    {
+      "source": "ADV-AFFILIATE-ADMIN-001",
+      "target": "SPEC-010",
+      "type": "critiques"
+    },
+    {
+      "source": "ADV-AFFILIATE-ADMIN-001",
+      "target": "TEST-AFFILIATE-ADMIN-001",
+      "type": "critiques"
+    },
+    {
+      "source": "SPEC-010",
+      "target": "IMPL-AFFILIATE-ADMIN",
+      "type": "governs"
+    },
+    {
+      "source": "SPEC-010",
+      "target": "IMPL-AFFILIATE-CRUD",
+      "type": "governs"
+    },
+    {
+      "source": "SPEC-010",
+      "target": "IMPL-AFFILIATE-API",
+      "type": "governs"
+    },
+    {
+      "source": "SPEC-010",
+      "target": "IMPL-AFFILIATE-SCHEMA",
+      "type": "governs"
+    },
     {
       "source": "SPEC-009",
       "target": "frontend/src/lib/supabase.ts",
