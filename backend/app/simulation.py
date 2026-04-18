@@ -4,6 +4,7 @@ import logging
 from typing import List, Dict, Any, Optional, Tuple
 from scipy.optimize import minimize
 from scipy.stats import gmean
+from .log_utils import logger
 
 # Standard constant for numerical stability across all financial calculations
 EPSILON = 1e-9
@@ -177,11 +178,22 @@ def calculate_efficient_frontier(
     
     # Find minimum variance return
     min_var_problem = cp.Problem(cp.Minimize(portfolio_variance), constraints)
-    min_var_problem.solve()
-    min_return = portfolio_return.value
+    try:
+        min_var_problem.solve()
+        if min_var_problem.status != cp.OPTIMAL or portfolio_return.value is None:
+            raise ValueError("Could not find optimal minimum variance portfolio")
+        min_return = portfolio_return.value
+    except Exception as e:
+        logger.error(f"Min variance solver failed: {e}")
+        # Fallback: use the return of the asset with minimum return
+        min_return = np.min(expected_returns)
     
     max_return = np.max(expected_returns)
-    target_returns = np.linspace(min_return, max_return, n_points)
+    # Ensure range is valid for linspace
+    if min_return >= max_return:
+        target_returns = [min_return]
+    else:
+        target_returns = np.linspace(min_return, max_return, n_points)
     
     frontier_points = []
     for target in target_returns:
@@ -189,11 +201,17 @@ def calculate_efficient_frontier(
         prob = cp.Problem(cp.Minimize(portfolio_variance), constraints + ret_constraint)
         try:
             prob.solve()
-            if prob.status == cp.OPTIMAL:
+            if prob.status == cp.OPTIMAL and weights.value is not None:
+                # Double check for NaN in weights
+                w_val = np.nan_to_num(weights.value, nan=0.0)
+                # Re-normalize just in case
+                if np.sum(w_val) > 0:
+                    w_val = w_val / np.sum(w_val)
+                
                 frontier_points.append({
                     "expected_return": float(portfolio_return.value),
                     "volatility": float(np.sqrt(portfolio_variance.value)),
-                    "weights": {asset_codes[i]: float(weights.value[i]) for i in range(n_assets)}
+                    "weights": {asset_codes[i]: float(w_val[i]) for i in range(n_assets)}
                 })
         except Exception: 
             continue
@@ -213,7 +231,9 @@ def calculate_efficient_frontier(
 def calculate_portfolio_stats(expected_returns: np.ndarray, covariance_matrix: np.ndarray, weights: np.ndarray) -> Tuple[float, float]:
     """Calculates expected return and volatility for a given set of weights."""
     ret = expected_returns @ weights
-    vol = np.sqrt(weights.T @ covariance_matrix @ weights)
+    variance = weights.T @ covariance_matrix @ weights
+    # Safety floor for variance to prevent sqrt of negative number due to float noise
+    vol = np.sqrt(np.maximum(0.0, variance))
     return float(ret), float(vol)
 
 def get_asset_returns(historical_prices: List[Dict[str, Any]]) -> np.ndarray:
