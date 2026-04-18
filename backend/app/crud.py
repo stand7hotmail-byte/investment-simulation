@@ -211,36 +211,3 @@ def get_active_affiliates_by_region(db: Session, region: str):
                      models.AffiliateBroker.is_active == True)\
              .order_by(models.AffiliateBroker.priority.desc())\
              .all()
-
-def get_all_affiliates(db: Session):
-    return db.query(models.AffiliateBroker).order_by(models.AffiliateBroker.id).all()
-
-def create_affiliate_broker(db: Session, broker: schemas.AffiliateBrokerCreate):
-    data = broker.model_dump()
-    if "region" in data:
-        data["region"] = data["region"].upper()
-    db_broker = models.AffiliateBroker(**data)
-    db.add(db_broker)
-    db.commit()
-    db.refresh(db_broker)
-    return db_broker
-
-def update_affiliate_broker(db: Session, broker_id: int, broker_update: schemas.AffiliateBrokerUpdate):
-    db_broker = db.query(models.AffiliateBroker).filter(models.AffiliateBroker.id == broker_id).first()
-    if db_broker:
-        update_data = broker_update.model_dump(exclude_unset=True)
-        if "region" in update_data:
-            update_data["region"] = update_data["region"].upper()
-        for key, value in update_data.items():
-            setattr(db_broker, key, value)
-        db.commit()
-        db.refresh(db_broker)
-    return db_broker
-
-def delete_affiliate_broker(db: Session, broker_id: int):
-    db_broker = db.query(models.AffiliateBroker).filter(models.AffiliateBroker.id == broker_id).first()
-    if db_broker:
-        db.delete(db_broker)
-        db.commit()
-        return True
-    return False
