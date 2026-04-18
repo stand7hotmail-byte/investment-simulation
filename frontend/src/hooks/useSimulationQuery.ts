@@ -32,5 +32,7 @@ export function useSimulationQuery<T>(
     }),
     enabled: enabled && hasEnoughAssets,
     staleTime,
+    retry: 1, // Only retry once to avoid infinite loops on server errors
+    retryDelay: 1000,
   });
 }

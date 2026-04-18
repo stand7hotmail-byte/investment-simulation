@@ -189,13 +189,27 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
     returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
     cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
     bounds = [tuple(request.bounds.get(code, (0.0, 1.0))) for code in request.assets] if request.bounds else None
-    weights_array = simulation.calculate_risk_parity_weights(cov_matrix, bounds=bounds)
-    ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, weights_array)
-    result = {
-        "expected_return": ret,
-        "volatility": vol,
-        "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
-    }
+    
+    try:
+        weights_array = simulation.calculate_risk_parity_weights(cov_matrix, bounds=bounds)
+        ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, weights_array)
+        
+        # Sanitize for JSON compatibility
+        safe_ret = float(ret) if not (np.isnan(ret) or np.isinf(ret)) else 0.0
+        safe_vol = float(vol) if not (np.isnan(vol) or np.isinf(vol)) else 0.0
+        
+        result = {
+            "expected_return": safe_ret,
+            "volatility": safe_vol,
+            "weights": {request.assets[i]: float(weights_array[i]) for i in range(len(request.assets))}
+        }
+    except Exception as e:
+        logger.error(f"Risk parity optimization failed: {e}")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Risk parity optimization could not converge: {str(e)}"
+        )
+
     # Always cache result for the user
     crud.create_simulation_result(db, effective_user_id, "risk_parity", parameters, result)
     return result

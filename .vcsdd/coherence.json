@@ -191,9 +191,43 @@
       "path": ".vcsdd/history/vcsdd_status_report_v4.md",
       "status": "completed",
       "created_at": "2026-04-14T13:00:00Z"
+    },
+    {
+      "id": "SPEC-011",
+      "type": "specification",
+      "label": "Risk Parity & UI Stability",
+      "path": ".vcsdd/specs/spec_risk_parity_stability.md",
+      "status": "green",
+      "created_at": "2026-04-18T10:00:00Z"
+    },
+    {
+      "id": "IMPL-BACKEND-174",
+      "type": "implementation",
+      "label": "Risk Parity Robustness Fix",
+      "path": "backend/app/main.py",
+      "status": "green",
+      "created_at": "2026-04-18T10:30:00Z"
+    },
+    {
+      "id": "IMPL-FRONTEND-QUERY",
+      "type": "implementation",
+      "label": "Retry Limitation for Simulation",
+      "path": "frontend/src/hooks/useSimulationQuery.ts",
+      "status": "green",
+      "created_at": "2026-04-18T10:45:00Z"
     }
   ],
   "links": [
+    {
+      "source": "SPEC-011",
+      "target": "IMPL-BACKEND-174",
+      "type": "governs"
+    },
+    {
+      "source": "SPEC-011",
+      "target": "IMPL-FRONTEND-QUERY",
+      "type": "governs"
+    },
     {
       "source": "SPEC-009",
       "target": "frontend/src/lib/supabase.ts",
