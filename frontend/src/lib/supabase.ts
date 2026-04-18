@@ -7,6 +7,10 @@ const supabaseUrl = rawUrl.trim() || 'https://placeholder.supabase.co'
 const supabaseAnonKey = rawKey.trim() || 'placeholder-key'
 
 if (typeof window !== 'undefined') {
+  const mask = (str: string) => str ? `${str.substring(0, 5)}...${str.substring(str.length - 3)}` : 'MISSING'
+  console.log('[Supabase Config] URL:', mask(supabaseUrl))
+  console.log('[Supabase Config] Key Length:', supabaseAnonKey.length)
+
   if (!rawUrl || supabaseUrl.includes('placeholder')) {
     console.warn('[Supabase] Warning: NEXT_PUBLIC_SUPABASE_URL is not set or using placeholder.')
   }
@@ -14,10 +18,14 @@ if (typeof window !== 'undefined') {
     console.warn('[Supabase] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY is not set or using placeholder.')
   }
   
+  if (supabaseUrl.startsWith('http://') && !supabaseUrl.includes('localhost')) {
+    console.warn('[Supabase] Security Warning: Using insecure HTTP for production Supabase URL.')
+  }
+
   try {
     new URL(supabaseUrl)
   } catch (e) {
-    console.error('[Supabase] Invalid URL configuration:', supabaseUrl.substring(0, 10) + '...')
+    console.error('[Supabase] Invalid URL configuration:', supabaseUrl)
   }
 }
 
