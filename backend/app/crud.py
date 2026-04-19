@@ -15,20 +15,37 @@ def create_portfolio(db: Session, portfolio: schemas.PortfolioCreate, user_id: u
         description=portfolio.description
     )
     db.add(db_portfolio)
-    db.commit()
-    db.refresh(db_portfolio)
-
+    db.flush() # Ensure ID is generated for allocations
+    
     if portfolio.allocations:
-        for allocation in portfolio.allocations:
+        # Prevent duplicate asset codes
+        seen_assets = set()
+        unique_allocations = []
+        for a in portfolio.allocations:
+            if a.asset_code not in seen_assets:
+                seen_assets.add(a.asset_code)
+                unique_allocations.append(a)
+        
+        # Verify all assets exist
+        for allocation in unique_allocations:
+            asset = get_asset_by_code(db, allocation.asset_code)
+            if not asset:
+                raise ValueError(f"Asset with code '{allocation.asset_code}' not found")
+        
+        # Re-normalize weights based on unique assets
+        total_weight = sum(a.weight for a in unique_allocations)
+        
+        for allocation in unique_allocations:
+            norm_weight = allocation.weight / total_weight if total_weight > 0 else Decimal("0.0")
             db_allocation = models.PortfolioAllocation(
                 portfolio_id=db_portfolio.id,
                 asset_code=allocation.asset_code,
-                weight=allocation.weight
+                weight=norm_weight
             )
             db.add(db_allocation)
-        db.commit()
-        db.refresh(db_portfolio)
     
+    db.commit()
+    db.refresh(db_portfolio)
     return db_portfolio
 
 def get_portfolios(db: Session, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[models.Portfolio]:
@@ -43,12 +60,32 @@ def update_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID, p
         db_portfolio.name = portfolio_update.name
         db_portfolio.description = portfolio_update.description
         if portfolio_update.allocations is not None:
+            # Prevent duplicate asset codes
+            seen_assets = set()
+            unique_allocations = []
+            for a in portfolio_update.allocations:
+                if a.asset_code not in seen_assets:
+                    seen_assets.add(a.asset_code)
+                    unique_allocations.append(a)
+
+            # Verify assets exist
+            for allocation in unique_allocations:
+                asset = get_asset_by_code(db, allocation.asset_code)
+                if not asset:
+                    raise ValueError(f"Asset with code '{allocation.asset_code}' not found")
+
+            # Clean up old within transaction
             db.query(models.PortfolioAllocation).filter(models.PortfolioAllocation.portfolio_id == portfolio_id).delete()
-            for allocation in portfolio_update.allocations:
+            
+            # Re-normalize weights
+            total_weight = sum(a.weight for a in unique_allocations)
+            
+            for allocation in unique_allocations:
+                norm_weight = allocation.weight / total_weight if total_weight > 0 else Decimal("0.0")
                 db_allocation = models.PortfolioAllocation(
                     portfolio_id=portfolio_id,
                     asset_code=allocation.asset_code,
-                    weight=allocation.weight
+                    weight=norm_weight
                 )
                 db.add(db_allocation)
         db.commit()
@@ -58,6 +95,8 @@ def update_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID, p
 def delete_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID):
     db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id, models.Portfolio.user_id == user_id).first()
     if db_portfolio:
+        # Cascade delete simulation results linked to this portfolio
+        db.query(models.SimulationResult).filter(models.SimulationResult.portfolio_id == portfolio_id).delete()
         db.delete(db_portfolio)
         db.commit()
         return True

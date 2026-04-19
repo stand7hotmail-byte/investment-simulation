@@ -1,15 +1,48 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 import uuid
 from datetime import datetime
 from decimal import Decimal
 from typing import List
+import numpy as np
 
 class PortfolioBase(BaseModel):
     name: str
     description: str | None = None
 
+class PortfolioAllocationBase(BaseModel):
+    asset_code: str
+    weight: Decimal
+
+    @field_validator('weight')
+    @classmethod
+    def validate_weight(cls, v: Decimal) -> Decimal:
+        f_v = float(v)
+        if np.isnan(f_v) or np.isinf(f_v):
+            return Decimal("0.0")
+        if v < 0 or v > 1:
+            raise ValueError("Weight must be between 0 and 1")
+        return v
+
+class PortfolioAllocationCreate(PortfolioAllocationBase):
+    pass
+
+class PortfolioAllocation(PortfolioAllocationBase):
+    id: uuid.UUID
+    portfolio_id: uuid.UUID
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
 class PortfolioCreate(PortfolioBase):
-    allocations: List["PortfolioAllocationCreate"] = []
+    allocations: List[PortfolioAllocationCreate] = []
+
+    @field_validator('allocations')
+    @classmethod
+    def validate_allocations(cls, v: List[PortfolioAllocationCreate]) -> List[PortfolioAllocationCreate]:
+        if v:
+            total_weight = sum(a.weight for a in v)
+            if total_weight <= 0:
+                raise ValueError("Total weight must be positive")
+        return v
 
 class Portfolio(PortfolioBase):
     id: uuid.UUID
@@ -17,20 +50,7 @@ class Portfolio(PortfolioBase):
     is_current: bool
     created_at: datetime
     updated_at: datetime
-    allocations: List["PortfolioAllocation"] = []
-
-    model_config = ConfigDict(from_attributes=True)
-
-class PortfolioAllocationBase(BaseModel):
-    asset_code: str
-    weight: Decimal
-
-class PortfolioAllocationCreate(PortfolioAllocationBase):
-    pass
-
-class PortfolioAllocation(PortfolioAllocationBase):
-    id: uuid.UUID
-    created_at: datetime
+    allocations: List[PortfolioAllocation] = []
 
     model_config = ConfigDict(from_attributes=True)
 
