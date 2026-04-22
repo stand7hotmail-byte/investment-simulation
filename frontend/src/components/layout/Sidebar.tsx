@@ -13,7 +13,8 @@ import {
   UserPlus,
   ChevronLeft,
   ChevronRight,
-  History
+  History,
+  Languages
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
@@ -21,14 +22,15 @@ import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/store/useUIStore";
+import { useI18n } from "@/hooks/useI18n";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Efficient Frontier", href: "/simulation/efficient-frontier", icon: TrendingUp },
-  { name: "Accumulation Sim", href: "/simulation/accumulation", icon: LineChart },
-  { name: "Portfolios", href: "/portfolios", icon: Wallet },
-  { name: "Simulation History", href: "/simulation/history", icon: History },
-  { name: "Settings", href: "/settings", icon: Settings },
+const navigationItems = [
+  { id: 'dashboard', name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { id: 'efficient_frontier', name: "Efficient Frontier", href: "/simulation/efficient-frontier", icon: TrendingUp },
+  { id: 'accumulation_sim', name: "Accumulation Sim", href: "/simulation/accumulation", icon: LineChart },
+  { id: 'portfolios', name: "Portfolios", href: "/portfolios", icon: Wallet },
+  { id: 'history', name: "Simulation History", href: "/simulation/history", icon: History },
+  { id: 'settings', name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -36,6 +38,7 @@ export function Sidebar() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const { sidebarCollapsed, toggleSidebar, hasHydrated } = useUIStore();
+  const { lang, t } = useI18n();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -51,8 +54,23 @@ export function Sidebar() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/");
+    router.push(`/${lang}`);
     router.refresh();
+  };
+
+  const toggleLanguage = () => {
+    const newLang = lang === 'en' ? 'ja' : 'en';
+    // Set cookie
+    document.cookie = `NEXT_LOCALE=${newLang};path=/;max-age=31536000`;
+    
+    // Replace current lang in pathname
+    const segments = pathname.split('/');
+    if (segments[1] === lang) {
+      segments[1] = newLang;
+      router.push(segments.join('/'));
+    } else {
+      router.push(`/${newLang}${pathname}`);
+    }
   };
 
   // Prevent flash of collapsed state before hydration
@@ -90,12 +108,13 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2 py-4">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href;
+        {navigationItems.map((item) => {
+          const localizedHref = `/${lang}${item.href}`;
+          const isActive = pathname === localizedHref;
           return (
             <Link
-              key={item.name}
-              href={item.href}
+              key={item.id}
+              href={localizedHref}
               className={cn(
                 "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 isActive 
@@ -103,13 +122,13 @@ export function Sidebar() {
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 sidebarCollapsed && "justify-center px-2"
               )}
-              title={sidebarCollapsed ? item.name : ""}
+              title={sidebarCollapsed ? t(`nav.${item.id}`) : ""}
             >
               <item.icon className={cn(
                 "h-5 w-5 flex-shrink-0",
                 !sidebarCollapsed && "mr-3"
               )} />
-              {!sidebarCollapsed && <span>{item.name}</span>}
+              {!sidebarCollapsed && <span>{t(`nav.${item.id}`)}</span>}
               {isActive && !sidebarCollapsed && (
                 <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
               )}
@@ -120,6 +139,20 @@ export function Sidebar() {
 
       {/* Footer / User Profile */}
       <div className="border-t border-border p-2 space-y-1">
+        {/* Language Switcher */}
+        <Button 
+          variant="ghost" 
+          className={cn(
+            "w-full justify-start text-slate-500 hover:text-slate-900 hover:bg-slate-50 p-2 h-auto",
+            sidebarCollapsed && "justify-center"
+          )}
+          onClick={toggleLanguage}
+          title={sidebarCollapsed ? (lang === 'en' ? '日本語' : 'English') : ""}
+        >
+          <Languages className={cn("h-5 w-5", !sidebarCollapsed && "mr-3")} />
+          {!sidebarCollapsed && <span>{lang === 'en' ? '日本語' : 'English'}</span>}
+        </Button>
+
         {user ? (
           <div className="space-y-1">
             {!sidebarCollapsed && (
@@ -143,7 +176,7 @@ export function Sidebar() {
         ) : (
           <>
             <Link
-              href="/login"
+              href={`/${lang}/login`}
               className={cn(
                 "flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 sidebarCollapsed && "justify-center"
@@ -154,7 +187,7 @@ export function Sidebar() {
               {!sidebarCollapsed && <span>Login</span>}
             </Link>
             <Link
-              href="/signup"
+              href={`/${lang}/signup`}
               className={cn(
                 "flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 sidebarCollapsed && "justify-center"

@@ -11,6 +11,27 @@ export async function fetchApi<T>(path: string, options?: RequestInit): Promise<
     ...options?.headers,
   };
 
+  // Add Accept-Language header (I-010: Hydration Integrity)
+  let locale: string | undefined;
+  if (typeof document !== 'undefined') {
+    const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
+    locale = match?.[1];
+  } else {
+    // Server-side: Try to get from next/headers if available
+    try {
+      // Dynamic import to avoid bundling next/headers on the client
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      locale = cookieStore.get('NEXT_LOCALE')?.value;
+    } catch (e) {
+      // Fail silently if next/headers is not available (e.g., in a non-request context)
+    }
+  }
+
+  if (locale) {
+    (headers as any)["Accept-Language"] = locale;
+  }
+
   if (token) {
     (headers as any)["Authorization"] = `Bearer ${token}`;
   }

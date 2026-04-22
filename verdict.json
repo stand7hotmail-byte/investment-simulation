@@ -1,0 +1,4 @@
+{
+  "verdict": "FAIL",
+  "reason": "The specification fails to address critical hydration stability issues and ignores variable parity within translation keys, both of which lead to runtime crashes or broken UIs. Additionally, financial formatting is only partially defined, leaving separator logic ambiguous."
+}

@@ -76,5 +76,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [~] **Track: Advanced Portfolio Analytics (Rebalancing, Stress Test, Income)**
   *Link: [./tracks/advanced_analytics_20260321/](./tracks/advanced_analytics_20260321/)*
 
+- [ ] **Track: Portfolio Management Robustness & Write Safety**
+  *Link: [./tracks/fix_portfolio_robustness_20260418/](./tracks/fix_portfolio_robustness_20260418/)*
+
 
 

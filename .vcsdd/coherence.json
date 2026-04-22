@@ -3,359 +3,56 @@
   "project_name": "Investment Simulation",
   "beads": [
     {
-      "id": "SPEC-001",
+      "id": "SPEC-012",
       "type": "specification",
-      "label": "Monte Carlo Simulation Behavior",
-      "path": ".vcsdd/specs/spec_simulation_behavior.md",
+      "label": "Multi-language Support (i18n)",
+      "path": ".vcsdd/specs/spec_i18n_support.md",
       "status": "green",
-      "created_at": "2026-04-08T22:20:00Z"
+      "created_at": "2026-04-20T00:00:00Z"
     },
     {
-      "id": "SPEC-002",
-      "type": "specification",
-      "label": "Strict JWT Authentication",
-      "path": ".vcsdd/specs/spec_auth_behavior.md",
-      "status": "green",
-      "created_at": "2026-04-08T22:25:00Z"
-    },
-    {
-      "id": "SPEC-003",
-      "type": "specification",
-      "label": "JSON Numeric Stability",
-      "path": ".vcsdd/specs/spec_numeric_stability.md",
-      "status": "green",
-      "created_at": "2026-04-08T22:25:00Z"
-    },
-    {
-      "id": "TEST-SIM-001",
-      "type": "test",
-      "label": "Existing Simulation Unit Tests",
-      "path": "backend/tests/test_simulation.py",
-      "status": "green",
-      "created_at": "2026-04-08T22:20:00Z"
-    },
-    {
-      "id": "ADV-INITIAL-001",
-      "type": "review",
-      "label": "Initial Security & Stability Review",
-      "path": ".vcsdd/adversary/adv_initial_security_review.md",
-      "links": ["SPEC-002", "SPEC-003"],
-      "status": "completed",
-      "result": "pass"
-    },
-    {
-      "id": "REPORT-V1",
-      "type": "report",
-      "label": "VCSDD Coherence Status Report (v1.0)",
-      "path": ".vcsdd/history/vcsdd_status_report_v1.md",
-      "status": "completed",
-      "created_at": "2026-04-08T22:45:00Z"
-    },
-    {
-      "id": "SPEC-004",
-      "type": "specification",
-      "label": "Railway Deployment Fix",
-      "path": ".vcsdd/specs/spec_railway_fix.md",
-      "status": "green",
-      "created_at": "2026-04-11T09:15:00Z"
-    },
-    {
-      "id": "ADV-RAILWAY-001",
-      "type": "review",
-      "label": "Railway Deployment Fix Adversary Review",
-      "path": ".vcsdd/adversary/adv_railway_fix.md",
-      "links": ["SPEC-004"],
-      "status": "completed",
-      "result": "pass"
-    },
-    {
-      "id": "TEST-AUTH-001",
-      "type": "test",
-      "label": "Strict Auth Unit Tests (ES256)",
-      "path": "backend/tests/test_auth_es256.py",
-      "status": "green",
-      "created_at": "2026-04-14T10:00:00Z"
-    },
-    {
-      "id": "TEST-ROBUST-001",
-      "type": "test",
-      "label": "Simulation Robustness Tests",
-      "path": "backend/tests/test_simulation_robustness.py",
-      "status": "green",
-      "created_at": "2026-04-14T10:00:00Z"
-    },
-    {
-      "id": "SPEC-005",
-      "type": "specification",
-      "label": "Code Refinement & Hardening",
-      "path": ".vcsdd/specs/spec_code_refinement.md",
-      "status": "green",
-      "created_at": "2026-04-14T10:15:00Z"
-    },
-    {
-      "id": "REPORT-V3",
-      "type": "report",
-      "label": "VCSDD Coherence Status Report (v3.0)",
-      "path": ".vcsdd/history/vcsdd_status_report_v3.md",
-      "status": "completed",
-      "created_at": "2026-04-14T10:30:00Z"
-    },
-    {
-      "id": "SPEC-006",
-      "type": "specification",
-      "label": "Railway Startup Fix & CORS Robustness",
-      "path": ".vcsdd/specs/spec_railway_startup_fix.md",
-      "status": "green",
-      "created_at": "2026-04-14T11:00:00Z"
-    },
-    {
-      "id": "ADV-REFINE-001",
-      "type": "review",
-      "label": "Code Refinement Adversary Review",
-      "path": ".vcsdd/adversary/adv_code_refinement_review.md",
-      "links": ["SPEC-005", "SPEC-006"],
-      "status": "completed",
-      "result": "pass"
-    },
-    {
-      "id": "SPEC-007",
-      "type": "specification",
-      "label": "Vulnerability Eradication & Concurrency Safety",
-      "path": ".vcsdd/specs/spec_vulnerability_eradication.md",
-      "status": "green",
-      "created_at": "2026-04-14T12:00:00Z"
-    },
-    {
-      "id": "SPEC-008",
-      "type": "specification",
-      "label": "Missing Endpoints Restoration & Stability",
-      "path": ".vcsdd/specs/spec_missing_endpoints_restoration.md",
-      "status": "green",
-      "created_at": "2026-04-17T01:50:00Z"
-    },
-    {
-      "id": "TEST-NEW-001",
-      "type": "test",
-      "label": "New Endpoints Integration Tests",
-      "path": "backend/tests/test_new_endpoints.py",
-      "status": "green",
-      "created_at": "2026-04-17T01:50:00Z"
-    },
-    {
-      "id": "IMPL-MAIN-008",
+      "id": "IMPL-I18N-001",
       "type": "implementation",
-      "label": "Main API Routes Extension",
-      "path": "backend/app/main.py",
-      "status": "green",
-      "created_at": "2026-04-17T01:50:00Z"
+      "label": "i18n Middleware",
+      "path": "frontend/src/middleware.ts",
+      "links": ["SPEC-012"],
+      "status": "green"
     },
     {
-      "id": "IMPL-UTILS-008",
+      "id": "IMPL-I18N-002",
       "type": "implementation",
-      "label": "Restored Log Utilities",
-      "path": "backend/app/log_utils.py",
-      "status": "green",
-      "created_at": "2026-04-17T01:50:00Z"
+      "label": "i18n Utility & Dictionaries",
+      "path": "frontend/src/lib/i18n.ts",
+      "links": ["SPEC-012"],
+      "status": "green"
     },
     {
-      "id": "ADV-SPEC-008",
+      "id": "ADV-I18N-FINAL",
       "type": "review",
-      "label": "Endpoints Restoration Adversary Review",
-      "path": ".vcsdd/adversary/adv_spec_008_review.md",
-      "links": ["SPEC-008", "TEST-NEW-001"],
-      "status": "completed",
-      "result": "pass"
-    },
-    {
-      "id": "SPEC-009",
-      "type": "specification",
-      "label": "Connectivity & Auth Robustness",
-      "path": ".vcsdd/specs/spec_connectivity_robustness.md",
-      "status": "red",
-      "created_at": "2026-04-17T02:30:00Z"
-    },
-    {
-      "id": "REPORT-V4",
-      "type": "report",
-      "label": "VCSDD Final Security & Stability Report (v4.0)",
-      "path": ".vcsdd/history/vcsdd_status_report_v4.md",
-      "status": "completed",
-      "created_at": "2026-04-14T13:00:00Z"
-    },
-    {
-      "id": "SPEC-011",
-      "type": "specification",
-      "label": "Risk Parity & UI Stability",
-      "path": ".vcsdd/specs/spec_risk_parity_stability.md",
-      "status": "green",
-      "created_at": "2026-04-18T10:00:00Z"
-    },
-    {
-      "id": "IMPL-BACKEND-174",
-      "type": "implementation",
-      "label": "Simulation Stability Fix",
-      "path": "backend/app/main.py",
-      "status": "green",
-      "created_at": "2026-04-18T10:30:00Z"
-    },
-    {
-      "id": "IMPL-FRONTEND-QUERY",
-      "type": "implementation",
-      "label": "Retry Limitation for Simulation",
-      "path": "frontend/src/hooks/useSimulationQuery.ts",
-      "status": "green",
-      "created_at": "2026-04-18T10:45:00Z"
-    },
-    {
-      "id": "IMPL-SIMULATION-HARDENING",
-      "type": "implementation",
-      "label": "Simulation Logic Solver Hardening",
-      "path": "backend/app/simulation.py",
-      "status": "green",
-      "created_at": "2026-04-18T11:00:00Z"
-    },
-    {
-      "id": "ADV-RISK-STABILITY-001",
-      "type": "review",
-      "label": "Risk Parity Stability Adversary Review",
-      "path": ".vcsdd/adversary/adv_risk_parity_stability_review.md",
-      "links": ["SPEC-011"],
+      "label": "i18n Final Implementation Review",
+      "path": "verdict_final.json",
+      "links": ["SPEC-012"],
       "status": "completed",
       "result": "pass"
     }
   ],
   "links": [
     {
-      "source": "SPEC-011",
-      "target": "IMPL-BACKEND-174",
+      "source": "SPEC-012",
+      "target": "IMPL-I18N-001",
       "type": "governs"
     },
     {
-      "source": "SPEC-011",
-      "target": "IMPL-FRONTEND-QUERY",
+      "source": "SPEC-012",
+      "target": "IMPL-I18N-002",
       "type": "governs"
     },
     {
-      "source": "SPEC-011",
-      "target": "IMPL-SIMULATION-HARDENING",
-      "type": "governs"
-    },
-    {
-      "source": "ADV-RISK-STABILITY-001",
-      "target": "SPEC-011",
+      "source": "ADV-I18N-FINAL",
+      "target": "SPEC-012",
       "type": "critiques"
-    },
-    {
-      "source": "SPEC-009",
-      "target": "frontend/src/lib/supabase.ts",
-      "type": "governs"
-    },
-    {
-      "source": "ADV-SPEC-008-001",
-      "target": "SPEC-008",
-      "type": "critiques"
-    },
-    {
-      "source": "ADV-SPEC-008-001",
-      "target": "TEST-NEW-001",
-      "type": "critiques"
-    },
-    {
-      "source": "SPEC-007",
-      "target": "ADV-REFINE-001",
-      "type": "addresses"
-    },
-    {
-      "source": "REPORT-V4",
-      "target": "SPEC-007",
-      "type": "summarizes"
-    },
-    {
-      "source": "REPORT-V3",
-      "target": "SPEC-005",
-      "type": "summarizes"
-    },
-    {
-      "source": "SPEC-005",
-      "target": "backend/app/log_utils.py",
-      "type": "governs"
-    },
-    {
-      "source": "ADV-INITIAL-001",
-      "target": "SPEC-002",
-      "type": "critiques"
-    },
-    {
-      "source": "ADV-INITIAL-001",
-      "target": "SPEC-003",
-      "type": "critiques"
-    },
-    {
-      "source": "SPEC-001",
-      "target": "TEST-SIM-001",
-      "type": "verifies"
-    },
-    {
-      "source": "SPEC-002",
-      "target": "TEST-AUTH-001",
-      "type": "verifies"
-    },
-    {
-      "source": "SPEC-003",
-      "target": "TEST-ROBUST-001",
-      "type": "verifies"
-    },
-    {
-      "source": "REPORT-V1",
-      "target": "SPEC-001",
-      "type": "summarizes"
-    },
-    {
-      "source": "REPORT-V1",
-      "target": "SPEC-002",
-      "type": "summarizes"
-    },
-    {
-      "source": "REPORT-V1",
-      "target": "SPEC-003",
-      "type": "summarizes"
-    },
-    {
-      "source": "SPEC-004",
-      "target": "backend/railway.toml",
-      "type": "governs"
-    },
-    {
-      "source": "ADV-RAILWAY-001",
-      "target": "SPEC-004",
-      "type": "critiques"
-    },
-    {
-      "source": "ADV-REFINE-001",
-      "target": "SPEC-005",
-      "type": "critiques"
-    },
-    {
-      "source": "ADV-REFINE-001",
-      "target": "SPEC-006",
-      "type": "critiques"
-    },
-    {
-      "source": "SPEC-008",
-      "target": "TEST-NEW-001",
-      "type": "verifies"
-    },
-    {
-      "source": "SPEC-008",
-      "target": "IMPL-MAIN-008",
-      "type": "governs"
-    },
-    {
-      "source": "SPEC-008",
-      "target": "IMPL-UTILS-008",
-      "type": "governs"
     }
   ],
-  "status": "unverified",
-  "last_updated": "2026-04-18T11:00:00Z"
+  "status": "verified",
+  "last_updated": "2026-04-22T21:40:00Z"
 }
