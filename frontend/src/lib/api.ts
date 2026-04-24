@@ -1,8 +1,17 @@
 import { supabase } from "./supabase";
+import { useCircuitStore } from "@/store/useCircuitStore";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").trim();
 
 export async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
+  // Check Circuit Breaker (Client-side only)
+  if (typeof window !== 'undefined') {
+    const isAllowed = useCircuitStore.getState().checkCircuit(path);
+    if (!isAllowed) {
+      throw new Error(`Circuit Breaker: request blocked for path ${path}`);
+    }
+  }
+
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
 
@@ -48,17 +57,38 @@ export async function fetchApi<T>(path: string, options?: RequestInit): Promise<
     if (!response.ok) {
       const errorText = await response.text().catch(() => "Could not read error body");
       console.error(`API Error [${response.status}]: ${errorText}`);
+      
+      // Record error (Client-side only)
+      if (typeof window !== 'undefined') {
+        useCircuitStore.getState().recordError();
+      }
+
       let errorDetail = "Unknown error";
       try {
         const errorJson = JSON.parse(errorText);
         errorDetail = errorJson.detail || errorDetail;
       } catch (e) {}
-      throw new Error(errorDetail);
+      
+      // Attach status for retry policy
+      const error = new Error(errorDetail) as any;
+      error.status = response.status;
+      throw error;
+    }
+
+    // Record success (Client-side only)
+    if (typeof window !== 'undefined') {
+      useCircuitStore.getState().recordSuccess();
     }
 
     return response.json();
   } catch (error: any) {
     console.error(`Fetch failed for ${url}:`, error);
+    
+    // Record network/unhandled error in Circuit Breaker (Client-side only)
+    if (typeof window !== 'undefined' && !error.message?.includes('Circuit Breaker:')) {
+      useCircuitStore.getState().recordError();
+    }
+    
     throw error;
   }
 }

@@ -3,7 +3,9 @@ import uuid
 from typing import List, Optional
 from decimal import Decimal
 from contextlib import asynccontextmanager
+import asyncio
 import numpy as np
+import time
 import traceback
 
 from fastapi import Depends, FastAPI, HTTPException, status, Request
@@ -72,6 +74,11 @@ def read_assets(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db))
         logger.error(f"Read assets failed: {e}")
         raise HTTPException(status_code=400, detail="Could not retrieve assets")
 
+@app.get("/api/asset-classes", response_model=schemas.AssetClassesResponse)
+def get_asset_classes_endpoint(db: Session = Depends(get_db)):
+    asset_classes = crud.get_asset_classes(db)
+    return {"asset_classes": asset_classes}
+
 @app.get("/api/assets/{asset_code}", response_model=schemas.AssetData)
 def read_asset(asset_code: str, db: Session = Depends(get_db)):
     try:
@@ -87,6 +94,17 @@ def read_asset(asset_code: str, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Read asset {asset_code} failed: {e}")
         raise HTTPException(status_code=400, detail="Could not retrieve asset")
+
+@app.get("/api/assets/{asset_code}/historical-data", response_model=schemas.HistoricalDataResponse)
+def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
+    db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
+    if db_asset is None: raise HTTPException(status_code=404, detail="Asset not found")
+    try:
+        # Already stored as list of dicts in DB
+        return {"historical_data": db_asset.historical_prices or []}
+    except Exception as e:
+        logger.error(f"Read historical data for {asset_code} failed: {e}")
+        raise HTTPException(status_code=400, detail="Could not retrieve historical data")
 
 @app.post("/api/simulate/efficient-frontier", response_model=schemas.EfficientFrontierResponse)
 def simulate_efficient_frontier(request: schemas.EfficientFrontierRequest, db: Session = Depends(get_db)):
@@ -166,6 +184,53 @@ def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depen
         logger.error(f"Monte Carlo failed: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
+@app.post("/api/simulate/basic-accumulation", response_model=schemas.BasicAccumulationResponse)
+def simulate_basic_accumulation(request: schemas.BasicAccumulationRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    exp_ret, vol = request.expected_return, request.volatility
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")        
+    try:
+        if exp_ret is None or vol is None:
+            db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == request.portfolio_id, models.Portfolio.user_id == effective_user_id).first()
+            if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found or unauthorized")
+            assets_data, weights = [], []
+            for alloc in db_portfolio.allocations:
+                asset = crud.get_asset_by_code(db, alloc.asset_code)
+                if asset:
+                    assets_data.append(asset)
+                    weights.append(float(alloc.weight))
+            if not assets_data: raise HTTPException(status_code=400, detail="Portfolio has no assets")
+            returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+            cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+            exp_ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+        result = simulation.calculate_basic_accumulation(initial_investment=request.initial_investment, monthly_contribution=request.monthly_contribution, expected_return=exp_ret, volatility=vol, years=request.years)
+        result["final_value"] = float(np.nan_to_num(result["final_value"]))
+        for h in result["history"]: h["value"] = float(np.nan_to_num(h["value"]))
+        return result
+    except Exception as e:
+        logger.error(f"Basic accumulation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Simulation failed: {str(e)}")
+
+@app.post("/api/simulate/custom-portfolio", response_model=schemas.PortfolioPointResponse)  
+def simulate_custom_portfolio(request: schemas.CustomPortfolioRequest, db: Session = Depends(get_db)):
+    if not request.assets: raise HTTPException(status_code=400, detail="At least 1 asset is required")
+    try:
+        total_weight = sum(request.weights.get(code, 0.0) for code in request.assets)       
+        if total_weight <= 0: raise HTTPException(status_code=400, detail="Total weight must be positive")
+        sanitized_weights = {code: (request.weights.get(code, 0.0) / total_weight) for code in request.assets}
+        assets_data, weights = [], []
+        for code in request.assets:
+            asset = crud.get_asset_by_code(db, code)
+            if not asset: raise HTTPException(status_code=404, detail=f"Asset {code} not found")      
+            assets_data.append(asset)
+            weights.append(sanitized_weights[code])
+        returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+        cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist()) 
+        ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+        return {"expected_return": float(np.nan_to_num(ret)), "volatility": float(np.nan_to_num(vol)), "weights": {k: float(np.nan_to_num(v)) for k, v in sanitized_weights.items()}}
+    except Exception as e:
+        logger.error(f"Custom portfolio failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Simulation failed: {str(e)}")
+
 @app.post("/api/portfolios", response_model=schemas.Portfolio, status_code=201)
 def create_portfolio(portfolio: schemas.PortfolioCreate, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
     effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
@@ -225,6 +290,46 @@ def delete_portfolio(portfolio_id: uuid.UUID, db: Session = Depends(get_db), use
         raise HTTPException(status_code=400, detail="Failed to delete portfolio")
 
 # --- ALLOCATION ROUTES ---
+
+# Global lock and cache for market summary (Single-flight pattern)
+market_summary_lock = asyncio.Lock()
+market_summary_cache = {"data": None, "timestamp": 0, "last_error": None, "error_timestamp": 0}
+
+@app.get("/api/market-summary")
+async def get_market_summary(db: Session = Depends(get_db)):
+    """
+    Get current prices and 24h performance for major assets.
+    Implements Single-flight (Request Coalescing) to prevent DB/API stampede.
+    """
+    current_time = time.time()
+    if market_summary_cache["data"] and (current_time - market_summary_cache["timestamp"] < 60):
+        return market_summary_cache["data"]
+    if market_summary_cache["last_error"] and (current_time - market_summary_cache["error_timestamp"] < 10):
+        raise HTTPException(status_code=500, detail=market_summary_cache["last_error"])
+
+    async with market_summary_lock:
+        if market_summary_cache["data"] and (time.time() - market_summary_cache["timestamp"] < 60):
+            return market_summary_cache["data"]
+        if market_summary_cache["last_error"] and (time.time() - market_summary_cache["error_timestamp"] < 10):
+            raise HTTPException(status_code=500, detail=market_summary_cache["last_error"])
+        try:
+            assets = crud.get_assets(db, limit=10)
+            items = []
+            for a in assets:
+                items.append({
+                    "asset_code": a.asset_code, "name": a.name,
+                    "current_price": float(a.current_price or 100.0),
+                    "change_percentage": float(a.expected_return or 0.0) / 12.0,
+                    "sparkline": [float(a.current_price or 100.0) * (1 + np.random.normal(0, 0.01)) for _ in range(10)]
+                })
+            result = {"items": items, "updated_at": time.time()}
+            market_summary_cache.update({"data": result, "timestamp": time.time(), "last_error": None})
+            return result
+        except Exception as e:
+            msg = "Service temporarily unavailable"
+            market_summary_cache.update({"last_error": msg, "error_timestamp": time.time()})
+            logger.error(f"Market summary failed: {e}")
+            raise HTTPException(status_code=500, detail=msg)
 
 @app.post("/api/portfolios/{portfolio_id}/allocations", response_model=schemas.PortfolioAllocation, status_code=201)
 def create_portfolio_allocation(portfolio_id: uuid.UUID, allocation: schemas.PortfolioAllocationCreate, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
@@ -310,6 +415,44 @@ def create_simulation_result_endpoint(result: schemas.SimulationResultCreate, db
     except Exception as e:
         logger.error(f"Create result failed: {e}")
         raise HTTPException(status_code=400, detail="Failed to save result")
+
+@app.get("/api/portfolios/{portfolio_id}/analytics/stress-test")
+def get_portfolio_stress_test(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    db_portfolio = crud.get_portfolio(db, portfolio_id=portfolio_id, user_id=effective_user_id)
+    if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found")
+    if not db_portfolio.allocations: raise HTTPException(status_code=400, detail="Portfolio has no allocations")
+    try:
+        assets_data, weights = [], []
+        for alloc in db_portfolio.allocations:
+            asset = crud.get_asset_by_code(db, alloc.asset_code)
+            if asset:
+                assets_data.append(asset)
+                weights.append(float(alloc.weight))
+        if not assets_data: raise HTTPException(status_code=400, detail="Portfolio has no valid assets")
+        hist_data_list = [a.historical_prices for a in assets_data]
+        scenarios = {"lehman_shock": ("2008-09-01", "2009-03-31", "Lehman Shock"), "covid_crash": ("2020-02-01", "2020-04-30", "Covid Crash"), "dotcom_bubble": ("2000-03-01", "2002-10-31", "Dot-com Bubble")}
+        results = {}
+        for key, (start, end, name) in scenarios.items():
+            perf = simulation.calculate_stress_test_performance(hist_data_list, weights, start, end)
+            safe_history = [{"date": h["date"], "cumulative_return": float(np.nan_to_num(h["cumulative_return"]))} for h in perf["history"]]
+            results[key] = {"name": name, "max_drawdown": float(np.nan_to_num(perf["max_drawdown"])), "history": safe_history}
+        return results
+    except Exception as e:
+        logger.error(f"Stress test failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Analytics failed: {str(e)}")
+
+@app.post("/api/portfolios/{portfolio_id}/analytics/rebalance", response_model=schemas.RebalanceResponse)
+def post_portfolio_rebalance(portfolio_id: uuid.UUID, request: schemas.RebalanceRequest, db: Session = Depends(get_db)):
+    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id).first()
+    if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found") 
+    try:
+        current_allocations = {a.asset_code: float(a.weight) for a in db_portfolio.allocations}
+        diff = simulation.calculate_rebalancing_diff(current_allocations, request.target_weights)
+        return {"diff": {k: float(np.nan_to_num(v)) for k, v in diff.items()}}
+    except Exception as e:
+        logger.error(f"Rebalance failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Analytics failed: {str(e)}")
 
 @app.get("/api/affiliates/recommendations", response_model=List[schemas.AffiliateBrokerRead])
 def get_affiliate_recommendations(request: Request, db: Session = Depends(get_db)):

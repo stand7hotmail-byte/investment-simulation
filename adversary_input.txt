@@ -1,0 +1,54 @@
+Perform a hostile audit of the following specification for a financial application.
+
+Specification:
+# Specification: API Routing & Frontend Retry Fix - Final v4
+
+## 1. Overview
+Ensure production stability by implementing Request Coalescing in the backend and a Priority-Aware Circuit Breaker in the frontend.
+
+## 2. Behavioral Requirements (EARS)
+
+- **[R-001: Backend Request Coalescing]**
+  BACKEND shall implement `/api/market-summary` using a **Single-flight pattern**.
+  - Use a global `asyncio.Lock` to ensure concurrent requests for the same stale data perform exactly ONE external provider fetch.
+  - TTL: 60s.
+
+- **[R-002: Priority-Aware Retry Policy]**
+  FRONTEND `QueryProvider` shall enforce:
+  - `retry: (failureCount, error) => {
+      if (error.status >= 400 && error.status < 500) return false; // Immediate stop for client errors
+      return failureCount < 3; // Retry 3 times for 5xx/network errors
+    }`
+  - `staleTime: 30000` (30s).
+
+- **[R-003: Isolated Circuit Breaker]**
+  FRONTEND shall implement a circuit breaker that distinguishes between **Critical** and **Background** paths.
+  - **Critical Paths**: `/api/auth/*`, `/api/health`. These MUST NEVER be blocked.
+  - **Background Paths**: `/api/market-summary`, `/api/simulation-results`.
+  - IF 5 errors occur in Background Paths within 60s:
+    - Set `backgroundCircuitOpen = true`.
+    - ALL automated Background Path fetches are blocked.
+    - MANUAL user-triggered fetches bypass the breaker but do not reset it.
+    - Reset after 5 minutes of no automated fetch attempts.
+
+## 3. Hostile Invariants (Mandated)
+
+- **[I-HOSTILE-001: Backend Cache Isolation]**
+  10 concurrent requests to `/api/market-summary` MUST result in exactly 1 call to the external provider.
+- **[I-HOSTILE-002: Deterministic 404 Failure]**
+  A 404 response MUST NOT result in more than 1 network request.
+- **[I-HOSTILE-003: Circuit Path Isolation]**
+  WHILE the background circuit is OPEN, a call to `/api/health` MUST still reach the network, while `/api/market-summary` MUST NOT.
+
+## 4. Success Criteria
+1. Integration test verifies call count == 1 under load.
+2. 404 error triggers zero retries.
+3. Auth/Health checks remain functional during a simulated API outage.
+
+Audit points:
+1. Is (failureCount < 3) mathematically sound for TanStack Query to achieve exactly 3 retries (4 total attempts)? Check the library definition.
+2. Does R-003 properly handle race conditions in the circuit state transition?
+3. Are the invariants I-HOSTILE-001, 002, 003 enough to prevent cascading failures?
+4. Is there any edge case missing for the backend Single-flight (e.g., error propagation, lock expiration)?
+
+Provide binary PASS/FAIL and detailed findings.
