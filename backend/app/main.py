@@ -100,8 +100,11 @@ def get_asset_historical_data(asset_code: str, db: Session = Depends(get_db)):
     db_asset = crud.get_asset_by_code(db, asset_code=asset_code)
     if db_asset is None: raise HTTPException(status_code=404, detail="Asset not found")
     try:
-        # Already stored as list of dicts in DB
-        return {"historical_data": db_asset.historical_prices or []}
+        # Match schemas.HistoricalDataResponse
+        return {
+            "asset_code": db_asset.asset_code,
+            "historical_prices": db_asset.historical_prices or []
+        }
     except Exception as e:
         logger.error(f"Read historical data for {asset_code} failed: {e}")
         raise HTTPException(status_code=400, detail="Could not retrieve historical data")
@@ -314,14 +317,27 @@ async def get_market_summary(db: Session = Depends(get_db)):
             raise HTTPException(status_code=500, detail=market_summary_cache["last_error"])
         try:
             assets = crud.get_assets(db, limit=10)
-            items = []
-            for a in assets:
-                items.append({
-                    "asset_code": a.asset_code, "name": a.name,
-                    "current_price": float(a.current_price or 100.0),
-                    "change_percentage": float(a.expected_return or 0.0) / 12.0,
-                    "sparkline": [float(a.current_price or 100.0) * (1 + np.random.normal(0, 0.01)) for _ in range(10)]
-                })
+            asset_codes = [a.asset_code for a in assets]
+            # Use real historical data from CRUD
+            items_models = crud.get_market_summary(db, asset_codes=asset_codes)
+            
+            # Convert models to dicts for consistent caching and ensure we have some data
+            items = [item.model_dump() for item in items_models]
+            
+            # If CRUD returned fewer items than requested, or no items, we could supplement 
+            # with mock data if needed, but current_price MUST NOT be accessed as an attribute.
+            if not items and assets:
+                for a in assets:
+                    # Fallback values using available attributes
+                    mock_price = 100.0
+                    items.append({
+                        "asset_code": a.asset_code, 
+                        "name": a.name,
+                        "current_price": mock_price,
+                        "change_percentage": float(a.expected_return or 0.0) / 12.0,
+                        "sparkline": [mock_price * (1 + np.random.normal(0, 0.01)) for _ in range(10)]
+                    })
+            
             result = {"items": items, "updated_at": time.time()}
             market_summary_cache.update({"data": result, "timestamp": time.time(), "last_error": None})
             return result
@@ -415,6 +431,20 @@ def create_simulation_result_endpoint(result: schemas.SimulationResultCreate, db
     except Exception as e:
         logger.error(f"Create result failed: {e}")
         raise HTTPException(status_code=400, detail="Failed to save result")
+
+@app.get("/api/simulation-results/{result_id}", response_model=schemas.SimulationResult)
+def read_simulation_result(result_id: uuid.UUID, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    db_result = db.query(models.SimulationResult).filter(models.SimulationResult.id == result_id, models.SimulationResult.user_id == effective_user_id).first()
+    if db_result is None: raise HTTPException(status_code=404, detail="Result not found")
+    return db_result
+
+@app.delete("/api/simulation-results/{result_id}")
+def delete_simulation_result(result_id: uuid.UUID, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or uuid.UUID("00000000-0000-0000-0000-000000000001")
+    if not crud.delete_simulation_result(db, result_id=result_id, user_id=effective_user_id):
+        raise HTTPException(status_code=404, detail="Result not found")
+    return {"message": "Result deleted successfully"}
 
 @app.get("/api/portfolios/{portfolio_id}/analytics/stress-test")
 def get_portfolio_stress_test(portfolio_id: uuid.UUID, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
