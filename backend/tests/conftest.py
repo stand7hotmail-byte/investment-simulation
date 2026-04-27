@@ -9,7 +9,8 @@ import os
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from app.main import app, get_db, get_current_user_id, get_optional_user_id
+from app.main import app
+from app.dependencies import get_db, get_current_user_id, get_optional_user_id
 from app.database import Base
 from app import models
 
@@ -52,7 +53,7 @@ def sample_assets(session_override):
             asset_class="Stock",
             expected_return=0.05,
             volatility=0.18,
-            correlation_matrix={"SP500": 0.7}
+            correlation_matrix={"SP500": 0.7, "AAPL": 0.5, "MSFT": 0.5, "A": 0.3, "B": 0.3}
         ),
         models.AssetData(
             asset_code="SP500",
@@ -60,7 +61,39 @@ def sample_assets(session_override):
             asset_class="Stock",
             expected_return=0.07,
             volatility=0.16,
-            correlation_matrix={"TOPIX": 0.7}
+            correlation_matrix={"TOPIX": 0.7, "AAPL": 0.8, "MSFT": 0.8, "A": 0.4, "B": 0.4}
+        ),
+        models.AssetData(
+            asset_code="AAPL",
+            name="Apple Inc.",
+            asset_class="Stock",
+            expected_return=0.12,
+            volatility=0.25,
+            correlation_matrix={"TOPIX": 0.5, "SP500": 0.8}
+        ),
+        models.AssetData(
+            asset_code="MSFT",
+            name="Microsoft",
+            asset_class="Stock",
+            expected_return=0.10,
+            volatility=0.22,
+            correlation_matrix={"TOPIX": 0.5, "SP500": 0.8}
+        ),
+        models.AssetData(
+            asset_code="A",
+            name="Asset A",
+            asset_class="Stock",
+            expected_return=0.05,
+            volatility=0.2,
+            correlation_matrix={"B": 0.5}
+        ),
+        models.AssetData(
+            asset_code="B",
+            name="Asset B",
+            asset_class="Stock",
+            expected_return=0.06,
+            volatility=0.22,
+            correlation_matrix={"A": 0.5}
         )
     ]
     for a in assets:

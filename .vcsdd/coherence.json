@@ -11,6 +11,14 @@
       "created_at": "2026-04-20T00:00:00Z"
     },
     {
+      "id": "SPEC-013",
+      "type": "specification",
+      "label": "API Routing & Frontend Retry Fix",
+      "path": ".vcsdd/specs/spec_api_routing_and_retry_fix.md",
+      "status": "green",
+      "created_at": "2026-04-20T12:00:00Z"
+    },
+    {
       "id": "IMPL-I18N-001",
       "type": "implementation",
       "label": "i18n Middleware",
@@ -27,32 +35,69 @@
       "status": "green"
     },
     {
-      "id": "ADV-I18N-FINAL",
+      "id": "IMPL-API-001",
+      "type": "implementation",
+      "label": "Market Summary & Single-flight",
+      "path": "backend/app/main.py",
+      "links": ["SPEC-013"],
+      "status": "green"
+    },
+    {
+      "id": "IMPL-API-002",
+      "type": "implementation",
+      "label": "Circuit Breaker & Retry Policy",
+      "path": "frontend/src/store/useCircuitStore.ts",
+      "links": ["SPEC-013"],
+      "status": "green"
+    },
+    {
+      "id": "ADV-API-FINAL",
       "type": "review",
-      "label": "i18n Final Implementation Review",
-      "path": "verdict_final.json",
-      "links": ["SPEC-012"],
+      "label": "API Fix Final Implementation Review",
+      "path": "verdict_impl_fix.json",
+      "links": ["SPEC-013"],
       "status": "completed",
       "result": "pass"
+    },
+    {
+      "id": "ADV-SPEC-V14",
+      "type": "review",
+      "label": "Adversarial Review of Spec v14 Draft",
+      "path": "verdict_spec_fix.json",
+      "links": ["SPEC-013"],
+      "status": "failed",
+      "result": "fail"
+    },
+    {
+      "id": "ADV-SPEC-V24",
+      "type": "review",
+      "label": "Adversarial Review of Spec v24 Draft",
+      "path": "verdict.json",
+      "links": ["SPEC-013"],
+      "status": "failed",
+      "result": "fail"
+    },
+    {
+      "id": "ADV-SPEC-V25",
+      "type": "review",
+      "label": "Adversarial Review of Spec v25 Draft",
+      "path": "verdict.json",
+      "links": ["SPEC-013"],
+      "status": "failed",
+      "result": "fail"
     }
   ],
   "links": [
-    {
-      "source": "SPEC-012",
-      "target": "IMPL-I18N-001",
-      "type": "governs"
-    },
-    {
-      "source": "SPEC-012",
-      "target": "IMPL-I18N-002",
-      "type": "governs"
-    },
-    {
-      "source": "ADV-I18N-FINAL",
-      "target": "SPEC-012",
-      "type": "critiques"
-    }
+    { "source": "SPEC-012", "target": "IMPL-I18N-001", "type": "governs" },
+    { "source": "SPEC-012", "target": "IMPL-I18N-002", "type": "governs" },
+    { "source": "SPEC-013", "target": "IMPL-API-001", "type": "governs" },
+    { "source": "SPEC-013", "target": "IMPL-API-002", "type": "governs" },
+    { "source": "ADV-API-FINAL", "target": "SPEC-013", "type": "critiques" },
+    { "source": "ADV-SPEC-V14", "target": "SPEC-013", "type": "critiques" },
+    { "source": "ADV-SPEC-V19", "target": "SPEC-013", "type": "critiques" },
+    { "source": "ADV-SPEC-V24", "target": "SPEC-013", "type": "critiques" },
+    { "source": "ADV-SPEC-V25", "target": "SPEC-013", "type": "critiques" }
   ],
-  "status": "verified",
-  "last_updated": "2026-04-22T21:40:00Z"
+  "status": "blocked",
+  "last_updated": "2026-04-24T00:20:00Z"
 }

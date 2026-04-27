@@ -1,0 +1,9 @@
+# RED PHASE FAILURE SIGNATURE (API Routing & Retry Fix)
+# DATE: 2026-04-20
+# TEST: backend/tests/test_api_fixes.py
+
+FAILED backend/tests/test_api_fixes.py::test_market_summary_exists - AssertionError: Expected 200 but got 404. Details: {'detail': 'Not Found'}
+FAILED backend/tests/test_api_fixes.py::test_request_coalescing_logic[asyncio] - AssertionError: Market summary logic missing
+
+# TEST: frontend/src/lib/retry-policy.test.ts (Initial state without spec-compliant logic)
+# (Infinite retry observed in logs before implementation)

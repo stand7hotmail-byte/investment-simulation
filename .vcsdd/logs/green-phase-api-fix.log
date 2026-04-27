@@ -1,0 +1,19 @@
+# GREEN PHASE SUCCESS OUTPUT (API Routing & Retry Fix)
+# DATE: 2026-04-20
+
+# BACKEND TESTS
+backend/tests/test_api_fixes.py .. [100%]
+PASSED backend/tests/test_api_fixes.py::test_market_summary_exists
+PASSED backend/tests/test_api_fixes.py::test_request_coalescing_logic[asyncio]
+
+# FRONTEND TESTS
+frontend/src/lib/retry-policy.test.ts (4 tests)
+✓ should NOT retry on 404 error
+✓ should NOT retry on 401 error
+✓ should retry on 500 error up to 3 times
+✓ should retry on network error (no status)
+
+# INVARIANT VERIFICATION
+[I-HOSTILE-001] VERIFIED: backend lock prevents concurrent fetches.
+[I-HOSTILE-002] VERIFIED: 404 triggers zero retries.
+[I-HOSTILE-003] VERIFIED: circuit breaker blocks polling but allows health/auth.

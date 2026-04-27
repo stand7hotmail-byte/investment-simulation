@@ -11,7 +11,6 @@ def test_market_summary_exists(test_client):
 
 @pytest.mark.anyio
 async def test_request_coalescing_logic():
-    # We will implement the actual logic in a way that can be tested async
-    from app import main
-    # Initial state: no implementation, this test is just a placeholder to fail or be updated
-    assert hasattr(main, 'get_market_summary'), "Market summary logic missing"
+    from app.routers import analytics
+    assert hasattr(analytics, 'get_market_summary'), "Market summary logic missing in analytics router"
+

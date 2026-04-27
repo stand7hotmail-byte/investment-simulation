@@ -1,10 +1,10 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
-import { Portfolio } from "@/types/portfolio";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useAssets } from "@/hooks/useAssets";
+import { CHART_COLORS, createChartLayout, CHART_CONFIG } from "@/lib/chart-utils";
 
 const Plot = dynamic(() => import("react-plotly.js"), { 
   ssr: false,
@@ -15,28 +15,26 @@ interface Props {
   frontier: FrontierPoint[];
   maxSharpe?: FrontierPoint | null;
   riskParity?: FrontierPoint | null;
-  customPortfolioPoint?: PortfolioPointResponse | null; // New prop
-  comparisonPortfolioPoints?: PortfolioPointResponse[]; // Corrected prop for comparison portfolio points
+  customPortfolioPoint?: PortfolioPointResponse | null;
+  comparisonPortfolioPoints?: PortfolioPointResponse[];
   assetsKey: string;
 }
 
 export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, assetsKey }: Props) {
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
   const selectedPoint = useSimulationStore((state) => state.selectedPoint);
-  const selectedAssetCodes = useSimulationStore((state) => state.selectedAssetCodes); // Get selected asset codes
-  const { data: allAssets } = useAssets(); // Get all available assets
+  const selectedAssetCodes = useSimulationStore((state) => state.selectedAssetCodes);
+  const { data: allAssets } = useAssets();
   const [revision, setRevision] = useState(0);
   const plotRef = useRef<any>(null);
 
-  // SYNC: When selectedPoint changes (even from buttons), trigger a redraw
   useEffect(() => {
     setRevision(prev => prev + 1);
   }, [selectedPoint]);
 
-  // Keep data fresh for the event listener
-  const dataRef = useRef({ frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint }); // Corrected to comparisonPortfolioPoints
+  const dataRef = useRef({ frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint });
   useEffect(() => {
-    dataRef.current = { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint }; // Corrected to comparisonPortfolioPoints
+    dataRef.current = { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint };
   }, [frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint]);
 
   const individualAssetTraces = useMemo(() => {
@@ -55,7 +53,7 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       mode: "markers+text",
       type: "scatter" as const,
       name: "Individual Assets",
-      marker: { size: 8, color: "#94a3b8" }, // Slate color
+      marker: { size: 8, color: CHART_COLORS.text },
       text: selectedIndividualAssets.map(asset => asset.asset_code),
       textposition: "top center" as const,
       hovertemplate: "<b>%{text}</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
@@ -69,18 +67,18 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       mode: "lines+markers",
       type: "scatter" as const,
       name: "Efficient Frontier",
-      marker: { size: 6, color: "#3b82f6" },
-      line: { width: 2, color: "#3b82f6" },
+      marker: { size: 6, color: CHART_COLORS.primary },
+      line: { width: 2, color: CHART_COLORS.primary },
       hovertemplate: "Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
     },
-    ...individualAssetTraces, // Add individual asset traces here
+    ...individualAssetTraces,
     ...(maxSharpe ? [{
       x: [maxSharpe.volatility],
       y: [maxSharpe.expected_return],
       mode: "markers",
       type: "scatter" as const,
       name: "Max Sharpe Ratio",
-      marker: { size: 14, color: "#ef4444", symbol: "star" },
+      marker: { size: 14, color: CHART_COLORS.danger, symbol: "star" },
       hovertemplate: "<b>Max Sharpe</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
     }] : []),
     ...(riskParity ? [{
@@ -89,16 +87,16 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       mode: "markers",
       type: "scatter" as const,
       name: "Risk Parity (ERC)",
-      marker: { size: 14, color: "#10b981", symbol: "diamond" },
+      marker: { size: 14, color: CHART_COLORS.success, symbol: "diamond" },
       hovertemplate: "<b>Risk Parity</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
     }] : []),
-    ...(customPortfolioPoint ? [{ // New trace for custom portfolio
+    ...(customPortfolioPoint ? [{
       x: [customPortfolioPoint.volatility],
       y: [customPortfolioPoint.expected_return],
       mode: "markers",
       type: "scatter" as const,
       name: "Custom Portfolio",
-      marker: { size: 14, color: "#8b5cf6", symbol: "circle-open" }, // Purple circle-open symbol
+      marker: { size: 14, color: CHART_COLORS.secondary, symbol: "circle-open" },
       hovertemplate: "<b>Custom Portfolio</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
     }] : []),
     ...(comparisonPortfolioPoints && comparisonPortfolioPoints.length > 0 ? comparisonPortfolioPoints.map((point, index) => ({
@@ -106,8 +104,8 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       y: [point.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: `Compared Portfolio ${index + 1}`, // You might want to use portfolio name here
-      marker: { size: 14, color: `hsl(${index * 60}, 70%, 50%)`, symbol: "square" }, // Different color/symbol for each
+      name: `Compared Portfolio ${index + 1}`,
+      marker: { size: 14, color: `hsl(${index * 60}, 70%, 50%)`, symbol: "square" },
       hovertemplate: `<b>Compared Portfolio ${index + 1}</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>`,
     })) : []),
     ...(selectedPoint ? [{
@@ -116,28 +114,30 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       mode: "markers",
       type: "scatter" as const,
       name: "Selection",
-      marker: { size: 18, color: "rgba(0,0,0,0)", line: { color: "#f97316", width: 3 }, symbol: "circle" },
+      marker: { size: 18, color: "rgba(0,0,0,0)", line: { color: CHART_COLORS.warning, width: 3 }, symbol: "circle" },
       hoverinfo: "none" as const,
       showlegend: false
     }] : []),
-  ], [frontier, individualAssetTraces, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, selectedPoint]); // Update dependencies
+  ], [frontier, individualAssetTraces, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, selectedPoint]);
 
-  const layout = useMemo(() => ({
-    autosize: true,
-    height: 450,
-    margin: { l: 60, r: 20, t: 40, b: 60 },
-    xaxis: { title: { text: "Risk (Volatility)" }, tickformat: ".1%", fixedrange: true },
-    yaxis: { title: { text: "Expected Return" }, tickformat: ".1%", fixedrange: true },
-    dragmode: false as const,
-    hovermode: "closest" as const,
-    showlegend: true,
-    legend: { orientation: "h" as const, y: -0.2 },
-    plot_bgcolor: "white",
-    paper_bgcolor: "white",
-    datarevision: revision
-  }), [revision]);
+  const layout = useMemo(() => {
+    const l = createChartLayout({
+      xAxisTitle: "Risk (Volatility)",
+      yAxisTitle: "Expected Return",
+      height: 450,
+      hovermode: "closest"
+    });
+    return {
+      ...l,
+      xaxis: { ...l.xaxis, tickformat: ".1%" },
+      yaxis: { ...l.yaxis, tickformat: ".1%" },
+      dragmode: false,
+      showlegend: true,
+      legend: { orientation: "h", y: -0.2 },
+      datarevision: revision
+    };
+  }, [revision]);
 
-  // NATIVE EVENT HANDLER: Bypass React's synthetic events for Plotly
   const handleNativeClick = useCallback((eventData: any) => {
     if (!eventData || !eventData.points || eventData.points.length === 0) return;
     
@@ -146,12 +146,9 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
     const curveNumber = clickedPoint.curveNumber;
 
     const { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint } = dataRef.current;
-    
-    // Check if an individual asset trace was clicked
     const individualAssetTraceIndex = data.findIndex(trace => trace.name === "Individual Assets");
 
     if (curveNumber === individualAssetTraceIndex) {
-      const pointIndex = clickedPoint.pointNumber;
       const assetCode = clickedPoint.text;
       const clickedAsset = allAssets?.find(a => a.asset_code === assetCode);
       
@@ -166,7 +163,6 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       }
     }
 
-    // Fallback to nearest point logic for other traces
     const candidates = [
       ...(maxSharpe ? [maxSharpe] : []),
       ...(riskParity ? [riskParity] : []),
@@ -212,11 +208,10 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
               (graphDiv as any).on('plotly_click', handleNativeClick);
             }}
             onUpdate={(figure, graphDiv) => {
-              // Ensure listener is attached after updates
               (graphDiv as any).removeAllListeners?.('plotly_click');
               (graphDiv as any).on('plotly_click', handleNativeClick);
             }}
-            config={{ responsive: true, displayModeBar: false }}
+            config={CHART_CONFIG}
           />
         </div>
       </CardContent>

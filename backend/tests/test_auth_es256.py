@@ -2,7 +2,7 @@ import pytest
 import jwt
 from unittest.mock import MagicMock, patch
 from fastapi import HTTPException
-from app.main import get_current_user_id, get_optional_user_id
+from app.dependencies import get_current_user_id, get_optional_user_id
 
 # Sample payload for testing
 PAYLOAD = {

@@ -8,6 +8,37 @@ from . import models, schemas
 from typing import List, Optional
 from decimal import Decimal
 
+def _process_allocations(db: Session, portfolio_id: uuid.UUID, allocations: List[schemas.PortfolioAllocationCreate]):
+    """Helper to validate, de-duplicate, and normalize allocations for a portfolio."""
+    if not allocations:
+        return
+
+    # Prevent duplicate asset codes
+    seen_assets = set()
+    unique_allocations = []
+    for a in allocations:
+        if a.asset_code not in seen_assets:
+            seen_assets.add(a.asset_code)
+            unique_allocations.append(a)
+    
+    # Verify all assets exist
+    for allocation in unique_allocations:
+        asset = get_asset_by_code(db, allocation.asset_code)
+        if not asset:
+            raise ValueError(f"Asset with code '{allocation.asset_code}' not found")
+    
+    # Re-normalize weights based on unique assets
+    total_weight = sum(a.weight for a in unique_allocations)
+    
+    for allocation in unique_allocations:
+        norm_weight = allocation.weight / total_weight if total_weight > 0 else Decimal("0.0")
+        db_allocation = models.PortfolioAllocation(
+            portfolio_id=portfolio_id,
+            asset_code=allocation.asset_code,
+            weight=norm_weight
+        )
+        db.add(db_allocation)
+
 def create_portfolio(db: Session, portfolio: schemas.PortfolioCreate, user_id: uuid.UUID) -> models.Portfolio:
     db_portfolio = models.Portfolio(
         user_id=user_id,
@@ -18,31 +49,7 @@ def create_portfolio(db: Session, portfolio: schemas.PortfolioCreate, user_id: u
     db.flush() # Ensure ID is generated for allocations
     
     if portfolio.allocations:
-        # Prevent duplicate asset codes
-        seen_assets = set()
-        unique_allocations = []
-        for a in portfolio.allocations:
-            if a.asset_code not in seen_assets:
-                seen_assets.add(a.asset_code)
-                unique_allocations.append(a)
-        
-        # Verify all assets exist
-        for allocation in unique_allocations:
-            asset = get_asset_by_code(db, allocation.asset_code)
-            if not asset:
-                raise ValueError(f"Asset with code '{allocation.asset_code}' not found")
-        
-        # Re-normalize weights based on unique assets
-        total_weight = sum(a.weight for a in unique_allocations)
-        
-        for allocation in unique_allocations:
-            norm_weight = allocation.weight / total_weight if total_weight > 0 else Decimal("0.0")
-            db_allocation = models.PortfolioAllocation(
-                portfolio_id=db_portfolio.id,
-                asset_code=allocation.asset_code,
-                weight=norm_weight
-            )
-            db.add(db_allocation)
+        _process_allocations(db, db_portfolio.id, portfolio.allocations)
     
     db.commit()
     db.refresh(db_portfolio)
@@ -60,34 +67,10 @@ def update_portfolio(db: Session, portfolio_id: uuid.UUID, user_id: uuid.UUID, p
         db_portfolio.name = portfolio_update.name
         db_portfolio.description = portfolio_update.description
         if portfolio_update.allocations is not None:
-            # Prevent duplicate asset codes
-            seen_assets = set()
-            unique_allocations = []
-            for a in portfolio_update.allocations:
-                if a.asset_code not in seen_assets:
-                    seen_assets.add(a.asset_code)
-                    unique_allocations.append(a)
-
-            # Verify assets exist
-            for allocation in unique_allocations:
-                asset = get_asset_by_code(db, allocation.asset_code)
-                if not asset:
-                    raise ValueError(f"Asset with code '{allocation.asset_code}' not found")
-
             # Clean up old within transaction
             db.query(models.PortfolioAllocation).filter(models.PortfolioAllocation.portfolio_id == portfolio_id).delete()
+            _process_allocations(db, portfolio_id, portfolio_update.allocations)
             
-            # Re-normalize weights
-            total_weight = sum(a.weight for a in unique_allocations)
-            
-            for allocation in unique_allocations:
-                norm_weight = allocation.weight / total_weight if total_weight > 0 else Decimal("0.0")
-                db_allocation = models.PortfolioAllocation(
-                    portfolio_id=portfolio_id,
-                    asset_code=allocation.asset_code,
-                    weight=norm_weight
-                )
-                db.add(db_allocation)
         db.commit()
         db.refresh(db_portfolio)
     return db_portfolio
@@ -203,8 +186,6 @@ def get_market_summary(db: Session, asset_codes: List[str]) -> List[schemas.Mark
         if not asset or not asset.historical_prices:
             continue
         
-        # historical_prices is a list of dicts like {"date": "...", "price": ...}
-        # Sort by date to ensure we get the latest
         prices = sorted(asset.historical_prices, key=lambda x: x['date'])
         if len(prices) < 2:
             continue
@@ -220,11 +201,9 @@ def get_market_summary(db: Session, asset_codes: List[str]) -> List[schemas.Mark
         else:
             change_pct = ((current_price - previous_price) / previous_price) * 100
         
-        # Ensure change_pct is not NaN (can happen with invalid data)
         if np.isnan(change_pct) or np.isinf(change_pct):
             change_pct = 0.0
             
-        # Get last 30 points for sparkline (for mini-charts)
         sparkline = []
         for p in prices[-30:]:
             val = float(p['price'])

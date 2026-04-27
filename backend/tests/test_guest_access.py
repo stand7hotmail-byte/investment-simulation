@@ -1,6 +1,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
-from app.main import app, get_db, get_current_user_id
+from app.main import app
+from app.dependencies import get_db, get_current_user_id
 import pytest
 import uuid
 
@@ -15,7 +16,7 @@ def guest_client(session_override):
 @pytest.fixture
 def auth_client(session_override, fixed_user_id):
     # get_db, get_current_user_id, get_optional_user_id をオーバーライド
-    from app.main import get_optional_user_id
+    from app.dependencies import get_optional_user_id
     app.dependency_overrides[get_db] = lambda: session_override
     app.dependency_overrides[get_current_user_id] = lambda: fixed_user_id
     app.dependency_overrides[get_optional_user_id] = lambda: fixed_user_id

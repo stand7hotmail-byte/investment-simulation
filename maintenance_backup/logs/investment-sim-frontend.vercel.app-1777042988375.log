@@ -1,0 +1,38 @@
+cf179e03ec9b3e2c.js:37 [Supabase Config] URL: https....co
+cf179e03ec9b3e2c.js:37 [Supabase Config] Key Length: 208
+cf179e03ec9b3e2c.js:37 [Supabase Probe] Basic connectivity: OK
+7051c8f4a4c804d2.js:1 [API REQUEST] Fetching: https://postgresql-production-ba08.up.railway.app/api/market-summary
+7051c8f4a4c804d2.js:1 [API REQUEST] Fetching: https://postgresql-production-ba08.up.railway.app/api/simulation-results
+7051c8f4a4c804d2.js:1 API Error [500]: {"detail":"Service temporarily unavailable"}
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 Fetch failed for https://postgresql-production-ba08.up.railway.app/api/market-summary: Error: Service temporarily unavailable
+    at n (7051c8f4a4c804d2.js:1:13686)
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 [API REQUEST] Fetching: https://postgresql-production-ba08.up.railway.app/api/market-summary
+7051c8f4a4c804d2.js:1 API Error [500]: {"detail":"Service temporarily unavailable"}
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 Fetch failed for https://postgresql-production-ba08.up.railway.app/api/market-summary: Error: Service temporarily unavailable
+    at n (7051c8f4a4c804d2.js:1:13686)
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 [API REQUEST] Fetching: https://postgresql-production-ba08.up.railway.app/api/market-summary
+7051c8f4a4c804d2.js:1 API Error [500]: {"detail":"Service temporarily unavailable"}
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 Fetch failed for https://postgresql-production-ba08.up.railway.app/api/market-summary: Error: Service temporarily unavailable
+    at n (7051c8f4a4c804d2.js:1:13686)
+n @ 7051c8f4a4c804d2.js:1
+7051c8f4a4c804d2.js:1 [API REQUEST] Fetching: https://postgresql-production-ba08.up.railway.app/api/market-summary
+7051c8f4a4c804d2.js:1 API Error [500]: {"detail":"Service temporarily unavailable"}
+n @ 7051c8f4a4c804d2.js:1
+await in n
+y @ 20ddb234e70abfe7.js:1
+a @ 75976d247e155360.js:1
+v @ 75976d247e155360.js:1
+(anonymous) @ 75976d247e155360.js:1
+7051c8f4a4c804d2.js:1 Fetch failed for https://postgresql-production-ba08.up.railway.app/api/market-summary: Error: Service temporarily unavailable
+    at n (7051c8f4a4c804d2.js:1:13686)
+n @ 7051c8f4a4c804d2.js:1
+await in n
+y @ 20ddb234e70abfe7.js:1
+a @ 75976d247e155360.js:1
+v @ 75976d247e155360.js:1
+(anonymous) @ 75976d247e155360.js:1
