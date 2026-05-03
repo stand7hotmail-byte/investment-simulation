@@ -65,6 +65,37 @@ def simulate_risk_parity(request: schemas.RiskParityRequest, db: Session = Depen
         logger.error(f"Risk parity failed: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/simulate/portfolio-points", response_model=List[schemas.PortfolioPointResponse])
+def simulate_portfolio_points(request: schemas.PortfolioPointsRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or GUEST_USER_ID
+    results = []
+    for pid in request.portfolio_ids:
+        db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == pid, models.Portfolio.user_id == effective_user_id).first()
+        if not db_portfolio: continue
+        
+        assets_data, weights = [], []
+        for alloc in db_portfolio.allocations:
+            asset = crud.get_asset_by_code(db, alloc.asset_code)
+            if asset:
+                assets_data.append(asset)
+                weights.append(float(alloc.weight))
+        
+        if not assets_data: continue
+        
+        try:
+            returns, volatilities, corr_matrix = simulation.prepare_simulation_inputs(assets_data)
+            cov_matrix = simulation.build_covariance_matrix(volatilities, corr_matrix.tolist())
+            ret, vol = simulation.calculate_portfolio_stats(returns, cov_matrix, np.array(weights))
+            results.append({
+                "expected_return": float(np.nan_to_num(ret)),
+                "volatility": float(np.nan_to_num(vol)),
+                "weights": {alloc.asset_code: float(alloc.weight) for alloc in db_portfolio.allocations}
+            })
+        except Exception as e:
+            logger.warning(f"Failed to calculate stats for portfolio {pid}: {e}")
+            continue
+    return results
+
 @router.post("/simulate/monte-carlo", response_model=schemas.MonteCarloResponse)
 def simulate_monte_carlo(request: schemas.MonteCarloRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
     effective_user_id = user_id or GUEST_USER_ID

@@ -4,22 +4,35 @@ import sys
 
 def extract_backend_routes(backend_dir):
     routes = set()
-    pattern = r'@app\.(get|post|put|delete)\("([^"]+)"'
+    # Match both @app.get... and @router.get...
+    route_pattern = r'@(?:app|router)\.(get|post|put|delete)\("([^"]*)"'
+    prefix_pattern = r'router\s*=\s*APIRouter\((?:.*prefix=["\']([^"\']+)["\'])?'
+    
     for root, _, files in os.walk(backend_dir):
         for file in files:
-            if file == "main.py":
+            if file.endswith(".py"):
                 with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
-                    matches = re.findall(pattern, f.read())
+                    content = f.read()
+                    
+                    # Extract prefix if it exists in this file
+                    prefix = ""
+                    prefix_match = re.search(prefix_pattern, content)
+                    if prefix_match and prefix_match.group(1):
+                        prefix = prefix_match.group(1)
+                    
+                    matches = re.findall(route_pattern, content)
                     for method, path in matches:
+                        # Combine prefix and path
+                        full_path = prefix + path
                         # Normalize path by removing path params
-                        norm_path = re.sub(r'\{[^}]+\}', '*', path)
+                        norm_path = re.sub(r'\{[^}]+\}', '*', full_path)
                         routes.add(f"{method.upper()} {norm_path}")
     return routes
 
 def extract_frontend_requests(frontend_dir):
     requests = set()
     # Matches fetchApi("/path" or fetchApi(`/path`
-    pattern = r'fetchApi(?:<[^>]*>)?\((?:["']|`)([^"'`]+)(?:["']|`)'
+    pattern = r"""fetchApi(?:<[^>]*>)?\((?:["']|`)([^"'`]+)(?:["']|`)"""
     for root, _, files in os.walk(frontend_dir):
         if "node_modules" in root or ".next" in root: continue
         for file in files:

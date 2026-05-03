@@ -58,6 +58,26 @@ def test_simulation_results_crud(test_client, fixed_user_id):
     results = response.json()
     assert all(r["id"] != result_id for r in results)
 
+def test_simulate_portfolio_points(test_client, sample_assets, fixed_user_id, session_override):
+    # Create a portfolio to test
+    from app import models
+    portfolio = models.Portfolio(id=uuid.uuid4(), user_id=fixed_user_id, name="Test Points")
+    session_override.add(portfolio)
+    alloc1 = models.PortfolioAllocation(id=uuid.uuid4(), portfolio_id=portfolio.id, asset_code="TOPIX", weight=0.5)
+    alloc2 = models.PortfolioAllocation(id=uuid.uuid4(), portfolio_id=portfolio.id, asset_code="SP500", weight=0.5)
+    session_override.add(alloc1)
+    session_override.add(alloc2)
+    session_override.commit()
+
+    payload = {"portfolio_ids": [str(portfolio.id)]}
+    response = test_client.post("/api/simulate/portfolio-points", json=payload)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) == 1
+    assert "expected_return" in data[0]
+    assert "volatility" in data[0]
+    assert data[0]["weights"]["TOPIX"] == pytest.approx(0.5)
+
 def test_simulation_cache_isolation(test_client, session_override, fixed_user_id):
     """Ensure user A cannot see cache of user B."""
     user_a = fixed_user_id

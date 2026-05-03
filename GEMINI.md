@@ -1,27 +1,24 @@
-# Project-Specific Rules (Investment Simulation App)
+# Project Rules: Investment Simulation App
 
-This file contains rules and facts specific to this workspace. Instructions here take precedence over global memory.
-
-## 対話方法について
-- 返答には必ず日本語を使用するようにしてください。
-- あなたの性格はフランクで親しみやすい人格です。
+## Language
+- 日本語で回答すること。
 
 ## Backend (Python/FastAPI)
-- **Data Sources**: When using `yfinance`, extract scalar values from Pandas Series using `.item()` before JSON serialization to avoid `TypeError`.
-- **Numerical Stability**: ALWAYS guard float values with `np.isnan()` and `np.isinf()` before returning them in an API response. JSON does not support these values and will cause a 500 Internal Server Error during serialization.
-- **Database**: Use absolute paths for the SQLite database URL in `config.py` to ensure consistency across different working directories.
-- **Database (Cross-Environment)**: For JSON columns, always use `JSON().with_variant(JSONB, "postgresql")` from `sqlalchemy.dialects.postgresql` to ensure SQLite compatibility during testing while maintaining JSONB benefits in production.
-- **Authentication**: NEVER bypass signature verification for Supabase JWTs, even for `ES256`. Always use `jwks.json` (via `PyJWKClient`) to verify public key signatures.
-- **Testing**: In unit tests, clear tables (e.g., `db.query(models.AssetData).delete()`) in the `setUp` method to prevent data leakage between tests.
-- **Backward Compatibility**: When refactoring or adding production features, never delete or rename existing endpoints that are covered by `pytest` unless explicitly requested. Always run `pytest` before finalizing any backend change.
+- **Data Sources**: `yfinance` 使用時は、JSON シリアライズ前に `.item()` でスカラー値に変換すること。
+- **Numerical Stability**: API レスポンスを返す前に必ず `np.isnan()` と `np.isinf()` でチェックすること。
+- **Database**: `config.py` の SQLite URL には絶対パスを使用すること。
+- **Database (Cross-Environment)**: JSON カラムには `JSON().with_variant(JSONB, "postgresql")` を使用すること。
+- **Authentication**: Supabase JWT の署名検証（`jwks.json` 経由）を省略しないこと。
+- **Testing**: `setUp` メソッドでテーブルをクリア（`db.query(...).delete()`）し、テスト間のデータ干渉を防ぐこと。
+- **Backward Compatibility**: `pytest` でカバーされている既存エンドポイントを勝手に削除・変更しないこと。
 
 ## Frontend (Next.js/TypeScript)
-- **API Requests**: ALWAYS use `fetchApi` from `@/lib/api.ts` for backend requests. Direct `fetch()` calls are strictly prohibited as they bypass Base URL configuration and Supabase Auth header injection.
-- **Environment Variables**: When accessing `process.env` values for URLs, always use `.trim()` to prevent accidental trailing spaces from breaking fetch calls.
-- **State Management**: When using `zustand/persist`, implement a `hasHydrated` flag via `onRehydrateStorage` to prevent side effects before the store is fully loaded.
-- **Charts (Plotly.js)**: For complex interactions like clicks on custom points, use the `onInitialized` callback to bind Plotly's native events (e.g., `plotly_click`) rather than relying on React synthetic events.
-- **Audio (Howler.js)**: Disable `html5` mode (set to `false`) for looping sounds to prioritize the Web Audio API and avoid pool exhaustion.
+- **API Requests**: 必ず `@/lib/api.ts` の `fetchApi` を使用すること。
+- **Environment Variables**: `process.env` の URL を使用する際は必ず `.trim()` すること。
+- **State Management**: `zustand/persist` 使用時は `hasHydrated` フラグでハイドレーションを確認すること。
+- **Charts (Plotly.js)**: カスタムクリックイベントは `onInitialized` でネイティブイベントをバインドすること。
+- **Audio (Howler.js)**: ループ音源では `html5: false` に設定すること。
 
 ## Environment & Build
-- **Next.js (Turbopack)**: Be vigilant about duplicate imports of the same symbol in a single file, as this will cause a build error.
-- **PowerShell (Windows)**: Use `;` for command chaining instead of `&&`.
+- **Next.js (Turbopack)**: 同一ファイル内でのシンボルの重複インポートに注意すること（ビルドエラーの原因）。
+- **PowerShell (Windows)**: コマンド連結には `&&` ではなく `;` を使用すること。

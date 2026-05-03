@@ -21,6 +21,10 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+@pytest.fixture
+def anyio_backend():
+    return 'asyncio'
+
 @pytest.fixture(scope="function")
 def session_override():
     Base.metadata.create_all(bind=engine) # Create tables

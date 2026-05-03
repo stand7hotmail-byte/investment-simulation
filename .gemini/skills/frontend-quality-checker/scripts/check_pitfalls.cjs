@@ -3,8 +3,7 @@ const path = require('path');
 
 function checkFile(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
-    const lines = content.split('
-');
+    const lines = content.split('\n');
     let issues = [];
 
     // 1. Check for duplicate imports from the same source
