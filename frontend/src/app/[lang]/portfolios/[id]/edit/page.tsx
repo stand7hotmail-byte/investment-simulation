@@ -72,7 +72,7 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
         description: portfolio.description || '',
         allocations: portfolio.allocations?.map(a => ({
           asset_code: a.asset_code,
-          weight: Number(a.weight),
+          weight: Number(a.weight) * 100,
         })) || [],
       });
     }
@@ -90,11 +90,11 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
       queryClient.invalidateQueries({ queryKey: ['portfolios', id] });
-      toast.success('Portfolio updated successfully!');
-      router.push('/portfolios');
+      toast.success(t('portfolios.updateSuccess'));
+      router.push(`/${lang}/portfolios`);
     },
     onError: (error) => {
-      toast.error(`Failed to update portfolio: ${error.message}`);
+      toast.error(t('portfolios.updateError', { message: error.message }));
     },
   });
 
@@ -102,7 +102,10 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
     updatePortfolioMutation.mutate({
       name: data.name,
       description: data.description || null,
-      allocations: data.allocations,
+      allocations: data.allocations.map(a => ({
+        ...a,
+        weight: a.weight / 100,
+      })),
     });
   };
 

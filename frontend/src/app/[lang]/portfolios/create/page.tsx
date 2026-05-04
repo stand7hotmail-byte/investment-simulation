@@ -86,7 +86,10 @@ export default function CreatePortfolioPage() {
     createPortfolioMutation.mutate({
       name: data.name,
       description: data.description || null,
-      allocations: data.allocations,
+      allocations: data.allocations.map(a => ({
+        ...a,
+        weight: a.weight / 100,
+      })),
     });
   };
 
