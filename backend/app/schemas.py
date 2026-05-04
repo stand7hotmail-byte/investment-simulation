@@ -19,8 +19,14 @@ class PortfolioAllocationBase(BaseModel):
         f_v = float(v)
         if np.isnan(f_v) or np.isinf(f_v):
             return Decimal("0.0")
-        if v < 0 or v > 1:
-            raise ValueError("Weight must be between 0 and 1")
+        
+        # If value is > 1, assume it's a percentage and normalize to 0-1
+        if f_v > 1.0:
+            v = v / Decimal("100.0")
+            f_v = float(v)
+            
+        if f_v < 0 or f_v > 1:
+            raise ValueError("Weight must be between 0 and 1 (or 0 and 100 as percentage)")
         return v
 
 class PortfolioAllocationCreate(PortfolioAllocationBase):
