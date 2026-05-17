@@ -17,6 +17,7 @@ import {
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/hooks/useI18n";
 
 // Plotly must be loaded dynamically for Next.js SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
@@ -37,6 +38,7 @@ interface StressTestResponse {
 
 export function StressTestView({ portfolioId }: StressTestProps) {
   const [selectedScenario, setSelectedScenario] = useState<string>("lehman_shock");
+  const { t } = useI18n();
 
   const { data: stressData, isLoading, isError } = useQuery<StressTestResponse>({
     queryKey: ["portfolio-stress-test", portfolioId],
@@ -55,12 +57,13 @@ export function StressTestView({ portfolioId }: StressTestProps) {
     return (
       <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed rounded-xl text-destructive bg-destructive/5">
         <AlertTriangle className="h-8 w-8 mb-2" />
-        <p className="font-semibold">Failed to load stress test data.</p>
+        <p className="font-semibold">{t('simulation.failedToLoadStress')}</p>
       </div>
     );
   }
 
   const scenario = stressData[selectedScenario];
+  const localizedScenarioName = t(`simulation.scenarios.${selectedScenario}` as any, { defaultValue: scenario.name });
   const maxDrawdownPct = (scenario.max_drawdown * 100).toFixed(2);
 
   // Prepare plot data
@@ -69,7 +72,7 @@ export function StressTestView({ portfolioId }: StressTestProps) {
     y: scenario.history.map((p: any) => p.cumulative_return * 100),
     type: 'scatter' as const,
     mode: 'lines' as const,
-    name: 'Portfolio Return',
+    name: t('simulation.cumulativeReturn'),
     line: { color: 'rgb(225, 29, 72)', width: 3 },
     fill: 'tozeroy' as const,
     fillcolor: 'rgba(225, 29, 72, 0.1)'
@@ -89,9 +92,11 @@ export function StressTestView({ portfolioId }: StressTestProps) {
                 : "bg-white text-slate-900 border-slate-200"
             )}
           >
-            <div className="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">{data.name}</div>
+            <div className="text-xs font-bold uppercase tracking-wider opacity-60 mb-1">
+              {t(`simulation.scenarios.${key}` as any, { defaultValue: data.name })}
+            </div>
             <div className="text-xl font-bold">{(data.max_drawdown * -100).toFixed(1)}%</div>
-            <div className="text-xs mt-1 opacity-80">Max Drawdown</div>
+            <div className="text-xs mt-1 opacity-80">{t('simulation.maxDrawdown')}</div>
           </button>
         ))}
       </div>
@@ -99,14 +104,14 @@ export function StressTestView({ portfolioId }: StressTestProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="space-y-1">
-            <CardTitle>{scenario.name} Scenario</CardTitle>
+            <CardTitle>{t('simulation.scenarioTitle', { name: localizedScenarioName })}</CardTitle>
             <CardDescription>
-              How your current portfolio would have performed during this crisis.
+              {t('simulation.scenarioDesc')}
             </CardDescription>
           </div>
           <div className="flex items-center text-rose-600 font-bold bg-rose-50 px-3 py-1 rounded-full text-sm">
             <TrendingDown className="h-4 w-4 mr-1" />
-            {maxDrawdownPct}% Drop
+            {t('simulation.dropLabel', { percent: maxDrawdownPct })}
           </div>
         </CardHeader>
         <CardContent>
@@ -116,8 +121,8 @@ export function StressTestView({ portfolioId }: StressTestProps) {
               layout={{
                 autosize: true,
                 margin: { l: 40, r: 20, t: 10, b: 40 },
-                xaxis: { title: { text: "Date" }, gridcolor: "#f1f5f9" },
-                yaxis: { title: { text: "Cumulative Return (%)" }, gridcolor: "#f1f5f9" },
+                xaxis: { title: { text: t('common.time') }, gridcolor: "#f1f5f9" },
+                yaxis: { title: { text: t('simulation.cumulativeReturn') }, gridcolor: "#f1f5f9" },
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 hovermode: 'closest'

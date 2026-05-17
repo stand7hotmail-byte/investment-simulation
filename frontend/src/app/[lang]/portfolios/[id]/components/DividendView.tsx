@@ -11,16 +11,14 @@ import {
 } from "@/components/ui/card";
 import { 
   Loader2, 
-  AlertTriangle,
   DollarSign,
-  TrendingUp,
-  History
+  TrendingUp
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { useI18n } from "@/hooks/useI18n";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -50,6 +48,7 @@ export function DividendView({ portfolioId }: DividendViewProps) {
   const [initialInvestment, setInitialInvestment] = useState(1000000); // 1M JPY
   const [monthlyContribution, setMonthlyContribution] = useState(50000); // 50k JPY
   const [years, setYears] = useState(20);
+  const { t, lang } = useI18n();
 
   // Simulation: With Reinvestment
   const { data: simWithReinvest, isLoading: loading1 } = useQuery<MonteCarloResponse>({
@@ -86,7 +85,7 @@ export function DividendView({ portfolioId }: DividendViewProps) {
       <div className="flex h-64 items-center justify-center border rounded-xl bg-slate-50/50">
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground font-medium">Running Monte Carlo simulations...</p>
+          <p className="text-sm text-muted-foreground font-medium">{t('simulation.runningMc')}</p>
         </div>
       </div>
     );
@@ -95,31 +94,34 @@ export function DividendView({ portfolioId }: DividendViewProps) {
   const incomeHistory = simNoReinvest?.history || [];
   const reinvestHistory = simWithReinvest?.history || [];
 
+  const yearLabel = lang === 'ja' ? '年' : 'Year';
+  const currencySymbol = lang === 'ja' ? '¥' : '$';
+
   // Data for Dividend Income Bar Chart
   const dividendPlotData = [{
-    x: incomeHistory.map((h: any) => `Year ${h.year}`),
+    x: incomeHistory.map((h: any) => `${yearLabel} ${h.year}`),
     y: incomeHistory.map((h: any) => h.p50_dividend),
     type: 'bar' as const,
-    name: 'Annual Dividends (P50)',
+    name: t('simulation.annualDividends'),
     marker: { color: 'rgb(16, 185, 129)' }
   }];
 
   // Data for Portfolio Comparison Line Chart
   const comparisonPlotData = [
     {
-      x: reinvestHistory.map((h: any) => `Year ${h.year}`),
+      x: reinvestHistory.map((h: any) => `${yearLabel} ${h.year}`),
       y: reinvestHistory.map((h: any) => h.p50),
       type: 'scatter' as const,
       mode: 'lines' as const,
-      name: 'Reinvested (Total Return)',
+      name: t('simulation.reinvestedReturn'),
       line: { color: 'rgb(59, 130, 246)', width: 3 }
     },
     {
-      x: incomeHistory.map((h: any) => `Year ${h.year}`),
+      x: incomeHistory.map((h: any) => `${yearLabel} ${h.year}`),
       y: incomeHistory.map((h: any) => h.p50),
       type: 'scatter' as const,
       mode: 'lines' as const,
-      name: 'Income Focused (Cash Out)',
+      name: t('simulation.incomeFocused'),
       line: { color: 'rgb(245, 158, 11)', width: 3, dash: 'dot' as const }
     }
   ];
@@ -132,8 +134,8 @@ export function DividendView({ portfolioId }: DividendViewProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-4">
               <div className="flex justify-between">
-                <Label>Initial Investment</Label>
-                <span className="font-bold text-primary">${initialInvestment.toLocaleString()}</span>
+                <Label>{t('simulation.initialInvestment')}</Label>
+                <span className="font-bold text-primary">{currencySymbol}{initialInvestment.toLocaleString()}</span>
               </div>
               <Slider
                 value={[initialInvestment]}
@@ -145,8 +147,8 @@ export function DividendView({ portfolioId }: DividendViewProps) {
             </div>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <Label>Monthly Saving</Label>
-                <span className="font-bold text-primary">${monthlyContribution.toLocaleString()}</span>
+                <Label>{t('simulation.monthlySaving')}</Label>
+                <span className="font-bold text-primary">{currencySymbol}{monthlyContribution.toLocaleString()}</span>
               </div>
               <Slider
                 value={[monthlyContribution]}
@@ -158,8 +160,8 @@ export function DividendView({ portfolioId }: DividendViewProps) {
             </div>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <Label>Years to Simulate</Label>
-                <span className="font-bold text-primary">{years} Years</span>
+                <Label>{t('simulation.yearsToSimulate')}</Label>
+                <span className="font-bold text-primary">{years} {t('simulation.period').replace('（年）', '')}</span>
               </div>
               <Slider
                 value={[years]}
@@ -178,9 +180,9 @@ export function DividendView({ portfolioId }: DividendViewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-emerald-600" />
-              Projected Annual Dividend Income
+              {t('simulation.projectedDividendTitle')}
             </CardTitle>
-            <CardDescription>Estimated cash payments you'll receive each year (P50 confidence).</CardDescription>
+            <CardDescription>{t('simulation.projectedDividendDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full bg-slate-50/50 rounded-xl overflow-hidden">
@@ -189,8 +191,8 @@ export function DividendView({ portfolioId }: DividendViewProps) {
                 layout={{
                   autosize: true,
                   margin: { l: 60, r: 20, t: 10, b: 40 },
-                  xaxis: { title: { text: "Time" } },
-                  yaxis: { title: { text: "Amount ($)" } },
+                  xaxis: { title: { text: t('common.time') } },
+                  yaxis: { title: { text: `${t('common.amount')} (${currencySymbol})` } },
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                 }}
@@ -199,9 +201,12 @@ export function DividendView({ portfolioId }: DividendViewProps) {
               />
             </div>
             <div className="mt-4 p-4 bg-emerald-50 rounded-lg">
-              <p className="text-sm text-emerald-800">
-                By Year {years}, you are projected to receive about <strong>${incomeHistory[years]?.p50_dividend.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> in dividends annually.
-              </p>
+              <p className="text-sm text-emerald-800" dangerouslySetInnerHTML={{ 
+                __html: t('simulation.dividendSummaryText', { 
+                  years: years, 
+                  amount: incomeHistory[years]?.p50_dividend.toLocaleString(undefined, { maximumFractionDigits: 0 }) 
+                }) 
+              }} />
             </div>
           </CardContent>
         </Card>
@@ -211,9 +216,9 @@ export function DividendView({ portfolioId }: DividendViewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-600" />
-              Reinvestment Strategy Impact
+              {t('simulation.reinvestmentImpactTitle')}
             </CardTitle>
-            <CardDescription>Comparing total wealth: Reinvesting vs. Receiving cash.</CardDescription>
+            <CardDescription>{t('simulation.reinvestmentImpactDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full bg-slate-50/50 rounded-xl overflow-hidden">
@@ -222,8 +227,8 @@ export function DividendView({ portfolioId }: DividendViewProps) {
                 layout={{
                   autosize: true,
                   margin: { l: 60, r: 20, t: 10, b: 40 },
-                  xaxis: { title: { text: "Time" } },
-                  yaxis: { title: { text: "Total Value ($)" } },
+                  xaxis: { title: { text: t('common.time') } },
+                  yaxis: { title: { text: `${t('common.totalValue')} (${currencySymbol})` } },
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   legend: { orientation: 'h', y: -0.2 }
@@ -233,9 +238,11 @@ export function DividendView({ portfolioId }: DividendViewProps) {
               />
             </div>
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                Reinvesting dividends adds an extra <strong>${(reinvestHistory[years]?.p50 - incomeHistory[years]?.p50).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> to your final portfolio value.
-              </p>
+              <p className="text-sm text-blue-800" dangerouslySetInnerHTML={{
+                __html: t('simulation.reinvestmentSummaryText', {
+                  amount: (reinvestHistory[years]?.p50 - incomeHistory[years]?.p50).toLocaleString(undefined, { maximumFractionDigits: 0 })
+                })
+              }} />
             </div>
           </CardContent>
         </Card>

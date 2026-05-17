@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/card";
 import { 
   Loader2, 
-  AlertTriangle,
-  ArrowRightLeft,
   CheckCircle2,
   AlertCircle
 } from "lucide-react";
+import { useI18n } from "@/hooks/useI18n";
+import { cn } from "@/lib/utils";
 
 interface RebalanceViewProps {
   portfolioId: string;
@@ -27,6 +27,7 @@ interface RebalanceResponse {
 }
 
 export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) {
+  const { t } = useI18n();
   // For now, we compare current against an "Ideal" balanced state
   // In a real app, target_weights would come from a user preference or a model
   const targetWeights = allocations.reduce((acc, a) => {
@@ -63,9 +64,9 @@ export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) 
             {needsRebalance ? <AlertCircle /> : <CheckCircle2 />}
           </div>
           <div>
-            <CardTitle>{needsRebalance ? "Rebalancing Recommended" : "Portfolio Well Balanced"}</CardTitle>
+            <CardTitle>{needsRebalance ? t('simulation.rebalance.recommended') : t('simulation.rebalance.balanced')}</CardTitle>
             <CardDescription>
-              Comparing your current weights to the target allocation.
+              {t('simulation.rebalance.comparisonDesc')}
             </CardDescription>
           </div>
         </CardHeader>
@@ -74,7 +75,8 @@ export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) 
       <div className="grid grid-cols-1 gap-4">
         {allocations.map((alloc) => {
           const diff = diffs[alloc.asset_code] || 0;
-          const isOver = diff < 0;
+          const actionText = diff > 0 ? t('simulation.rebalance.buy') : diff < 0 ? t('simulation.rebalance.sell') : t('simulation.rebalance.keep');
+          
           return (
             <Card key={alloc.asset_code}>
               <CardContent className="pt-6">
@@ -84,7 +86,7 @@ export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) 
                     "text-sm font-bold",
                     diff > 0 ? "text-emerald-600" : diff < 0 ? "text-rose-600" : "text-slate-400"
                   )}>
-                    {diff > 0 ? "+" : ""}{(diff * 100).toFixed(1)}% {diff !== 0 && (diff > 0 ? "Buy" : "Sell")}
+                    {diff > 0 ? "+" : ""}{(diff * 100).toFixed(1)}% {diff !== 0 && actionText}
                   </div>
                 </div>
                 <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden">
@@ -100,8 +102,8 @@ export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) 
                   />
                 </div>
                 <div className="flex justify-between mt-1 text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Current: {(alloc.weight * 100).toFixed(1)}%</span>
-                  <span>Target: {(targetWeights[alloc.asset_code] * 100).toFixed(1)}%</span>
+                  <span>{t('simulation.rebalance.current')}: {(alloc.weight * 100).toFixed(1)}%</span>
+                  <span>{t('simulation.rebalance.target')}: {(targetWeights[alloc.asset_code] * 100).toFixed(1)}%</span>
                 </div>
               </CardContent>
             </Card>
@@ -110,9 +112,4 @@ export function RebalanceView({ portfolioId, allocations }: RebalanceViewProps) 
       </div>
     </div>
   );
-}
-
-// Helper for conditional classes
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }

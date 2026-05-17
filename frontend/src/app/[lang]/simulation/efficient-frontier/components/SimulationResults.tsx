@@ -31,6 +31,7 @@ export function SimulationResults({
   selectedAssets,
   simulationId,
 }: SimulationResultsProps) {
+  const { t } = useI18n();
   if (!hasResults) {
     return (
       <Card className="h-[600px] flex flex-col items-center justify-center border-dashed border-2 bg-white/50 text-center border-slate-200">
@@ -40,12 +41,12 @@ export function SimulationResults({
           </div>
           <div className="space-y-2">
             <p className="text-xl font-semibold text-slate-900">
-              {isSimulating || isSimulatingCustom ? "Generating Frontier..." : "Ready to Analyze"}
+              {isSimulating || isSimulatingCustom ? t('simulation.generating') : t('simulation.readyToAnalyze')}
             </p>
             <p className="text-slate-500">
               {isSimulating || isSimulatingCustom
-                ? "Our optimizer is calculating the best possible allocations for your selected assets." 
-                : "Select at least two assets from the left panel and click 'Run Simulation' to visualize the optimal risk-return curve."}
+                ? t('simulation.optimizerCalculating') 
+                : t('simulation.selectAssetsInstruction')}
             </p>
           </div>
         </div>
@@ -57,7 +58,7 @@ export function SimulationResults({
     <div className="space-y-8">
       <Card className="border-none shadow-sm bg-white overflow-hidden">
         <CardHeader className="pb-0 pt-6 px-6">
-          <CardTitle className="text-xl">Efficient Frontier Chart</CardTitle>
+          <CardTitle className="text-xl">{t('simulation.efChartTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <EfficientFrontierChart 
@@ -73,8 +74,8 @@ export function SimulationResults({
 
       <Card className="border-none shadow-sm bg-white">
         <CardHeader>
-          <CardTitle className="text-xl">Allocation Summary</CardTitle>
-          <CardDescription>Key metrics for optimal and selected points</CardDescription>
+          <CardTitle className="text-xl">{t('simulation.allocationSummaryTitle')}</CardTitle>
+          <CardDescription>{t('simulation.allocationSummaryDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <AllocationTable 
@@ -85,5 +86,8 @@ export function SimulationResults({
         </CardContent>
       </Card>
     </div>
+  );
+}
+/div>
   );
 }

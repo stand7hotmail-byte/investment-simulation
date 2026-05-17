@@ -90,7 +90,7 @@ export default function Home() {
       <div className="pt-10 border-t border-slate-200">
         <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-8 text-center">{t('landing.marketHighlights')}</h2>
         <div className="bg-white p-8 rounded-3xl shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-4">SPY (S&P 500 ETF) Performance</h3>
+          <h3 className="text-xl font-bold text-slate-900 mb-4">{t('landing.spyPerformanceTitle')}</h3>
           <AssetHistoricalChart assetCode="SPY" />
         </div>
       </div>

@@ -4,8 +4,10 @@ import { fetchApi } from '@/lib/api';
 import { AffiliateBroker } from '@/types/affiliate';
 import { AffiliateBrokerCard } from './AffiliateBrokerCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useI18n } from '@/hooks/useI18n';
 
 export const AffiliateSection: React.FC = () => {
+  const { t } = useI18n();
   const { data: brokers, isLoading, error } = useQuery<AffiliateBroker[]>({
     queryKey: ['affiliate-recommendations'],
     queryFn: () => fetchApi<AffiliateBroker[]>('/api/affiliates/recommendations'),
@@ -15,7 +17,7 @@ export const AffiliateSection: React.FC = () => {
   if (isLoading) {
     return (
       <div className="py-8 space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight">Recommended Brokers for Your Portfolio</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('affiliates.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-64 w-full rounded-xl" />
@@ -32,9 +34,9 @@ export const AffiliateSection: React.FC = () => {
   return (
     <div className="py-8 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Recommended Brokers for Your Portfolio</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('affiliates.title')}</h2>
         <p className="text-muted-foreground mt-1">
-          Open an account with these brokers to start implementing your investment strategy.
+          {t('affiliates.subtitle')}
         </p>
       </div>
       

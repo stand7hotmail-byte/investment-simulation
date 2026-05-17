@@ -36,10 +36,12 @@ async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        logger.exception(f"Unhandled Exception: {e}")
+        # Sanitized logging: Only log the exception type to prevent PII leakage from user input in error messages
+        request_id = str(uuid.uuid4())
+        logger.error(f"Unhandled Exception [ID: {request_id}]: {type(e).__name__}")
         return JSONResponse(
             status_code=500,
-            content={"detail": "Internal Server Error", "request_id": str(uuid.uuid4())},
+            content={"detail": "Internal Server Error", "request_id": request_id},
         )
 
 # --- MIDDLEWARE ---

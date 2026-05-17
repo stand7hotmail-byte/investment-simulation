@@ -10,21 +10,21 @@ export const isPointMatch = (p1: FrontierPoint | null, p2: FrontierPoint | null)
 };
 
 /**
- * ポートフォリオの特性に基づいて戦略名を決定します。
+ * ポートフォリオの特性に基づいて戦略名を決定するキーを返します。
  */
-export const getStrategyName = (
+export const getStrategyNameKey = (
   current: FrontierPoint,
   riskParity: FrontierPoint | null,
   maxSharpe: FrontierPoint | null
 ): string => {
   if (isPointMatch(riskParity, current)) {
-    return "Risk Parity Strategy (ERC)";
+    return "simulation.riskParityStrategy";
   }
   if (isPointMatch(maxSharpe, current)) {
-    return "Maximum Sharpe Ratio Strategy";
+    return "simulation.maxSharpeStrategy";
   }
   if (current.expected_return > 0) {
-    return "Efficient Frontier Optimized Point";
+    return "simulation.optimizedPoint";
   }
-  return "Custom Selection";
+  return "simulation.customSelection";
 };

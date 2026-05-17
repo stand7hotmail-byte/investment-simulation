@@ -64,8 +64,8 @@ export default function PortfoliosPage() {
     return (
       <div className="space-y-4 max-w-5xl mx-auto py-8 px-4">
         <h1 className="text-3xl font-bold text-foreground">{t('portfolios.title')}</h1>
-        <p className="text-destructive font-medium">Error loading portfolios: {error?.message}</p>
-        <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+        <p className="text-destructive font-medium">{t('portfolios.errorLoading')}: {error?.message}</p>
+        <Button onClick={() => window.location.reload()} variant="outline">{t('history.tryAgain')}</Button>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export default function PortfoliosPage() {
                   disabled={deletePortfolioMutation.isPending}
                 >
                   <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
+                  <span className="sr-only">{t('common.delete')}</span>
                 </Button>
               </CardFooter>
             </Card>

@@ -58,9 +58,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed text-slate-400">
+                <div className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed text-slate-400 text-center px-4">
                   <p>{t('dashboard.noMarketData')}</p>
-                  <p className="text-xs">Make sure backend is running and seeded</p>
+                  <p className="text-xs">{t('dashboard.backendStatus')}</p>
                 </div>
               )}
             </CardContent>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
                     <div key={result.id} className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-slate-50 transition-colors">
                       <div className="space-y-1">
                         <div className="text-sm font-semibold truncate max-w-[150px]">
-                          {result.simulation_type === "risk_parity" ? "Risk Parity" : "Simulation"}
+                          {result.simulation_type === "risk_parity" ? t('dashboard.simulationTypeRiskParity') : t('dashboard.simulationTypeSimulation')}
                         </div>
                         <div className="text-xs text-slate-400">
                           {formatSafeDate(result.created_at, "MMM d, yyyy")}

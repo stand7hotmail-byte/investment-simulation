@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, Field
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -79,7 +79,7 @@ class AssetData(AssetDataBase):
 
 class EfficientFrontierRequest(BaseModel):
     assets: List[str]
-    n_points: int = 50
+    n_points: int = Field(50, ge=1, le=100)
 
 class FrontierPoint(BaseModel):
     expected_return: float
@@ -98,8 +98,8 @@ class MonteCarloRequest(BaseModel):
     portfolio_id: uuid.UUID
     initial_investment: float
     monthly_contribution: float
-    years: int
-    n_simulations: int = 10000
+    years: int = Field(..., ge=1, le=100)
+    n_simulations: int = Field(10000, ge=1, le=20000)
     extra_investments: List[ExtraInvestment] | None = None
     target_amount: float | None = None
     dividend_yield: float | None = None # Manual override for dividend yield
@@ -125,10 +125,10 @@ class BasicAccumulationRequest(BaseModel):
     portfolio_id: uuid.UUID
     initial_investment: float
     monthly_contribution: float
-    years: int
+    years: int = Field(..., ge=1, le=100)
     expected_return: float | None = None
     volatility: float | None = None
-    n_scenarios: int = 1000
+    n_scenarios: int = Field(1000, ge=1, le=5000)
 
 class BasicAccumulationHistory(BaseModel):
     year: int
@@ -172,6 +172,13 @@ class SimulationResultBase(BaseModel):
     parameters: dict
     results: dict
     portfolio_id: uuid.UUID | None = None
+
+    @field_validator('results')
+    @classmethod
+    def validate_results_size(cls, v: dict) -> dict:
+        if len(v) > 1000:
+            raise ValueError("Simulation results object is too large")
+        return v
 
 class SimulationResultCreate(SimulationResultBase):
     pass

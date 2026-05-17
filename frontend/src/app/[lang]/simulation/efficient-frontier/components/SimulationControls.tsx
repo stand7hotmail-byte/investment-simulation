@@ -34,12 +34,13 @@ export function SimulationControls({
   onCalculateCustom,
   onSaveResult,
 }: SimulationControlsProps) {
+  const { t } = useI18n();
   return (
     <div className="space-y-6">
       <Card className="border-none shadow-sm bg-white">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Assets & Allocation</CardTitle>
-          <CardDescription>Select at least 2 assets to begin</CardDescription>
+          <CardTitle className="text-lg">{t('simulation.assetsAllocationTitle')}</CardTitle>
+          <CardDescription>{t('simulation.selectAtLeast2')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <AssetSelector />
@@ -55,7 +56,7 @@ export function SimulationControls({
               disabled={selectedAssets.length < 2 || isSimulating || isSimulatingCustom}
               onClick={onRunSimulation}
             >
-              {isSimulating ? "Calculating..." : "Run Simulation"}
+              {isSimulating ? t('simulation.calculating') : t('simulation.runSim')}
             </Button>
 
             {hasResults && (
@@ -65,19 +66,19 @@ export function SimulationControls({
                 disabled={isSavingSimulation}
                 onClick={onSaveResult}
               >
-                {isSavingSimulation ? "Saving..." : "Save Result"}
+                {isSavingSimulation ? t('common.loading') : t('simulation.saveResult')}
               </Button>
             )}
           </div>
 
           {isSaveSuccess && (
             <p className="text-sm text-green-600 bg-green-50 p-3 rounded-md border border-green-100">
-              Simulation result saved successfully!
+              {t('simulation.saveSuccessLong')}
             </p>
           )}
           {(saveError || anyError) && (
             <p className="text-sm text-red-500 bg-red-50 p-3 rounded-md border border-red-100">
-              Error: {((saveError || anyError) as any).message || "Operation failed"}
+              {t('common.error')}: {((saveError || anyError) as any).message || t('common.error')}
             </p>
           )}
         </CardContent>
@@ -87,10 +88,10 @@ export function SimulationControls({
         <Card className="border-none shadow-sm bg-white">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-lg">Compare Portfolios</CardTitle>
+              <CardTitle className="text-lg">{t('simulation.comparePortfoliosTitle')}</CardTitle>
               <Info className="h-4 w-4 text-slate-400" />
             </div>
-            <CardDescription>Add your saved portfolios to the chart</CardDescription>
+            <CardDescription>{t('simulation.comparePortfoliosDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ComparisonPortfolioSelector />

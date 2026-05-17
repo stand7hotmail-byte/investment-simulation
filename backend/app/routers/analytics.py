@@ -91,8 +91,9 @@ def get_portfolio_stress_test(portfolio_id: uuid.UUID, db: Session = Depends(get
         raise HTTPException(status_code=400, detail=f"Analytics failed: {str(e)}")
 
 @router.post("/portfolios/{portfolio_id}/analytics/rebalance", response_model=schemas.RebalanceResponse)
-def post_portfolio_rebalance(portfolio_id: uuid.UUID, request: schemas.RebalanceRequest, db: Session = Depends(get_db)):
-    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id).first()
+def post_portfolio_rebalance(portfolio_id: uuid.UUID, request: schemas.RebalanceRequest, db: Session = Depends(get_db), user_id: Optional[uuid.UUID] = Depends(get_optional_user_id)):
+    effective_user_id = user_id or GUEST_USER_ID
+    db_portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == portfolio_id, models.Portfolio.user_id == effective_user_id).first()
     if not db_portfolio: raise HTTPException(status_code=404, detail="Portfolio not found") 
     try:
         current_allocations = {a.asset_code: float(a.weight) for a in db_portfolio.allocations}

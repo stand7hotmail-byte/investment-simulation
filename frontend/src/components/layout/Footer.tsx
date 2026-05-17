@@ -19,7 +19,7 @@ export const Footer = () => {
           </p>
         </div>
         <div className="mt-4 text-center">
-          <p>&copy; {new Date().getFullYear()} InvestSim. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} InvestSim. {t('common.allRightsReserved')}</p>
         </div>
       </div>
     </footer>

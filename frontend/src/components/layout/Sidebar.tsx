@@ -167,10 +167,10 @@ export function Sidebar() {
                 sidebarCollapsed && "justify-center"
               )}
               onClick={handleSignOut}
-              title={sidebarCollapsed ? "Sign Out" : ""}
+              title={sidebarCollapsed ? t('common.signOut') : ""}
             >
               <LogOut className={cn("h-5 w-5", !sidebarCollapsed && "mr-3")} />
-              {!sidebarCollapsed && <span>Sign Out</span>}
+              {!sidebarCollapsed && <span>{t('common.signOut')}</span>}
             </Button>
           </div>
         ) : (
@@ -181,10 +181,10 @@ export function Sidebar() {
                 "flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 sidebarCollapsed && "justify-center"
               )}
-              title={sidebarCollapsed ? "Login" : ""}
+              title={sidebarCollapsed ? t('landing.login') : ""}
             >
               <LogIn className={cn("h-5 w-5", !sidebarCollapsed && "mr-3")} />
-              {!sidebarCollapsed && <span>Login</span>}
+              {!sidebarCollapsed && <span>{t('landing.login')}</span>}
             </Link>
             <Link
               href={`/${lang}/signup`}
@@ -192,10 +192,10 @@ export function Sidebar() {
                 "flex items-center rounded-md px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 sidebarCollapsed && "justify-center"
               )}
-              title={sidebarCollapsed ? "Sign Up" : ""}
+              title={sidebarCollapsed ? t('auth.signupButton') : ""}
             >
               <UserPlus className={cn("h-5 w-5", !sidebarCollapsed && "mr-3")} />
-              {!sidebarCollapsed && <span>Sign Up</span>}
+              {!sidebarCollapsed && <span>{t('auth.signupButton')}</span>}
             </Link>
           </>
         )}

@@ -5,10 +5,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useAssets } from "@/hooks/useAssets";
 import { CHART_COLORS, createChartLayout, CHART_CONFIG } from "@/lib/chart-utils";
+import { useI18n } from "@/hooks/useI18n";
 
 const Plot = dynamic(() => import("react-plotly.js"), { 
   ssr: false,
-  loading: () => <div className="flex h-[450px] items-center justify-center bg-slate-50 rounded-md text-slate-400">Initializing Chart...</div>
+  loading: () => <div className="flex h-[450px] items-center justify-center bg-slate-50 rounded-md text-slate-400">Initializing...</div>
 });
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, assetsKey }: Props) {
+  const { t } = useI18n();
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
   const selectedPoint = useSimulationStore((state) => state.selectedPoint);
   const selectedAssetCodes = useSimulationStore((state) => state.selectedAssetCodes);
@@ -52,13 +54,13 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       y: selectedIndividualAssets.map(asset => asset.expected_return),
       mode: "markers+text",
       type: "scatter" as const,
-      name: "Individual Assets",
+      name: t('simulation.individualAssets'),
       marker: { size: 8, color: CHART_COLORS.text },
       text: selectedIndividualAssets.map(asset => asset.asset_code),
       textposition: "top center" as const,
-      hovertemplate: "<b>%{text}</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+      hovertemplate: `<b>%{text}</b><br>${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     }];
-  }, [allAssets, selectedAssetCodes]);
+  }, [allAssets, selectedAssetCodes, t]);
 
   const data = useMemo(() => [
     {
@@ -66,10 +68,10 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       y: frontier.map((p) => p.expected_return),
       mode: "lines+markers",
       type: "scatter" as const,
-      name: "Efficient Frontier",
+      name: t('simulation.efTitle'),
       marker: { size: 6, color: CHART_COLORS.primary },
       line: { width: 2, color: CHART_COLORS.primary },
-      hovertemplate: "Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+      hovertemplate: `${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     },
     ...individualAssetTraces,
     ...(maxSharpe ? [{
@@ -77,53 +79,53 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       y: [maxSharpe.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: "Max Sharpe Ratio",
+      name: t('simulation.maxSharpeStrategy'),
       marker: { size: 14, color: CHART_COLORS.danger, symbol: "star" },
-      hovertemplate: "<b>Max Sharpe</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+      hovertemplate: `<b>${t('simulation.maxSharpeStrategy')}</b><br>${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     }] : []),
     ...(riskParity ? [{
       x: [riskParity.volatility],
       y: [riskParity.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: "Risk Parity (ERC)",
+      name: t('dashboard.simulationTypeRiskParity'),
       marker: { size: 14, color: CHART_COLORS.success, symbol: "diamond" },
-      hovertemplate: "<b>Risk Parity</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+      hovertemplate: `<b>${t('dashboard.simulationTypeRiskParity')}</b><br>${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     }] : []),
     ...(customPortfolioPoint ? [{
       x: [customPortfolioPoint.volatility],
       y: [customPortfolioPoint.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: "Custom Portfolio",
+      name: t('simulation.customSelection'),
       marker: { size: 14, color: CHART_COLORS.secondary, symbol: "circle-open" },
-      hovertemplate: "<b>Custom Portfolio</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>",
+      hovertemplate: `<b>${t('simulation.customSelection')}</b><br>${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     }] : []),
     ...(comparisonPortfolioPoints && comparisonPortfolioPoints.length > 0 ? comparisonPortfolioPoints.map((point, index) => ({
       x: [point.volatility],
       y: [point.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: `Compared Portfolio ${index + 1}`,
+      name: `${t('simulation.comparedPortfolio')} ${index + 1}`,
       marker: { size: 14, color: `hsl(${index * 60}, 70%, 50%)`, symbol: "square" },
-      hovertemplate: `<b>Compared Portfolio ${index + 1}</b><br>Risk: %{x:.2%}<br>Return: %{y:.2%}<extra></extra>`,
+      hovertemplate: `<b>${t('simulation.comparedPortfolio')} ${index + 1}</b><br>${t('common.risk')}: %{x:.2%}<br>${t('common.return')}: %{y:.2%}<extra></extra>`,
     })) : []),
     ...(selectedPoint ? [{
       x: [selectedPoint.volatility],
       y: [selectedPoint.expected_return],
       mode: "markers",
       type: "scatter" as const,
-      name: "Selection",
+      name: t('simulation.selection'),
       marker: { size: 18, color: "rgba(0,0,0,0)", line: { color: CHART_COLORS.warning, width: 3 }, symbol: "circle" },
       hoverinfo: "none" as const,
       showlegend: false
     }] : []),
-  ], [frontier, individualAssetTraces, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, selectedPoint]);
+  ], [frontier, individualAssetTraces, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, selectedPoint, t]);
 
   const layout = useMemo(() => {
     const l = createChartLayout({
-      xAxisTitle: "Risk (Volatility)",
-      yAxisTitle: "Expected Return",
+      xAxisTitle: t('common.volatility'),
+      yAxisTitle: t('common.expectedReturn'),
       height: 450,
       hovermode: "closest"
     });
@@ -136,7 +138,7 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
       legend: { orientation: "h", y: -0.2 },
       datarevision: revision
     };
-  }, [revision]);
+  }, [revision, t]);
 
   const handleNativeClick = useCallback((eventData: any) => {
     if (!eventData || !eventData.points || eventData.points.length === 0) return;
@@ -146,7 +148,7 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
     const curveNumber = clickedPoint.curveNumber;
 
     const { frontier, maxSharpe, riskParity, customPortfolioPoint, comparisonPortfolioPoints, setSelectedPoint } = dataRef.current;
-    const individualAssetTraceIndex = data.findIndex(trace => trace.name === "Individual Assets");
+    const individualAssetTraceIndex = data.findIndex(trace => trace.name === t('simulation.individualAssets'));
 
     if (curveNumber === individualAssetTraceIndex) {
       const assetCode = clickedPoint.text;
@@ -187,12 +189,12 @@ export function EfficientFrontierChart({ frontier, maxSharpe, riskParity, custom
 
     setSelectedPoint(nearest);
     setRevision(prev => prev + 1);
-  }, [data, allAssets]);
+  }, [data, allAssets, t]);
 
   return (
     <Card className="w-full shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold">Efficient Frontier Analysis</CardTitle>
+        <CardTitle className="text-lg font-semibold">{t('simulation.efAnalysisTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full overflow-hidden rounded-md border border-slate-200 bg-white">

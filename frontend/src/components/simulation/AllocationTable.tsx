@@ -2,7 +2,7 @@
 
 import { useSimulationStore } from "@/store/useSimulationStore";
 import { useAssets } from "@/hooks/useAssets";
-import { isPointMatch, getStrategyName } from "@/lib/simulation-utils";
+import { isPointMatch, getStrategyNameKey } from "@/lib/simulation-utils";
 import {
   Table,
   TableBody,
@@ -14,6 +14,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, MousePointer2 } from "lucide-react";
+import { useI18n } from "@/hooks/useI18n";
 
 import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
 
@@ -27,12 +28,14 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
   const selectedPoint = useSimulationStore((state) => state.selectedPoint);
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
   const { data: assets } = useAssets();
+  const { t } = useI18n();
 
   if (!selectedPoint) {
     return null;
   }
 
-  const strategyName = getStrategyName(selectedPoint, riskParityPoint ?? null, maxSharpePoint ?? null);
+  const strategyNameKey = getStrategyNameKey(selectedPoint, riskParityPoint ?? null, maxSharpePoint ?? null);
+  const strategyName = t(strategyNameKey);
 
   const getAssetName = (code: string) => {
     const asset = assets?.find((a) => a.asset_code === code);
@@ -71,7 +74,7 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
             className="flex items-center gap-2"
           >
             <Target className="w-4 h-4" />
-            Risk Parity
+            {t('dashboard.simulationTypeRiskParity')}
           </Button>
         )}
         {maxSharpePoint && (
@@ -82,13 +85,13 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
             className="flex items-center gap-2"
           >
             <TrendingUp className="w-4 h-4" />
-            Max Sharpe
+            {t('common.sharpeRatio')}
           </Button>
         )}
         <div className="flex-1" />
         <div className="hidden sm:flex items-center gap-1 text-xs text-slate-400 italic">
           <MousePointer2 className="w-3 h-3" />
-          Click chart points to select other portfolios
+          {t('simulation.clickChartInstruction')}
         </div>
       </div>
 
@@ -98,10 +101,10 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
             {strategyName}
           </div>
           <CardTitle className="text-lg font-semibold flex items-center justify-between">
-            <span>Asset Allocation Details</span>
+            <span>{t('simulation.allocationDetails')}</span>
             <div className="flex space-x-4 text-sm font-normal text-slate-500">
-              <span>Risk: {(selectedPoint.volatility * 100).toFixed(2)}%</span>
-              <span>Return: {(selectedPoint.expected_return * 100).toFixed(2)}%</span>
+              <span>{t('common.risk')}: {(selectedPoint.volatility * 100).toFixed(2)}%</span>
+              <span>{t('common.return')}: {(selectedPoint.expected_return * 100).toFixed(2)}%</span>
             </div>
           </CardTitle>
         </CardHeader>
@@ -109,8 +112,8 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Asset Name</TableHead>
-                <TableHead className="text-right">Allocation (%)</TableHead>
+                <TableHead>{t('simulation.assetName')}</TableHead>
+                <TableHead className="text-right">{t('simulation.allocationPercent')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,22 +133,22 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
             {comparedPortfoliosWithSharpe.length > 0 && (
               <Card className="w-full shadow-sm">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-semibold">Comparison Summary</CardTitle>
+                  <CardTitle className="text-lg font-semibold">{t('simulation.comparisonSummary')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Portfolio</TableHead>
-                        <TableHead className="text-right">Risk</TableHead>
-                        <TableHead className="text-right">Return</TableHead>
-                        <TableHead className="text-right">Sharpe Ratio</TableHead>
+                        <TableHead>{t('nav.portfolios')}</TableHead>
+                        <TableHead className="text-right">{t('common.risk')}</TableHead>
+                        <TableHead className="text-right">{t('common.return')}</TableHead>
+                        <TableHead className="text-right">{t('common.sharpeRatio')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {/* Current Selected Portfolio */}
                       <TableRow className="bg-blue-50/50">
-                        <TableCell className="font-medium">Current Selection ({strategyName})</TableCell>
+                        <TableCell className="font-medium">{t('simulation.currentSelection')} ({strategyName})</TableCell>
                         <TableCell className="text-right tabular-nums">{(selectedPoint.volatility * 100).toFixed(2)}%</TableCell>
                         <TableCell className="text-right tabular-nums">{(selectedPoint.expected_return * 100).toFixed(2)}%</TableCell>
                         <TableCell className="text-right tabular-nums">{currentPortfolioSharpe.toFixed(2)}</TableCell>
@@ -154,7 +157,7 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
                       {/* Compared Portfolios */}
                       {comparedPortfoliosWithSharpe.map((point, index) => (
                         <TableRow key={`comp-${index}`}>
-                          <TableCell className="font-medium">Compared Portfolio {index + 1}</TableCell>
+                          <TableCell className="font-medium">{t('simulation.comparedPortfolio')} {index + 1}</TableCell>
                           <TableCell className="text-right tabular-nums">{(point.volatility * 100).toFixed(2)}%</TableCell>
                           <TableCell className="text-right tabular-nums">{(point.expected_return * 100).toFixed(2)}%</TableCell>
                           <TableCell className="text-right tabular-nums">{point.sharpe_ratio.toFixed(2)}</TableCell>

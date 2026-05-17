@@ -86,7 +86,7 @@ async def get_optional_user_id(
             payload = jwt.decode(
                 token, 
                 key, 
-                algorithms=[alg], 
+                algorithms=["ES256"], 
                 audience="authenticated",
                 issuer=expected_iss,
                 options=options
@@ -99,7 +99,7 @@ async def get_optional_user_id(
             payload = jwt.decode(
                 token, 
                 key, 
-                algorithms=[alg], 
+                algorithms=["HS256"], 
                 audience="authenticated",
                 options=options
             )
