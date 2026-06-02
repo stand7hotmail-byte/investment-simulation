@@ -5,6 +5,7 @@ import { EfficientFrontierChart } from "@/components/simulation/EfficientFrontie
 import { AllocationTable } from "@/components/simulation/AllocationTable";
 import { TrendingUp } from "lucide-react";
 import { EfficientFrontierResponse, FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
+import { useI18n } from "@/hooks/useI18n";
 
 interface SimulationResultsProps {
   hasResults: boolean;
@@ -86,8 +87,5 @@ export function SimulationResults({
         </CardContent>
       </Card>
     </div>
-  );
-}
-/div>
   );
 }

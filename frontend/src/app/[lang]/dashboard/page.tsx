@@ -30,8 +30,8 @@ export default function DashboardPage() {
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{t('dashboard.title')}</h1>
-        <p className="text-slate-500 text-lg">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">{t('dashboard.title')}</h1>
+        <p className="text-muted-foreground text-lg">
           {t('dashboard.welcomeBack')}
         </p>
       </div>
@@ -39,17 +39,17 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Market Summary - Left Column (Main) */}
         <div className="lg:col-span-2 space-y-8">
-          <Card>
+          <Card className="glass-card border-border/40 shadow-xl shadow-primary/5 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div className="space-y-1">
-                <CardTitle className="text-xl">{t('dashboard.marketSummary')}</CardTitle>
-                <CardDescription>{t('dashboard.marketPerformance')}</CardDescription>
+                <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{t('dashboard.marketSummary')}</CardTitle>
+                <CardDescription className="text-muted-foreground">{t('dashboard.marketPerformance')}</CardDescription>
               </div>
             </CardHeader>
             <CardContent>
               {marketLoading ? (
                 <div className="flex h-48 items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               ) : marketData?.items && marketData.items.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -58,37 +58,37 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed text-slate-400 text-center px-4">
+                <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 text-muted-foreground text-center px-4">
                   <p>{t('dashboard.noMarketData')}</p>
-                  <p className="text-xs">{t('dashboard.backendStatus')}</p>
+                  <p className="text-xs text-muted-foreground/80">{t('dashboard.backendStatus')}</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass-card border-border/40 shadow-xl shadow-primary/5 transition-all duration-300">
             <CardHeader>
-              <CardTitle className="text-xl">{t('dashboard.quickActions')}</CardTitle>
-              <CardDescription>{t('dashboard.quickActionsDesc')}</CardDescription>
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{t('dashboard.quickActions')}</CardTitle>
+              <CardDescription className="text-muted-foreground">{t('dashboard.quickActionsDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed">
+                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed border-border/80 rounded-2xl hover:border-solid hover:bg-gradient-to-br hover:from-primary/10 hover:to-transparent hover:text-primary transition-all duration-300 shimmer-btn group">
                   <Link href={`/${lang}/simulation/efficient-frontier`}>
-                    <TrendingUp className="h-6 w-6 text-blue-500" />
-                    <span>{t('dashboard.newFrontier')}</span>
+                    <TrendingUp className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                    <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{t('dashboard.newFrontier')}</span>
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed">
+                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed border-border/80 rounded-2xl hover:border-solid hover:bg-gradient-to-br hover:from-chart-4/15 hover:to-transparent hover:text-chart-4 transition-all duration-300 shimmer-btn group">
                   <Link href={`/${lang}/simulation/accumulation`}>
-                    <LineChart className="h-6 w-6 text-indigo-500" />
-                    <span>{t('dashboard.newMonteCarlo')}</span>
+                    <LineChart className="h-6 w-6 text-chart-4 transition-transform group-hover:scale-110" />
+                    <span className="font-semibold text-foreground group-hover:text-chart-4 transition-colors">{t('dashboard.newMonteCarlo')}</span>
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed">
+                <Button asChild variant="outline" className="h-24 flex-col gap-2 border-dashed border-border/80 rounded-2xl hover:border-solid hover:bg-gradient-to-br hover:from-chart-2/15 hover:to-transparent hover:text-chart-2 transition-all duration-300 shimmer-btn group">
                   <Link href={`/${lang}/portfolios`}>
-                    <Wallet className="h-6 w-6 text-emerald-500" />
-                    <span>{t('dashboard.managePortfolios')}</span>
+                    <Wallet className="h-6 w-6 text-chart-2 transition-transform group-hover:scale-110" />
+                    <span className="font-semibold text-foreground group-hover:text-chart-2 transition-colors">{t('dashboard.managePortfolios')}</span>
                   </Link>
                 </Button>
               </div>
@@ -98,32 +98,32 @@ export default function DashboardPage() {
 
         {/* Side Column - Right */}
         <div className="space-y-8">
-          <Card className="h-full">
+          <Card className="glass-card border-border/40 shadow-xl shadow-primary/5 transition-all duration-300 h-full">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="space-y-1">
-                <CardTitle className="text-xl">{t('dashboard.recentActivity')}</CardTitle>
-                <CardDescription>{t('dashboard.savedSims')}</CardDescription>
+                <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{t('dashboard.recentActivity')}</CardTitle>
+                <CardDescription className="text-muted-foreground">{t('dashboard.savedSims')}</CardDescription>
               </div>
-              <History className="h-5 w-5 text-slate-400" />
+              <History className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-4">
               {historyLoading ? (
                 <div className="flex h-32 items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               ) : recentHistory.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {recentHistory.map((result) => (
-                    <div key={result.id} className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-slate-50 transition-colors">
+                    <div key={result.id} className="flex items-center justify-between p-3.5 rounded-xl border border-border/40 bg-card hover:bg-accent/40 hover:translate-x-1 transition-all duration-300">
                       <div className="space-y-1">
-                        <div className="text-sm font-semibold truncate max-w-[150px]">
+                        <div className="text-sm font-semibold truncate max-w-[150px] text-foreground">
                           {result.simulation_type === "risk_parity" ? t('dashboard.simulationTypeRiskParity') : t('dashboard.simulationTypeSimulation')}
                         </div>
-                        <div className="text-xs text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           {formatSafeDate(result.created_at, "MMM d, yyyy")}
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon-sm" asChild>
+                      <Button variant="ghost" size="icon-sm" className="hover:bg-primary/20 hover:text-primary transition-all rounded-full" asChild>
                         <Link href={`/${lang}/simulation/history?id=${result.id}`}>
                           <ArrowUpRight className="h-4 w-4" />
                         </Link>
@@ -132,9 +132,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex h-32 flex-col items-center justify-center rounded-lg border border-dashed text-slate-400 text-sm">
+                <div className="flex h-32 flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 text-muted-foreground text-sm">
                   <p>{t('dashboard.noRecentActivity')}</p>
-                  <Button variant="link" size="sm" asChild className="h-auto p-0 mt-2">
+                  <Button variant="link" size="sm" asChild className="h-auto p-0 mt-2 text-primary hover:text-primary/80">
                     <Link href={`/${lang}/simulation/efficient-frontier`}>{t('dashboard.startFirstSim')}</Link>
                   </Button>
                 </div>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             </CardContent>
             {recentHistory.length > 0 && (
               <CardFooter className="pt-0">
-                <Button variant="ghost" className="w-full text-slate-500 text-xs" asChild>
+                <Button variant="ghost" className="w-full text-muted-foreground hover:text-foreground text-xs font-semibold rounded-lg py-2.5 transition-all" asChild>
                   <Link href={`/${lang}/simulation/history`}>{t('dashboard.viewFullHistory')}</Link>
                 </Button>
               </CardFooter>
@@ -158,13 +158,13 @@ function MarketItemCard({ item, lang }: { item: MarketSummaryItem, lang: string 
   const isPositive = item.change_percentage >= 0;
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-slate-50/50">
+    <div className="flex items-center justify-between p-4.5 rounded-xl border border-border/40 bg-card hover:bg-accent/10 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
       <div className="space-y-1">
-        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">{item.asset_code}</div>
-        <div className="text-lg font-bold">{formatFinancialValue(item.current_price, 'USD', lang)}</div>
+        <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{item.asset_code}</div>
+        <div className="text-lg font-bold text-foreground">{formatFinancialValue(item.current_price, 'USD', lang)}</div>
         <div className={cn(
-          "flex items-center text-xs font-semibold",
-          isPositive ? "text-emerald-600" : "text-rose-600"
+          "flex items-center text-xs font-semibold px-2 py-0.5 rounded-full w-fit",
+          isPositive ? "text-emerald-600 bg-emerald-500/10" : "text-rose-600 bg-rose-500/10"
         )}>
           {isPositive ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
           {Math.abs(item.change_percentage).toFixed(2)}%
@@ -174,7 +174,7 @@ function MarketItemCard({ item, lang }: { item: MarketSummaryItem, lang: string 
       {/* Mini Sparkline using SVG */}
       <div className="h-10 w-24">
         {item.sparkline && item.sparkline.length > 0 && (
-          <Sparkline data={item.sparkline} color={isPositive ? "rgb(16 185 129)" : "rgb(225 29 72)"} />
+          <Sparkline data={item.sparkline} color={isPositive ? "var(--color-chart-2)" : "var(--color-destructive)"} />
         )}
       </div>
     </div>
@@ -201,9 +201,10 @@ function Sparkline({ data, color }: { data: number[], color: string }) {
   return (
     <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
       <polyline
+        className="sparkline-path"
         fill="none"
         stroke={color}
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         points={points}

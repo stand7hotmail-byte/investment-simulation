@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from '@/hooks/useI18n';
 import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -43,7 +44,7 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
   const queryClient = useQueryClient();
   const { data: assets, isLoading: assetsLoading } = useAssets();
   const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(id);
-
+  const { t, lang } = useI18n();
   const {
     register,
     control,

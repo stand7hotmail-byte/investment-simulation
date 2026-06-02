@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Footer } from "@/components/layout/Footer";
@@ -8,7 +8,15 @@ import { getDictionary } from "@/lib/i18n";
 import { I18nProvider } from "@/hooks/useI18n";
 import { headers } from "next/headers";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+});
 
 // Define supported locales
 const locales = ["en", "ja"];
@@ -58,7 +66,7 @@ export default async function RootLayout({
         ))}
         <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en${purePath === '/' ? '' : purePath}`} />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${plusJakartaSans.variable} font-sans`}>
         <I18nProvider lang={lang} dictionary={dictionary}>
           <QueryProvider>
             <div className="flex h-screen overflow-hidden bg-background">
