@@ -26,8 +26,7 @@ export function useChartTheme() {
     
     const checkTheme = () => {
       const isDarkClass = document.documentElement.classList.contains('dark');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(isDarkClass || prefersDark);
+      setIsDark(isDarkClass);
     };
 
     checkTheme();
