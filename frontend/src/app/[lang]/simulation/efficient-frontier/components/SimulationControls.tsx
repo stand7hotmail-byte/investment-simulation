@@ -4,7 +4,6 @@ import { useI18n } from "@/hooks/useI18n";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AssetSelector } from "@/components/simulation/AssetSelector";
-import { CustomAllocationInput } from "@/components/simulation/CustomAllocationInput";
 import { ComparisonPortfolioSelector } from "@/components/simulation/ComparisonPortfolioSelector";
 import { Info } from "lucide-react";
 
@@ -18,7 +17,6 @@ interface SimulationControlsProps {
   saveError: any;
   anyError: any;
   onRunSimulation: () => void;
-  onCalculateCustom: () => void;
   onSaveResult: () => void;
 }
 
@@ -32,7 +30,6 @@ export function SimulationControls({
   saveError,
   anyError,
   onRunSimulation,
-  onCalculateCustom,
   onSaveResult,
 }: SimulationControlsProps) {
   const { t } = useI18n();
@@ -45,11 +42,6 @@ export function SimulationControls({
         </CardHeader>
         <CardContent className="space-y-6">
           <AssetSelector />
-          <CustomAllocationInput 
-            selectedAssetCodes={selectedAssets} 
-            onCalculateCustom={onCalculateCustom}
-            isCalculatingCustom={isSimulatingCustom}
-          />
           
           <div className="pt-4 space-y-3">
             <Button 

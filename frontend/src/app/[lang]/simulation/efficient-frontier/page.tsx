@@ -120,7 +120,6 @@ export default function EfficientFrontierPage() {
             saveError={saveError}
             anyError={anyError}
             onRunSimulation={runSimulation}
-            onCalculateCustom={handleCalculateCustomPortfolio}
             onSaveResult={handleSaveResult}
           />
         </div>
@@ -137,6 +136,7 @@ export default function EfficientFrontierPage() {
             comparisonPortfolioPoints={comparisonPortfolioPoints}
             selectedAssets={selectedAssets}
             simulationId={simulationId?.toString() || ""}
+            onCalculateCustom={handleCalculateCustomPortfolio}
           />
         </div>
       </div>

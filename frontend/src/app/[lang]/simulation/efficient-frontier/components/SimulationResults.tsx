@@ -3,6 +3,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { EfficientFrontierChart } from "@/components/simulation/EfficientFrontierChart";
 import { AllocationTable } from "@/components/simulation/AllocationTable";
+import { CustomAllocationInput } from "@/components/simulation/CustomAllocationInput";
 import { TrendingUp } from "lucide-react";
 import { EfficientFrontierResponse, FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
 import { useI18n } from "@/hooks/useI18n";
@@ -18,6 +19,7 @@ interface SimulationResultsProps {
   comparisonPortfolioPoints: PortfolioPointResponse[];
   selectedAssets: string[];
   simulationId: string;
+  onCalculateCustom: () => void;
 }
 
 export function SimulationResults({
@@ -31,6 +33,7 @@ export function SimulationResults({
   comparisonPortfolioPoints,
   selectedAssets,
   simulationId,
+  onCalculateCustom,
 }: SimulationResultsProps) {
   const { t } = useI18n();
   if (!hasResults) {
@@ -72,6 +75,12 @@ export function SimulationResults({
           />
         </CardContent>
       </Card>
+
+      <CustomAllocationInput 
+        selectedAssetCodes={selectedAssets} 
+        onCalculateCustom={onCalculateCustom}
+        isCalculatingCustom={isSimulatingCustom}
+      />
 
       <Card className="border-none shadow-sm bg-white">
         <CardHeader>
