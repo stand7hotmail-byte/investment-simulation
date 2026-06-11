@@ -9,22 +9,22 @@ from scipy.stats import gmean
 
 # 資産リスト
 ASSETS_LIST = [
-    # 投資信託 (Proxyを使用)
-    {"asset_code": "EMAXIS-ALC", "proxy_ticker": "2559.T", "name": "eMAXIS Slim 全世界株式(オール・カントリー)", "asset_class": "Stock", "default_ret": 0.06, "default_vol": 0.16},
-    {"asset_code": "EMAXIS-SP5", "proxy_ticker": "2558.T", "name": "eMAXIS Slim 米国株式(S&P500)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
+    # 投資信託 (Proxyには米国ETFを使用してyfinanceの分割未調整バグを回避)
+    {"asset_code": "EMAXIS-ALC", "proxy_ticker": "ACWI", "name": "eMAXIS Slim 全世界株式(オール・カントリー)", "asset_class": "Stock", "default_ret": 0.06, "default_vol": 0.16},
+    {"asset_code": "EMAXIS-SP5", "proxy_ticker": "VOO", "name": "eMAXIS Slim 米国株式(S&P500)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
     {"asset_code": "SBIV-SP5", "proxy_ticker": "VOO", "name": "SBI・V・S&P500インデックス・ファンド", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
-    {"asset_code": "EMAXIS-JAP", "proxy_ticker": "1306.T", "name": "eMAXIS Slim 国内株式(TOPIX)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.17},
+    {"asset_code": "EMAXIS-JAP", "proxy_ticker": "EWJ", "name": "eMAXIS Slim 国内株式(TOPIX)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.17},
 
-    # 国内ETF
-    {"asset_code": "1306.T", "name": "NEXT FUNDS TOPIX連動型ETF (1306)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.17},
-    {"asset_code": "1321.T", "name": "NEXT FUNDS 日経225連動型ETF (1321)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.18},
-    {"asset_code": "1489.T", "name": "NEXT FUNDS 日経平均高配当株50 ETF (1489)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.16},
-    {"asset_code": "2558.T", "name": "MAXIS 米国株式(S&P500)ETF (2558)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
-    {"asset_code": "2621.T", "name": "iシェアーズ 米国債20年超 ETF(為替ヘッジあり) (2621)", "asset_class": "Bond", "default_ret": 0.02, "default_vol": 0.15},
-    {"asset_code": "2510.T", "name": "NEXT FUNDS Japan Govt Bond ETF (2510)", "asset_class": "Bond", "default_ret": 0.01, "default_vol": 0.03},
-    {"asset_code": "2511.T", "name": "NEXT FUNDS Foreign Govt Bond ETF (2511)", "asset_class": "Bond", "default_ret": 0.02, "default_vol": 0.06},
-    {"asset_code": "1343.T", "name": "NEXT FUNDS TSE REIT Index ETF (1343)", "asset_class": "REIT", "default_ret": 0.04, "default_vol": 0.15},
-    {"asset_code": "1555.T", "name": "Listed Index Fund Australian REIT (1555)", "asset_class": "REIT", "default_ret": 0.05, "default_vol": 0.18},
+    # 国内ETF (同様にProxyを設定)
+    {"asset_code": "1306.T", "proxy_ticker": "EWJ", "name": "NEXT FUNDS TOPIX連動型ETF (1306)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.17},
+    {"asset_code": "1321.T", "proxy_ticker": "EWJ", "name": "NEXT FUNDS 日経225連動型ETF (1321)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.18},
+    {"asset_code": "1489.T", "proxy_ticker": "DXJ", "name": "NEXT FUNDS 日経平均高配当株50 ETF (1489)", "asset_class": "Stock", "default_ret": 0.05, "default_vol": 0.16},
+    {"asset_code": "2558.T", "proxy_ticker": "VOO", "name": "MAXIS 米国株式(S&P500)ETF (2558)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
+    {"asset_code": "2621.T", "proxy_ticker": "TLT", "name": "iシェアーズ 米国債20年超 ETF(為替ヘッジあり) (2621)", "asset_class": "Bond", "default_ret": 0.02, "default_vol": 0.15},
+    {"asset_code": "2510.T", "proxy_ticker": "IGOV", "name": "NEXT FUNDS Japan Govt Bond ETF (2510)", "asset_class": "Bond", "default_ret": 0.01, "default_vol": 0.03},
+    {"asset_code": "2511.T", "proxy_ticker": "BNDX", "name": "NEXT FUNDS Foreign Govt Bond ETF (2511)", "asset_class": "Bond", "default_ret": 0.02, "default_vol": 0.06},
+    {"asset_code": "1343.T", "proxy_ticker": "VNQ", "name": "NEXT FUNDS TSE REIT Index ETF (1343)", "asset_class": "REIT", "default_ret": 0.04, "default_vol": 0.15},
+    {"asset_code": "1555.T", "proxy_ticker": "VNQ", "name": "Listed Index Fund Australian REIT (1555)", "asset_class": "REIT", "default_ret": 0.05, "default_vol": 0.18},
 
     # 米国ETF等
     {"asset_code": "SPY", "name": "S&P 500 ETF (SPY)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
@@ -33,7 +33,7 @@ ASSETS_LIST = [
     {"asset_code": "VOO", "name": "Vanguard S&P 500 ETF (VOO)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
     {"asset_code": "VYM", "name": "Vanguard High Dividend Yield ETF (VYM)", "asset_class": "Stock", "default_ret": 0.06, "default_vol": 0.14},
     {"asset_code": "DIA", "name": "SPDR Dow Jones Industrial Average ETF (DIA)", "asset_class": "Stock", "default_ret": 0.06, "default_vol": 0.15},
-    {"asset_code": "1557.T", "name": "SPDR S&P 500 ETF (1557)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
+    {"asset_code": "1557.T", "proxy_ticker": "SPY", "name": "SPDR S&P 500 ETF (1557)", "asset_class": "Stock", "default_ret": 0.07, "default_vol": 0.16},
     {"asset_code": "BND", "name": "Vanguard Total Bond Market ETF (BND)", "asset_class": "Bond", "default_ret": 0.03, "default_vol": 0.05},
     {"asset_code": "AGG", "name": "iShares Core U.S. Aggregate Bond ETF (AGG)", "asset_class": "Bond", "default_ret": 0.03, "default_vol": 0.05},
     {"asset_code": "TLT", "name": "iShares 20+ Year Treasury Bond ETF (TLT)", "asset_class": "Bond", "default_ret": 0.04, "default_vol": 0.12},
@@ -87,9 +87,15 @@ def precompute():
             # Annualized volatility
             ann_vol = float(asset_rets.std() * np.sqrt(252))
             
-            # Capping for sanity
-            ann_ret = max(-0.2, min(0.5, ann_ret))
-            ann_vol = max(0.01, min(1.0, ann_vol))
+            # 異常なマイナス値（分割調整バグなど）の検出フォールバック
+            if ann_ret < -0.15:
+                print(f"  Anomaly detected for {code} (ann_ret {ann_ret}), using defaults.")
+                ann_ret = asset["default_ret"]
+                ann_vol = asset["default_vol"]
+            else:
+                # Capping for sanity
+                ann_ret = max(-0.2, min(0.5, ann_ret))
+                ann_vol = max(0.01, min(1.0, ann_vol))
         else:
             print(f"  Insufficient data for {code}, using defaults.")
             ann_ret = asset["default_ret"]
