@@ -11,26 +11,18 @@ interface SimulationControlsProps {
   selectedAssets: string[];
   isSimulating: boolean;
   isSimulatingCustom: boolean;
-  isSavingSimulation: boolean;
   hasResults: boolean;
-  isSaveSuccess: boolean;
-  saveError: any;
   anyError: any;
   onRunSimulation: () => void;
-  onSaveResult: () => void;
 }
 
 export function SimulationControls({
   selectedAssets,
   isSimulating,
   isSimulatingCustom,
-  isSavingSimulation,
   hasResults,
-  isSaveSuccess,
-  saveError,
   anyError,
   onRunSimulation,
-  onSaveResult,
 }: SimulationControlsProps) {
   const { t } = useI18n();
   return (
@@ -51,27 +43,11 @@ export function SimulationControls({
             >
               {isSimulating ? t('simulation.calculating') : t('simulation.runSim')}
             </Button>
-
-            {hasResults && (
-              <Button
-                variant="outline"
-                className="w-full h-11 text-base font-medium shadow-sm transition-all active:scale-[0.98]"
-                disabled={isSavingSimulation}
-                onClick={onSaveResult}
-              >
-                {isSavingSimulation ? t('common.loading') : t('simulation.saveResult')}
-              </Button>
-            )}
           </div>
 
-          {isSaveSuccess && (
-            <p className="text-sm text-green-600 bg-green-50 p-3 rounded-md border border-green-100">
-              {t('simulation.saveSuccessLong')}
-            </p>
-          )}
-          {(saveError || anyError) && (
+          {anyError && (
             <p className="text-sm text-red-500 bg-red-50 p-3 rounded-md border border-red-100">
-              {t('common.error')}: {((saveError || anyError) as any).message || t('common.error')}
+              {t('common.error')}: {(anyError as any).message || t('common.error')}
             </p>
           )}
         </CardContent>

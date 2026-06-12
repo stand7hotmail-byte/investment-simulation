@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { PortfolioPointResponse } from "@/types/simulation";
 import { useComparisonPortfolios } from "@/hooks/useComparisonPortfolios";
 import { usePortfolioPointsSimulation } from "@/hooks/usePortfolioPointsSimulation";
-import { useSaveSimulationResult } from "@/hooks/useSaveSimulationResult";
 import { SimulationControls } from "./components/SimulationControls";
 import { SimulationResults } from "./components/SimulationResults";
 import { AffiliateSection } from "@/components/simulation/AffiliateSection";
@@ -38,8 +37,6 @@ export default function EfficientFrontierPage() {
   const [comparisonPortfolioPoints, setComparisonPortfolioPoints] = useState<PortfolioPointResponse[]>([]);
 
   const anyError = efError || rpError || customSimError || comparisonPortfoliosError || comparisonPointsError;
-
-  const { mutate: saveSimulationResult, isPending: isSavingSimulation, isSuccess: isSaveSuccess, error: saveError } = useSaveSimulationResult();
 
   useEffect(() => {
     if (selectedComparisonPortfolioIds.length > 0) {
@@ -83,24 +80,6 @@ export default function EfficientFrontierPage() {
     );
   };
 
-  const handleSaveResult = () => {
-    if (!efData) return;
-    saveSimulationResult({
-      simulation_type: "efficient_frontier",
-      parameters: { assets: selectedAssets, n_points: efData.frontier.length },
-      results: {
-        frontier: efData.frontier,
-        max_sharpe: maxSharpePoint,
-        risk_parity: riskParityPoint,
-        custom_portfolio: customPortfolioPoint,
-        comparison_portfolios: comparisonPortfolioPoints,
-      },
-    }, {
-      onSuccess: () => toast.success(t('simulation.saveSuccess')),
-      onError: (err) => toast.error(t('simulation.saveError', { message: err.message }))
-    });
-  };
-
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex flex-col space-y-2">
@@ -114,13 +93,9 @@ export default function EfficientFrontierPage() {
             selectedAssets={selectedAssets}
             isSimulating={isSimulating}
             isSimulatingCustom={isSimulatingCustom}
-            isSavingSimulation={isSavingSimulation}
             hasResults={hasResults}
-            isSaveSuccess={isSaveSuccess}
-            saveError={saveError}
             anyError={anyError}
             onRunSimulation={runSimulation}
-            onSaveResult={handleSaveResult}
           />
         </div>
         

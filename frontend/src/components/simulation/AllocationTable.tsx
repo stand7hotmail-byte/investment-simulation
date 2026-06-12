@@ -15,6 +15,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, MousePointer2 } from "lucide-react";
 import { useI18n } from "@/hooks/useI18n";
+import { useState } from "react";
+import { SavePortfolioDialog } from "./SavePortfolioDialog";
+import { BookmarkPlus } from "lucide-react";
 
 import { FrontierPoint, PortfolioPointResponse } from "@/types/simulation";
 
@@ -29,6 +32,7 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
   const setSelectedPoint = useSimulationStore((state) => state.setSelectedPoint);
   const { data: assets } = useAssets();
   const { t } = useI18n();
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
 
   if (!selectedPoint) {
     return null;
@@ -101,7 +105,18 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
             {strategyName}
           </div>
           <CardTitle className="text-lg font-semibold flex items-center justify-between">
-            <span>{t('simulation.allocationDetails')}</span>
+            <div className="flex items-center gap-3">
+              <span>{t('simulation.allocationDetails')}</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 text-xs flex items-center gap-1.5 border-slate-200"
+                onClick={() => setIsSaveDialogOpen(true)}
+              >
+                <BookmarkPlus className="w-3.5 h-3.5" />
+                Save Result
+              </Button>
+            </div>
             <div className="flex space-x-4 text-sm font-normal text-slate-500">
               <span>{t('common.risk')}: {(selectedPoint.volatility * 100).toFixed(2)}%</span>
               <span>{t('common.return')}: {(selectedPoint.expected_return * 100).toFixed(2)}%</span>
@@ -167,6 +182,15 @@ export function AllocationTable({ riskParityPoint, maxSharpePoint, comparisonPor
                   </Table>
                 </CardContent>
               </Card>
-            )}    </div>
+            )}
+            
+      <SavePortfolioDialog
+        isOpen={isSaveDialogOpen}
+        onClose={() => setIsSaveDialogOpen(false)}
+        allocations={Object.fromEntries(
+          Object.entries(selectedPoint.weights).map(([code, weight]) => [code, weight * 100])
+        )}
+      />
+    </div>
   );
 }
