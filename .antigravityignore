@@ -1,0 +1,65 @@
+# 依存ライブラリ（最優先除外）
+node_modules/
+vendor/
+.venv/
+venv/
+env/
+packages/
+
+# バージョン管理・エディタの一時ファイル
+.git/
+.svn/
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# ログファイルやキャッシュ
+*.log
+.npm/
+.eslintcache
+.parcel-cache
+.turbo/
+
+# 一般的なビルド成果物・静的資産
+dist/
+out/
+build/
+.cache/
+public/assets/
+public/images/
+src/assets/
+
+# Python/データ系キャッシュと巨大データ
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+data/
+datasets/
+*.csv
+*.json
+*.sqlite3
+*.db
+
+# === 追加提案分 ===
+# Next.js / TypeScript
+.next/
+*.tsbuildinfo
+
+# テストカバレッジ
+coverage/
+htmlcov/
+
+# 環境変数（ローカルのシークレット）
+.env.local
+.env.*.local
+
+# OSシステムファイル
+.DS_Store
+Thumbs.db
